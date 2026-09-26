@@ -31,7 +31,7 @@ Tic-tac-toe (page `tic-tac-toe` `22:3195`):
 | --- | --- | --- |
 | `<740` | `26:6973` | Stacked players, `sm` board, exit + Invite others |
 | `740+` | `26:6776` | Side-by-side players, `med` board, exit + Invite others |
-| `share-modal` | `26:7720` | QR + “share link” (opened from Invite others) |
+| `share-modal` | `26:7720` | QR + “share link” (header qr-btn + Invite others) |
 
 Game code lives in `/_tic-tac-toe` (project root). Catalog id: `tic-tac-toe`.
 
@@ -48,6 +48,7 @@ Components:
 - `cards` (`20:571`) — `<600` / `600-1280` / `>1280`
 - `hero-image` (`21:2757`) — lg 380×225, med 336×196, sm 246×143
 - `app-icon` (`26:7892`) — tic-tac-toe card art (exported to `public/assets/tic-tac-toe/hero-{lg,sm,xs}.png`)
+- `share-modal` (`26:7720`) — QR + “share link”; used from header `qr-btn` and Invite others
 - `text-title` (`9:51`), `text-description` (`9:52`)
 
 Copy (use verbatim):

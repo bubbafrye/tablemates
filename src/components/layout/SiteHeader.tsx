@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useId, useState, useSyncExternalStore } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import QRCode from "qrcode";
 import { Logo } from "@/components/ui/Logo";
-import { inviteUrl } from "@/platform/codes";
+import { ShareModal } from "@/components/ui/ShareModal";
 import { withBasePath } from "@/platform/site";
 import styles from "./SiteHeader.module.css";
 
@@ -13,39 +12,7 @@ type SiteHeaderProps = {
 };
 
 export function SiteHeader({ roomCode }: SiteHeaderProps) {
-  const [qrOpen, setQrOpen] = useState(false);
-  const [qr, setQr] = useState("");
-  const titleId = useId();
-  const origin = useSyncExternalStore(
-    () => () => undefined,
-    () => window.location.origin,
-    () => "",
-  );
-  const url = roomCode && origin ? inviteUrl(origin, roomCode) : "";
-
-  useEffect(() => {
-    if (!url || !qrOpen) return;
-    let cancelled = false;
-    QRCode.toDataURL(url, {
-      width: 196,
-      margin: 0,
-      color: { dark: "#241f1a", light: "#fffdf8" },
-    }).then((data) => {
-      if (!cancelled) setQr(data);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [url, qrOpen]);
-
-  useEffect(() => {
-    if (!qrOpen) return;
-    function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") setQrOpen(false);
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [qrOpen]);
+  const [shareOpen, setShareOpen] = useState(false);
 
   return (
     <>
@@ -68,35 +35,15 @@ export function SiteHeader({ roomCode }: SiteHeaderProps) {
               type="button"
               data-name="qr-btn"
               aria-label="Show room QR code"
-              onClick={() => setQrOpen(true)}
+              onClick={() => setShareOpen(true)}
             >
               <img src={withBasePath("/assets/icon-qr.svg")} alt="" width={22} height={22} />
             </button>
           </div>
         ) : null}
       </header>
-      {qrOpen ? (
-        <div
-          className={styles.modal}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={titleId}
-          onClick={() => setQrOpen(false)}
-        >
-          <div
-            className={styles.modalCard}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <p id={titleId} className={styles.modalTitle}>
-              Scan to join
-            </p>
-            <p className={styles.modalCode}>{roomCode}</p>
-            {qr ? <img className={styles.modalQr} src={qr} alt="" width={196} height={196} /> : null}
-            <button className={styles.modalClose} type="button" onClick={() => setQrOpen(false)}>
-              Close
-            </button>
-          </div>
-        </div>
+      {shareOpen && roomCode ? (
+        <ShareModal code={roomCode} onClose={() => setShareOpen(false)} />
       ) : null}
     </>
   );

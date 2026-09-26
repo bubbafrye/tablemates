@@ -26,8 +26,8 @@ export function ShareModal({ code, onClose }: ShareModalProps) {
     let cancelled = false;
     QRCode.toDataURL(url, {
       width: 280,
-      margin: 1,
-      color: { dark: "#241f1a", light: "#fffdf8" },
+      margin: 0,
+      color: { dark: "#241f1a", light: "#ffffff" },
     }).then((data) => {
       if (!cancelled) setQr(data);
     });
@@ -47,8 +47,12 @@ export function ShareModal({ code, onClose }: ShareModalProps) {
   async function shareLink() {
     if (!url) return;
     if (navigator.share) {
-      await navigator.share({ title: "tablemates", text: `Room code ${code}`, url });
-      return;
+      try {
+        await navigator.share({ title: "tablemates", text: `Room code ${code}`, url });
+        return;
+      } catch {
+        /* user cancelled or share unavailable — fall through to clipboard */
+      }
     }
     await navigator.clipboard.writeText(`${code}\n${url}`);
   }
@@ -65,7 +69,12 @@ export function ShareModal({ code, onClose }: ShareModalProps) {
       >
         <div className={styles.closeRow}>
           <button className={styles.close} type="button" aria-label="Close" onClick={onClose}>
-            <img src={withBasePath("/assets/tic-tac-toe/icon-close.svg")} alt="" width={26} height={26} />
+            <img
+              src={withBasePath("/assets/tic-tac-toe/icon-close.svg")}
+              alt=""
+              width={26}
+              height={26}
+            />
           </button>
         </div>
         <div className={styles.content} data-name="content">
@@ -79,7 +88,12 @@ export function ShareModal({ code, onClose }: ShareModalProps) {
           </div>
           <div className={styles.share} data-name="share">
             <p className={styles.lede}>Get them in the groove!</p>
-            <button className={styles.shareBtn} type="button" data-name="Button-primary" onClick={shareLink}>
+            <button
+              className={styles.shareBtn}
+              type="button"
+              data-name="Button-primary"
+              onClick={shareLink}
+            >
               <span>share link</span>
               <img
                 src={withBasePath("/assets/tic-tac-toe/icon-share.svg")}

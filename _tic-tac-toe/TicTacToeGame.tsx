@@ -16,7 +16,7 @@ import {
   type TicTacToeState,
 } from "./logic";
 import { PlayerBadge } from "./PlayerBadge";
-import { ShareModal } from "./ShareModal";
+import { ShareModal } from "@/components/ui/ShareModal";
 import styles from "./TicTacToeGame.module.css";
 
 type TicTacToeGameProps = {
