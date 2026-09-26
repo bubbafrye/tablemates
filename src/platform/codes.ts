@@ -1,3 +1,5 @@
+import { basePath } from "./site";
+
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 export function createRoomCode(length = 6) {
@@ -13,6 +15,14 @@ export function normalizeRoomCode(value: string) {
     .replaceAll("1", "I");
 }
 
+/** Invite URL that works with static hosting (query param, not a dynamic path segment). */
 export function inviteUrl(origin: string, code: string) {
-  return `${origin}/s/${normalizeRoomCode(code)}`;
+  const normalized = normalizeRoomCode(code);
+  return `${origin}${basePath()}/s/?code=${encodeURIComponent(normalized)}`;
+}
+
+export function sessionPath(code: string, gameId?: string) {
+  const params = new URLSearchParams({ code: normalizeRoomCode(code) });
+  if (gameId) params.set("game", gameId);
+  return `/s/?${params.toString()}`;
 }

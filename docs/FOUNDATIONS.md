@@ -71,7 +71,7 @@ Until those are designed, the session route (`/s/[code]`) only composes `SiteHea
 
 | Layer | Choice | Why |
 | --- | --- | --- |
-| App | Next.js App Router + TypeScript | Mobile-first web, GitHub-friendly, one codebase for web + installable mobile browser |
+| App | Next.js App Router + TypeScript (`output: "export"`) | Mobile-first web; static export for GitHub Pages (`/tablemates` basePath) |
 | Styles | CSS modules + generated custom properties | Figma instruction: do not add Tailwind. Tokens stay the single source of values. |
 | Components | Storybook | Authenticate each design-system piece in isolation |
 | Realtime | PartyKit | Free Cloudflare-backed rooms; already familiar. Room id = invite code. |

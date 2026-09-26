@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { GameCard } from "@/components/ui/GameCard";
 import { catalog } from "@/platform/catalog";
-import { createRoomCode } from "@/platform/codes";
+import { createRoomCode, sessionPath } from "@/platform/codes";
 import { rememberRoom } from "@/platform/identity";
 import styles from "./GameLibrary.module.css";
 
@@ -13,7 +13,7 @@ export function GameLibrary() {
   function launch(gameId: string) {
     const code = createRoomCode();
     rememberRoom({ code, gameId, createdAt: new Date().toISOString() });
-    router.push(`/s/${code}?game=${gameId}`);
+    router.push(sessionPath(code, gameId));
   }
 
   return (

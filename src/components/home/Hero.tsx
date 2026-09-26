@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { JoinField } from "@/components/ui/JoinField";
-import { normalizeRoomCode } from "@/platform/codes";
+import { sessionPath } from "@/platform/codes";
 import styles from "./Hero.module.css";
 
 export function Hero() {
@@ -18,7 +18,7 @@ export function Hero() {
         <div className={styles.body}>
           <JoinField
             variant="join"
-            onSubmit={(value) => router.push(`/s/${normalizeRoomCode(value)}`)}
+            onSubmit={(value) => router.push(sessionPath(value))}
           />
         </div>
       </div>

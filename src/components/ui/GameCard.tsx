@@ -1,6 +1,7 @@
 "use client";
 
 import type { GameDefinition } from "@/platform/catalog";
+import { withBasePath } from "@/platform/site";
 import { Button } from "./Button";
 import { TextDescription } from "./TextDescription";
 import { TextTitle } from "./TextTitle";
@@ -18,21 +19,21 @@ export function GameCard({ game, onLaunch }: GameCardProps) {
         <div className={styles.hero} data-name="hero-image">
           <img
             className={`${styles.image} ${styles.lg}`}
-            src="/assets/hero-lg.png"
+            src={withBasePath("/assets/hero-lg.png")}
             alt=""
             width={380}
             height={225}
           />
           <img
             className={`${styles.image} ${styles.sm}`}
-            src="/assets/hero-sm.png"
+            src={withBasePath("/assets/hero-sm.png")}
             alt=""
             width={336}
             height={196}
           />
           <img
             className={`${styles.image} ${styles.xs}`}
-            src="/assets/hero-xs.png"
+            src={withBasePath("/assets/hero-xs.png")}
             alt=""
             width={246}
             height={143}

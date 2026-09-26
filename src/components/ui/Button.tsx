@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { withBasePath } from "@/platform/site";
 import styles from "./Button.module.css";
 
 export type ButtonVariant = "primary" | "secondary" | "plain";
@@ -26,14 +27,14 @@ export function Button({
         variant === "plain" ? (
           <>
             <img
-              src="/assets/icon-launch-dark.svg"
+              src={withBasePath("/assets/icon-launch-dark.svg")}
               alt=""
               width={12}
               height={12}
               className={`${styles.icon} ${styles.iconDefault}`}
             />
             <img
-              src="/assets/icon-launch-muted.svg"
+              src={withBasePath("/assets/icon-launch-muted.svg")}
               alt=""
               width={12}
               height={12}
@@ -42,7 +43,7 @@ export function Button({
           </>
         ) : (
           <img
-            src="/assets/icon-launch.svg"
+            src={withBasePath("/assets/icon-launch.svg")}
             alt=""
             width={12}
             height={12}

@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Arimo, Encode_Sans_Condensed, Mulish } from "next/font/google";
-import { site } from "@/platform/site";
+import { site, withBasePath } from "@/platform/site";
 import "@/styles/globals.css";
 
 const mulish = Mulish({
@@ -24,7 +24,7 @@ const arimo = Arimo({
 export const metadata: Metadata = {
   title: site.title,
   description: site.description,
-  manifest: "/manifest.webmanifest",
+  manifest: withBasePath("/manifest.webmanifest"),
   appleWebApp: {
     capable: true,
     title: site.name,

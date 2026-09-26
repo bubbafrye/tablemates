@@ -5,6 +5,7 @@ import Link from "next/link";
 import QRCode from "qrcode";
 import { Logo } from "@/components/ui/Logo";
 import { inviteUrl } from "@/platform/codes";
+import { withBasePath } from "@/platform/site";
 import styles from "./SiteHeader.module.css";
 
 type SiteHeaderProps = {
@@ -69,7 +70,7 @@ export function SiteHeader({ roomCode }: SiteHeaderProps) {
               aria-label="Show room QR code"
               onClick={() => setQrOpen(true)}
             >
-              <img src="/assets/icon-qr.svg" alt="" width={22} height={22} />
+              <img src={withBasePath("/assets/icon-qr.svg")} alt="" width={22} height={22} />
             </button>
           </div>
         ) : null}
