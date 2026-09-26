@@ -1,0 +1,44 @@
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--size-page-x);
+  background: var(--color-neutral-900);
+}
+
+.body {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-item-gap);
+  width: 100%;
+}
+
+.credit {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--color-neutral-300);
+  font-family: var(--font-primary-face), sans-serif;
+  font-size: var(--font-size-button);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.contact {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-item-gap);
+  color: var(--color-brand-primary);
+  font-family: var(--font-primary-face), sans-serif;
+  font-size: var(--font-size-button);
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.contact img {
+  width: 20px;
+  height: 21px;
+}

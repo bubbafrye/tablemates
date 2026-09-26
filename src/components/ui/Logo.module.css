@@ -1,0 +1,29 @@
+.logo {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--radius-logo);
+  flex-shrink: 0;
+}
+
+.row {
+  display: flex;
+  flex: 1 0 0;
+  min-height: 0;
+  width: 100%;
+}
+
+.dark,
+.primary {
+  flex: 1 0 0;
+  min-width: 0;
+  height: 100%;
+}
+
+.dark {
+  background: var(--color-brand-tertiary-dark);
+}
+
+.primary {
+  background: var(--color-brand-primary);
+}

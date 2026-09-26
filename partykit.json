@@ -1,0 +1,8 @@
+{
+  "name": "tablemates",
+  "main": "party/session.ts",
+  "compatibilityDate": "2024-09-01",
+  "parties": {
+    "leaderboard": "party/leaderboard.ts"
+  }
+}

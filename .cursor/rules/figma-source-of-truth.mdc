@@ -1,0 +1,17 @@
+---
+description: Figma is the visual source of truth for Tablemates
+alwaysApply: true
+---
+
+# Figma is the spec
+
+Design file: https://www.figma.com/design/tE15PVyJVeYZ6XP0d0xfMc/Untitled?node-id=0-1
+File key: `tE15PVyJVeYZ6XP0d0xfMc`. Page `site` (`0:1`).
+
+- Pull layout, type, color, radii, spacing, assets, variants, and copy from this file via Figma MCP. Do not invent or "improve" patterns.
+- Reuse existing components (`Button`, `GameCard`, `JoinField`, `Logo`, text styles, header, footer). Do not create a parallel component when one covers the case.
+- Tokens live in `design/tokens.json`. Regenerate CSS with `npm run tokens`. Never hand-edit `src/styles/tokens.css`.
+- If a screen or state is not in Figma, stop and ask. Session body and QR modal chrome are not designed yet — compose only from existing components and tokens, then flag it. Header `room-code` + `qr-btn` (`25:4348`) and `input` (`25:5010`) are designed.
+- Breakpoints from frames: 393 (mobile), 640, 900, 1024, 1280.
+- `cards` (`20:571`) spaces game cards with flex-grow spacers — equal gap from each page margin and between cards (`space-evenly`). Do not pin cards to the edges.
+- Join uses `Button-plain`; register uses `Button-secondary`, both inside `input`.

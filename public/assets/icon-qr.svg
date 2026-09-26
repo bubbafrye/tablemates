@@ -1,0 +1,16 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="qr" clip-path="url(#clip0_0_54)">
+<g id="top row">
+<path id="Rectangle 7 (Stroke)" d="M10 0V10H0V0H10ZM3 7H7V3H3V7Z" fill="white"/>
+<path id="Rectangle 8 (Stroke)" d="M22 0V10H12V0H22ZM15 7H19V3H15V7Z" fill="white"/>
+</g>
+<path id="Subtract" d="M17 12V15H15V19H12V12H17ZM22 22H17V19H19V15H22V22Z" fill="white"/>
+<rect id="Rectangle 13" x="3" y="16" width="3" height="3" fill="white"/>
+<path id="Subtract_2" d="M10 22H3V19H0V12H10V22ZM3 19H7V15H3V19Z" fill="white"/>
+</g>
+<defs>
+<clipPath id="clip0_0_54">
+<rect width="22" height="22" fill="white"/>
+</clipPath>
+</defs>
+</svg>

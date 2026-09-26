@@ -1,0 +1,12 @@
+.title {
+  margin: 0;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  color: var(--color-text-primary);
+  font-family: var(--font-primary-face), sans-serif;
+  font-size: var(--font-size-title);
+  font-weight: var(--font-primary-weight);
+  line-height: normal;
+  overflow: hidden;
+}
