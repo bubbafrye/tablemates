@@ -6,15 +6,16 @@ This document is the working contract for the platform. The Figma file is the vi
 
 - Figma: https://www.figma.com/design/tE15PVyJVeYZ6XP0d0xfMc/Untitled?node-id=0-1
 - File key: `tE15PVyJVeYZ6XP0d0xfMc`
-- Page: `site` (`0:1`) — currently the only page in the file
+- Page: `site` (`0:1`) for catalog; `tic-tac-toe` (`22:3195`) for the first game
 - Tokens source: `design/tokens.json` (synced from Figma variables + frame measurements)
 - Generated CSS: `src/styles/tokens.css` via `npm run tokens`
+- Game modules: `/_tic-tac-toe` at project root (imported as `@_tic-tac-toe/*`)
 
 Do not invent UI patterns. If a screen is not in Figma, ask before designing it. Compose from existing components if a holding surface is required to ship a platform capability.
 
 ## What the designed file covers
 
-Responsive catalog / home:
+Responsive catalog / home: (page `site` `0:1`)
 
 | Frame | Node | Layout |
 | --- | --- | --- |
@@ -23,6 +24,16 @@ Responsive catalog / home:
 | 900–1023 | `20:1976` | 3-col `xs` cards, equal flex spacers. Register CTA. |
 | 1024–1280 | `20:277` | 3-col `xs` cards, equal flex spacers. Register CTA, lede under title row. |
 | >1280 | `20:1773` | 3-col `sm` cards, equal flex spacers. Register CTA side-by-side. |
+
+Tic-tac-toe (page `tic-tac-toe` `22:3195`):
+
+| Frame | Node | Layout |
+| --- | --- | --- |
+| `<740` | `26:6973` | Stacked players, `sm` board, exit + Invite others |
+| `740+` | `26:6776` | Side-by-side players, `med` board, exit + Invite others |
+| `share-modal` | `26:7720` | QR + “share link” (opened from Invite others) |
+
+Game code lives in `/_tic-tac-toe` (project root). Catalog id: `tic-tac-toe`.
 
 Components:
 
@@ -36,6 +47,7 @@ Components:
 - `game-card` (`20:201`) — Default / sm / xs
 - `cards` (`20:571`) — `<600` / `600-1280` / `>1280`
 - `hero-image` (`21:2757`) — lg 380×225, med 336×196, sm 246×143
+- `app-icon` (`26:7892`) — tic-tac-toe card art (exported to `public/assets/tic-tac-toe/hero-{lg,sm,xs}.png`)
 - `text-title` (`9:51`), `text-description` (`9:52`)
 
 Copy (use verbatim):
@@ -59,13 +71,12 @@ Copy (use verbatim):
 
 These were requested for the platform but have **no frames** in Figma:
 
-- Session / lobby screen body (header room-code is designed; the rest is not)
-- QR invite **modal** chrome (qr-btn and qr icon are designed; the dialog is composed from existing surface/type tokens)
-- In-game chrome beyond header room-code (pause / resume / scores / leaderboard UI)
+- Session / lobby screen body for non–tic-tac-toe games (header room-code is designed; the rest is not)
+- In-game chrome beyond what tic-tac-toe covers (generic pause / resume / scores UI)
 - Auth beyond the email field
-- Any individual game (including tic-tac-toe)
+- Additional games beyond tic-tac-toe
 
-Until those are designed, the session route (`/s/[code]`) only composes `SiteHeader` (with `roomCode`), `SiteFooter`, `Button`, `JoinField` / `input` patterns, `GameCard` surface tokens, and type styles. Treat that route as a temporary composition, not a new pattern.
+Until those are designed, non–tic-tac-toe session routes only compose `SiteHeader` (with `roomCode`), `SiteFooter`, `Button`, `JoinField` / `input` patterns, `GameCard` surface tokens, and type styles. Treat those as temporary compositions, not new patterns.
 
 ## Stack
 

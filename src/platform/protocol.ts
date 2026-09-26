@@ -14,6 +14,7 @@ export type SessionState = {
   hostId: string;
   players: Player[];
   scores: Record<string, number>;
+  game?: unknown;
 };
 
 export type LeaderboardEntry = {

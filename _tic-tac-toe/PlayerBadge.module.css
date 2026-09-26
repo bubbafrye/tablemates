@@ -1,0 +1,31 @@
+.player {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-item-gap);
+  min-height: 60px;
+  width: 100%;
+  padding: 10px 20px;
+  border-radius: 10px;
+}
+
+.active {
+  padding-top: 7px;
+  padding-bottom: 7px;
+  background: #d6f6f4;
+  border: 3px solid #16d9ef;
+}
+
+.inactive {
+  background: rgba(148, 138, 126, 0.4);
+  border: 1px solid #878787;
+  opacity: 0.5;
+}
+
+.name {
+  width: 150px;
+  color: #000;
+  font-family: var(--font-game-face), cursive;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: normal;
+}

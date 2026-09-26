@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@_tic-tac-toe/*": ["./_tic-tac-toe/*"]
     }
   },
   "include": [

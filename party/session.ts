@@ -70,6 +70,14 @@ export default class SessionServer implements Party.Server {
       await this.recordHighScore(parsed.playerId, next);
       return;
     }
+
+    if (parsed.type === "game") {
+      this.state.game = parsed.payload;
+      if (this.state.status === "lobby") this.state.status = "playing";
+      await this.persist();
+      this.push();
+      return;
+    }
   }
 
   private async upsertPlayer(playerId: string, gameId: string) {

@@ -1,5 +1,6 @@
 "use client";
 
+import { TicTacToeGame } from "@_tic-tac-toe/TicTacToeGame";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { Button } from "@/components/ui/Button";
@@ -16,9 +17,23 @@ type SessionViewProps = {
 
 export function SessionView({ code, gameId }: SessionViewProps) {
   const session = useSession({ code, gameId });
-  const game = getGame(session.state?.gameId || gameId);
+  const resolvedGameId = session.state?.gameId || gameId;
+  const game = getGame(resolvedGameId);
   const isHost = session.state?.hostId === session.playerId;
   const paused = session.state?.status === "paused";
+
+  if (resolvedGameId === "tic-tac-toe") {
+    return (
+      <TicTacToeGame
+        code={code}
+        playerId={session.playerId}
+        session={session.state}
+        connected={session.connected}
+        sendGame={session.sendGame}
+        setScore={session.setScore}
+      />
+    );
+  }
 
   return (
     <div className={styles.page}>

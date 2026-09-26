@@ -13,27 +13,33 @@ type GameCardProps = {
 };
 
 export function GameCard({ game, onLaunch }: GameCardProps) {
+  const hero = game.hero ?? {
+    lg: "/assets/hero-lg.png",
+    sm: "/assets/hero-sm.png",
+    xs: "/assets/hero-xs.png",
+  };
+
   return (
     <article className={styles.card} data-name="game-card">
       <div className={styles.content}>
         <div className={styles.hero} data-name="hero-image">
           <img
             className={`${styles.image} ${styles.lg}`}
-            src={withBasePath("/assets/hero-lg.png")}
+            src={withBasePath(hero.lg)}
             alt=""
             width={380}
             height={225}
           />
           <img
             className={`${styles.image} ${styles.sm}`}
-            src={withBasePath("/assets/hero-sm.png")}
+            src={withBasePath(hero.sm)}
             alt=""
             width={336}
             height={196}
           />
           <img
             className={`${styles.image} ${styles.xs}`}
-            src={withBasePath("/assets/hero-xs.png")}
+            src={withBasePath(hero.xs)}
             alt=""
             width={246}
             height={143}

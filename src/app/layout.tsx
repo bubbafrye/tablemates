@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Arimo, Encode_Sans_Condensed, Mulish } from "next/font/google";
+import { Arimo, Encode_Sans_Condensed, Itim, Mulish } from "next/font/google";
 import { site, withBasePath } from "@/platform/site";
 import "@/styles/globals.css";
 
@@ -21,6 +21,12 @@ const arimo = Arimo({
   variable: "--font-display-face",
 });
 
+const itim = Itim({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-game-face",
+});
+
 export const metadata: Metadata = {
   title: site.title,
   description: site.description,
@@ -39,7 +45,10 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${mulish.variable} ${encodeSans.variable} ${arimo.variable}`}>
+    <html
+      lang="en"
+      className={`${mulish.variable} ${encodeSans.variable} ${arimo.variable} ${itim.variable}`}
+    >
       <body>{children}</body>
     </html>
   );
