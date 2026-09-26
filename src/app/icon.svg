@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Figma logo 18:140 — 2×2 logomark, radius/logo 3 on 30 → 3.2 on 32 -->
+  <g clip-path="url(#clip)">
+    <rect width="16" height="16" fill="#241f1a"/>
+    <rect x="16" width="16" height="16" fill="#D6653C"/>
+    <rect y="16" width="16" height="16" fill="#D6653C"/>
+    <rect x="16" y="16" width="16" height="16" fill="#241f1a"/>
+  </g>
+  <defs>
+    <clipPath id="clip">
+      <rect width="32" height="32" rx="3.2"/>
+    </clipPath>
+  </defs>
+</svg>
