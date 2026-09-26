@@ -17,8 +17,8 @@ export function Board({ board, canPlay, onCell }: BoardProps) {
           <div className={styles.edge} data-name="edge" />
           <div className={styles.base} data-name="base" />
           <img
-            className={styles.cuts}
-            src={withBasePath("/assets/tic-tac-toe/cuts-med.svg")}
+            className={`${styles.cuts} ${styles.cutsXsm}`}
+            src={withBasePath("/assets/tic-tac-toe/cuts-xsm.svg")}
             alt=""
             data-name="cuts"
           />
@@ -43,7 +43,16 @@ export function Board({ board, canPlay, onCell }: BoardProps) {
               aria-label={cell ? `Cell ${index + 1}, ${cell}` : `Play in cell ${index + 1}`}
               onClick={() => onCell(index)}
             >
-              {cell ? <MarkIcon mark={cell} size="med" /> : null}
+              {cell ? (
+                <>
+                  <span className={styles.markXsm}>
+                    <MarkIcon mark={cell} size="boardXsm" />
+                  </span>
+                  <span className={styles.markSm}>
+                    <MarkIcon mark={cell} size="sm" />
+                  </span>
+                </>
+              ) : null}
             </button>
           ))}
         </div>

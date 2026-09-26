@@ -29,8 +29,8 @@ Tic-tac-toe (page `tic-tac-toe` `22:3195`):
 
 | Frame | Node | Layout |
 | --- | --- | --- |
-| `<740` | `26:6973` | Stacked players, `sm` board, exit + Invite others |
-| `740+` | `26:6776` | Side-by-side players, `med` board, exit + Invite others |
+| `<740` | `26:6973` | Stacked players; board set `xsm` 360×370 (320 surface); exit + Invite others |
+| `740+` | `26:6776` | Side-by-side players; board set `sm` 440×458 (400 surface); exit + Invite others |
 | `share-modal` | `26:7720` | QR + “share link” (header qr-btn + Invite others) |
 
 Game code lives in `/_tic-tac-toe` (project root). Catalog id: `tic-tac-toe`.

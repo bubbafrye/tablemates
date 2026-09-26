@@ -1,12 +1,13 @@
+/* Mobile / <740 — Figma set Property 1=xsm (360×370, 320 surface) */
 .wrap {
-  width: min(100%, 440px);
+  width: min(100%, 360px);
   margin: 0 auto;
 }
 
 .board {
   position: relative;
   width: 100%;
-  aspect-ratio: 440 / 458;
+  aspect-ratio: 360 / 370;
 }
 
 .surface {
@@ -19,15 +20,15 @@
 .hilight,
 .texture {
   position: absolute;
-  left: 4.545%;
-  top: 3.275%;
-  width: 90.91%;
-  height: 87.336%;
+  left: 5.556%;
+  top: 4.054%;
+  width: 88.889%;
+  height: 86.486%;
   border-radius: 10px;
 }
 
 .edge {
-  top: 7.07%;
+  top: 7.814%;
   background: linear-gradient(180deg, #997233 93.954%, #622900 100%);
   border: 2px solid #c4a565;
 }
@@ -38,17 +39,24 @@
 }
 
 .cuts {
-  display: none;
   position: absolute;
-  left: 7.634%;
-  top: 5.53%;
-  width: 82.727%;
-  height: 82.59%;
   pointer-events: none;
 }
 
-.cutsSm {
+.cutsXsm {
   display: block;
+  left: 8.575%;
+  top: 6.287%;
+  width: 82.367%;
+  height: 81.786%;
+}
+
+.cutsSm {
+  display: none;
+  left: 7.633%;
+  top: 5.53%;
+  width: 84.239%;
+  height: 82.59%;
 }
 
 .hilight {
@@ -75,21 +83,20 @@
 
 .tokens {
   position: absolute;
-  left: 7.727%;
-  top: 6.325%;
-  right: 7.727%;
-  bottom: 12.45%;
+  left: 13.333%;
+  top: 12.162%;
+  width: 73.333%;
+  height: 72.162%;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  gap: 2.5%;
+  gap: 0;
 }
 
 .cell {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8%;
   border: 0;
   background: transparent;
   cursor: pointer;
@@ -104,20 +111,62 @@
   border-radius: 8px;
 }
 
+.markXsm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.markSm {
+  display: none;
+}
+
+/* Desktop / 740+ — Figma set Property 1=sm (440×458, 400 surface) */
 @media (min-width: 740px) {
   .wrap {
-    width: min(100%, 640px);
+    width: min(100%, 440px);
   }
 
   .board {
-    aspect-ratio: 640 / 667;
+    aspect-ratio: 440 / 458;
   }
 
-  .cuts {
-    display: block;
+  .edge,
+  .base,
+  .hilight,
+  .texture {
+    left: 4.545%;
+    top: 3.275%;
+    width: 90.909%;
+    height: 87.336%;
+  }
+
+  .edge {
+    top: 7.072%;
+  }
+
+  .cutsXsm {
+    display: none;
   }
 
   .cutsSm {
+    display: block;
+  }
+
+  .tokens {
+    left: 7.727%;
+    top: 6.325%;
+    width: 84.406%;
+    height: 81.38%;
+  }
+
+  .markXsm {
     display: none;
+  }
+
+  .markSm {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }

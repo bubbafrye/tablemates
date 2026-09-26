@@ -22,7 +22,13 @@ export function GameCard({ game, onLaunch }: GameCardProps) {
   return (
     <article className={styles.card} data-name="game-card">
       <div className={styles.content}>
-        <div className={styles.hero} data-name="hero-image">
+        <button
+          className={styles.hero}
+          type="button"
+          data-name="hero-image"
+          aria-label={`Launch ${game.name}`}
+          onClick={() => onLaunch?.(game.id)}
+        >
           <img
             className={`${styles.image} ${styles.lg}`}
             src={withBasePath(hero.lg)}
@@ -44,7 +50,7 @@ export function GameCard({ game, onLaunch }: GameCardProps) {
             width={246}
             height={143}
           />
-        </div>
+        </button>
         <div className={styles.meta}>
           <TextTitle>{game.name}</TextTitle>
           <Button onClick={() => onLaunch?.(game.id)}>Launch</Button>

@@ -1,6 +1,7 @@
 .page {
   display: flex;
   flex-direction: column;
+  gap: 10px;
   min-height: 100%;
   background: var(--color-surface-card);
 }
@@ -14,13 +15,14 @@
   width: 100%;
 }
 
+/* <740 game-area: 400 wide, padding 20, gap 20 */
 .gameArea {
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 20px;
   width: 100%;
-  max-width: 480px;
+  max-width: 400px;
   padding: 20px;
 }
 
@@ -34,6 +36,8 @@
 
 .boardSlot {
   width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .status {
@@ -108,14 +112,17 @@
   box-shadow: var(--shadow-focus);
 }
 
+/* 740+ : content px 40; game-area max 480 (440+40), pad 0 20; players row */
 @media (min-width: 740px) {
   .content {
     padding: 0 40px;
+    gap: 10px;
   }
 
   .gameArea {
-    max-width: 680px;
+    max-width: 480px;
     padding: 0 20px;
+    gap: 0;
   }
 
   .players {
@@ -127,5 +134,9 @@
   .players > * {
     flex: 1 1 0;
     min-width: 0;
+  }
+
+  .management {
+    margin-top: 10px;
   }
 }

@@ -20,8 +20,20 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  padding: 0;
   padding-bottom: var(--spacing-item-gap);
+  border: 0;
   background: var(--color-surface-image-container);
+  cursor: pointer;
+  text-align: left;
+}
+
+.hero:focus {
+  outline: none;
+}
+
+.hero:focus-visible {
+  box-shadow: var(--shadow-focus);
 }
 
 .image {
