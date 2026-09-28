@@ -7,7 +7,7 @@
     "party": "wrangler dev",
     "party:deploy": "wrangler deploy",
     "tokens": "node scripts/tokens-to-css.mjs",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "storybook": "storybook dev -p 6006",
