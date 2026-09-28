@@ -128,6 +128,7 @@
   border: 0;
   background: transparent;
   cursor: pointer;
+  overflow: visible;
 }
 
 .cell:disabled {
@@ -143,10 +144,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: visible;
 }
 
 .markSm {
   display: none;
+  overflow: visible;
 }
 
 /* Desktop / 740+ — Figma set Property 1=sm (440×458, 400 surface) — node 26:5601 */
