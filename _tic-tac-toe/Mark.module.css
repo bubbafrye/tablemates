@@ -9,7 +9,7 @@
   height: 37px;
 }
 
-/* Figma XO frame — overflow visible so shadow bleed is not clipped by the cell */
+/* Figma XO frame — overflow visible so CSS drop-shadow is not clipped */
 .slot {
   position: relative;
   display: block;
@@ -34,11 +34,13 @@
 
 .glyph {
   position: absolute;
+  overflow: visible;
 }
 
 .bleed {
   position: absolute;
   display: block;
+  overflow: visible;
 }
 
 .bleedImg {
@@ -48,4 +50,24 @@
   max-width: none;
   object-fit: fill;
   pointer-events: none;
+}
+
+/*
+ * Figma outer drop shadows (was SVG filter0_d — paints opaque boxes in Safari).
+ * Values from feOffset / feGaussianBlur / feColorMatrix on mark assets.
+ */
+.shadowXSm {
+  filter: drop-shadow(0 4px 6px rgba(68, 0, 0, 0.5));
+}
+
+.shadowOSm {
+  filter: drop-shadow(0 4px 5px rgba(132, 67, 7, 0.55));
+}
+
+.shadowXXsm {
+  filter: drop-shadow(0 2px 2.5px rgba(68, 0, 0, 0.5));
+}
+
+.shadowOXsm {
+  filter: drop-shadow(0 2px 2.5px rgba(132, 67, 7, 0.55));
 }

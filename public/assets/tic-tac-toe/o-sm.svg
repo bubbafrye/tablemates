@@ -1,5 +1,5 @@
 <svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="105" height="110.059" viewBox="0 0 105 110.059" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="o" filter="url(#filter0_d_0_4)">
+<g id="o">
 <g id="Subtract" filter="url(#filter1_ddi_0_4)">
 <path d="M52.5 11.0594C75.972 11.0594 94.9999 30.0874 95 53.5594C95 77.0315 75.9721 96.0594 52.5 96.0594C29.028 96.0594 10 77.0315 10 53.5594C10.0001 30.0874 29.028 11.0594 52.5 11.0594ZM52.5 22.6961C35.4549 22.6962 21.6367 36.5143 21.6367 53.5594C21.6367 70.6046 35.4549 84.4226 52.5 84.4227C69.5452 84.4227 83.3633 70.6046 83.3633 53.5594C83.3633 36.5142 69.5452 22.6961 52.5 22.6961Z" fill="#4D565D"/>
 </g>
@@ -8,16 +8,6 @@
 </g>
 </g>
 <defs>
-<filter id="filter0_d_0_4" x="0" y="0" width="105" height="110.059" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
-<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-<feOffset dy="4"/>
-<feGaussianBlur stdDeviation="5"/>
-<feComposite in2="hardAlpha" operator="out"/>
-<feColorMatrix type="matrix" values="0 0 0 0 0.518893 0 0 0 0 0.2641 0 0 0 0 0.0257458 0 0 0 0.55 0"/>
-<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_4"/>
-<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_4" result="shape"/>
-</filter>
 <filter id="filter1_ddi_0_4" x="6" y="7.0594" width="93" height="97" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>

@@ -8,21 +8,24 @@ type MarkProps = {
   size?: "sm" | "boardXsm" | "xsm";
 };
 
-/** Board marks use PNG so Safari/Chrome render Figma drop shadows correctly (SVG filters in <img> break). */
+/**
+ * Board marks use SVG (true transparency on wood) + CSS drop-shadow for the
+ * Figma ground shadow. Outer SVG filter regions paint as opaque boxes in Safari.
+ */
 const SRC: Record<Mark, Record<NonNullable<MarkProps["size"]>, string>> = {
   X: {
-    sm: "/assets/tic-tac-toe/x-sm.png",
-    boardXsm: "/assets/tic-tac-toe/x-board-xsm.png",
+    sm: "/assets/tic-tac-toe/x-sm.svg",
+    boardXsm: "/assets/tic-tac-toe/x-board-xsm.svg",
     xsm: "/assets/tic-tac-toe/x-xsm.svg",
   },
   O: {
-    sm: "/assets/tic-tac-toe/o-sm.png",
-    boardXsm: "/assets/tic-tac-toe/o-board-xsm.png",
+    sm: "/assets/tic-tac-toe/o-sm.svg",
+    boardXsm: "/assets/tic-tac-toe/o-board-xsm.svg",
     xsm: "/assets/tic-tac-toe/o-xsm.svg",
   },
 };
 
-/** Slot = Figma XO frame; glyph = mark art box before shadow bleed. */
+/** Slot = Figma XO frame; glyph = mark art box; bleed = Figma SVG overflow insets. */
 const LAYOUT: Record<
   Mark,
   Record<
@@ -97,10 +100,11 @@ export function MarkIcon({ mark, size = "sm" }: MarkProps) {
 
   const layout = LAYOUT[mark][size];
   const [bleedT, bleedR, bleedB, bleedL] = layout.bleed;
+  const shadowClass = size === "sm" ? styles[`shadow${mark}Sm`] : styles[`shadow${mark}Xsm`];
 
   return (
     <span
-      className={`${styles.slot} ${styles[size]}`}
+      className={`${styles.slot} ${styles[size]} ${shadowClass}`}
       style={{ width: layout.slotW, height: layout.slotH }}
     >
       <span
