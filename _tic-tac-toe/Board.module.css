@@ -141,14 +141,17 @@
 }
 
 .markXsm {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
   overflow: visible;
 }
 
 .markSm {
   display: none;
+  width: 100%;
+  height: 100%;
   overflow: visible;
 }
 
@@ -196,8 +199,9 @@
   }
 
   .markSm {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
   }
 }

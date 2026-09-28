@@ -9,27 +9,18 @@
   height: 37px;
 }
 
-/* Figma XO frame — overflow visible so CSS drop-shadow is not clipped */
+/*
+ * Aspect-ratio frame matches Figma XO size, centered in the cell by the
+ * parent flex/grid. Scales down on small boards without shifting top-left.
+ */
 .slot {
   position: relative;
   display: block;
-  flex-shrink: 0;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
   overflow: visible;
   pointer-events: none;
-}
-
-.sm {
-  width: 112px;
-  height: 112px;
-  max-width: 100%;
-  max-height: 100%;
-}
-
-.boardXsm {
-  width: 61px;
-  height: 64px;
-  max-width: 100%;
-  max-height: 100%;
 }
 
 .glyph {
@@ -53,7 +44,7 @@
 }
 
 /*
- * Figma outer drop shadows (was SVG filter0_d — paints opaque boxes in Safari).
+ * Figma outer drop shadows (SVG filters painted opaque boxes on mobile).
  * Values from feOffset / feGaussianBlur / feColorMatrix on mark assets.
  */
 .shadowXSm {
