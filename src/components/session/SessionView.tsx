@@ -37,7 +37,7 @@ export function SessionView({ code, gameId }: SessionViewProps) {
 
   return (
     <div className={styles.page}>
-      <SiteHeader roomCode={code} />
+      <SiteHeader roomCode={code} gameId={resolvedGameId} />
       <section className={styles.section}>
         <div className={styles.header}>
           <div className={styles.copy}>

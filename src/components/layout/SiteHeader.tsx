@@ -9,9 +9,10 @@ import styles from "./SiteHeader.module.css";
 
 type SiteHeaderProps = {
   roomCode?: string;
+  gameId?: string;
 };
 
-export function SiteHeader({ roomCode }: SiteHeaderProps) {
+export function SiteHeader({ roomCode, gameId }: SiteHeaderProps) {
   const [shareOpen, setShareOpen] = useState(false);
 
   return (
@@ -43,7 +44,7 @@ export function SiteHeader({ roomCode }: SiteHeaderProps) {
         ) : null}
       </header>
       {shareOpen && roomCode ? (
-        <ShareModal code={roomCode} onClose={() => setShareOpen(false)} />
+        <ShareModal code={roomCode} gameId={gameId} onClose={() => setShareOpen(false)} />
       ) : null}
     </>
   );

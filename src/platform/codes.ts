@@ -16,9 +16,10 @@ export function normalizeRoomCode(value: string) {
 }
 
 /** Invite URL that works with static hosting (query param, not a dynamic path segment). */
-export function inviteUrl(origin: string, code: string) {
-  const normalized = normalizeRoomCode(code);
-  return `${origin}${basePath()}/s/?code=${encodeURIComponent(normalized)}`;
+export function inviteUrl(origin: string, code: string, gameId?: string) {
+  const params = new URLSearchParams({ code: normalizeRoomCode(code) });
+  if (gameId) params.set("game", gameId);
+  return `${origin}${basePath()}/s/?${params.toString()}`;
 }
 
 export function sessionPath(code: string, gameId?: string) {

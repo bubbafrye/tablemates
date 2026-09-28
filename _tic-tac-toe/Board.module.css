@@ -1,18 +1,21 @@
-/* Mobile / <740 — Figma set Property 1=xsm (360×370, 320 surface) */
+/* Mobile / <740 — Figma set Property 1=xsm (360×370, 320 surface) — node 26:8021 */
 .wrap {
   width: min(100%, 360px);
   margin: 0 auto;
+  overflow: visible;
 }
 
 .board {
   position: relative;
   width: 100%;
   aspect-ratio: 360 / 370;
+  overflow: visible;
 }
 
 .surface {
   position: absolute;
   inset: 0;
+  overflow: visible;
 }
 
 .edge,
@@ -38,9 +41,17 @@
   border: 1px solid #fff2c8;
 }
 
+/* Cuts frame matches Figma layout box; SVG includes filter overflow via negative inset */
 .cuts {
   position: absolute;
+  overflow: visible;
   pointer-events: none;
+}
+
+.cutsImg {
+  position: absolute;
+  display: block;
+  max-width: none;
 }
 
 .cutsXsm {
@@ -51,12 +62,28 @@
   height: 81.786%;
 }
 
+/* Figma inset-[0_-1.01%_-1.32%_-0.34%] — SVG filter overflow */
+.cutsXsm .cutsImg {
+  top: 0;
+  right: -1.01%;
+  bottom: -1.32%;
+  left: -0.34%;
+}
+
 .cutsSm {
   display: none;
   left: 7.633%;
   top: 5.53%;
   width: 84.239%;
   height: 82.59%;
+}
+
+/* Figma inset-[-0.26%_-0.81%_-0.79%_-0.27%] — SVG filter overflow */
+.cutsSm .cutsImg {
+  top: -0.26%;
+  right: -0.81%;
+  bottom: -0.79%;
+  left: -0.27%;
 }
 
 .hilight {
@@ -91,6 +118,7 @@
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   gap: 0;
+  z-index: 1;
 }
 
 .cell {
@@ -121,7 +149,7 @@
   display: none;
 }
 
-/* Desktop / 740+ — Figma set Property 1=sm (440×458, 400 surface) */
+/* Desktop / 740+ — Figma set Property 1=sm (440×458, 400 surface) — node 26:5601 */
 @media (min-width: 740px) {
   .wrap {
     width: min(100%, 440px);

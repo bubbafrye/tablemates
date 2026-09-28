@@ -24,6 +24,7 @@ export function useSession({ code, gameId }: UseSessionOptions) {
 
   const socket = usePartySocket({
     host: partyHost(),
+    party: "session",
     room: code,
     query: playerId
       ? {

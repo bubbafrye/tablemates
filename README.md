@@ -18,7 +18,7 @@ npm run dev
 ```
 
 - App: http://localhost:3000
-- PartyKit rooms: http://127.0.0.1:1999
+- PartyServer rooms: http://127.0.0.1:8787
 - Storybook: `npm run storybook` → http://localhost:6006
 
 ## GitHub Pages
@@ -28,10 +28,10 @@ The site is a **static export** deployed by `.github/workflows/deploy-pages.yml`
 1. Repo **Settings → Pages → Build and deployment → Source**: **GitHub Actions** (not “Deploy from a branch”).
 2. Push to `main` (or run the workflow manually). The Action builds with `basePath=/tablemates` and publishes the `out/` folder.
 3. Optional repo **Variables** (Settings → Secrets and variables → Actions → Variables):
-   - `NEXT_PUBLIC_PARTY_HOST` — PartyKit host after `npx partykit deploy` (e.g. `tablemates.yourname.partykit.dev`)
+   - `NEXT_PUBLIC_PARTY_HOST` — PartyServer host after `npm run party:deploy` (e.g. `tablemates.yourname.workers.dev`)
    - `NEXT_PUBLIC_CONTACT_EMAIL` — footer mailto
 
-Without `NEXT_PUBLIC_PARTY_HOST`, the catalog still loads; live rooms only work against a deployed PartyKit (or local `npm run party`).
+Without `NEXT_PUBLIC_PARTY_HOST`, the catalog still loads; live rooms only work against a deployed PartyServer (or local `npm run party`).
 
 ## Platform first
 

@@ -1,0 +1,17 @@
+{
+  "name": "tablemates",
+  "main": "party/index.ts",
+  "compatibility_date": "2024-09-01",
+  "durable_objects": {
+    "bindings": [
+      { "name": "Session", "class_name": "Session" },
+      { "name": "Leaderboard", "class_name": "Leaderboard" }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["Session", "Leaderboard"]
+    }
+  ]
+}

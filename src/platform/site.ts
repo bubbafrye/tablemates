@@ -22,5 +22,5 @@ export function contactMailto() {
 }
 
 export function partyHost() {
-  return process.env.NEXT_PUBLIC_PARTY_HOST ?? "127.0.0.1:1999";
+  return process.env.NEXT_PUBLIC_PARTY_HOST ?? "127.0.0.1:8787";
 }

@@ -16,18 +16,20 @@ export function Board({ board, canPlay, onCell }: BoardProps) {
         <div className={styles.surface} data-name="surface">
           <div className={styles.edge} data-name="edge" />
           <div className={styles.base} data-name="base" />
-          <img
-            className={`${styles.cuts} ${styles.cutsXsm}`}
-            src={withBasePath("/assets/tic-tac-toe/cuts-xsm.svg")}
-            alt=""
-            data-name="cuts"
-          />
-          <img
-            className={`${styles.cuts} ${styles.cutsSm}`}
-            src={withBasePath("/assets/tic-tac-toe/cuts-sm.svg")}
-            alt=""
-            data-name="cuts"
-          />
+          <div className={`${styles.cuts} ${styles.cutsXsm}`} data-name="cuts">
+            <img
+              className={styles.cutsImg}
+              src={withBasePath("/assets/tic-tac-toe/cuts-xsm.svg")}
+              alt=""
+            />
+          </div>
+          <div className={`${styles.cuts} ${styles.cutsSm}`} data-name="cuts">
+            <img
+              className={styles.cutsImg}
+              src={withBasePath("/assets/tic-tac-toe/cuts-sm.svg")}
+              alt=""
+            />
+          </div>
           <div className={styles.hilight} data-name="hilight" />
           <div className={styles.texture} data-name="texture">
             <img src={withBasePath("/assets/tic-tac-toe/texture.png")} alt="" />

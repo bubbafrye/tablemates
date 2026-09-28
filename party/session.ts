@@ -1,26 +1,36 @@
-import type * as Party from "partykit/server";
+import { Server, type Connection, type ConnectionContext, getServerByName } from "partyserver";
 import type { ClientMessage, Player, ServerMessage, SessionState } from "../src/platform/protocol";
+import type { Leaderboard } from "./leaderboard";
 
-export default class SessionServer implements Party.Server {
-  state: SessionState;
+type Env = {
+  Session: DurableObjectNamespace;
+  Leaderboard: DurableObjectNamespace<Leaderboard>;
+};
 
-  constructor(readonly room: Party.Room) {
+export class Session extends Server<Env> {
+  state: SessionState = {
+    code: "",
+    gameId: "",
+    status: "lobby",
+    hostId: "",
+    players: [],
+    scores: {},
+  };
+
+  async onStart() {
     this.state = {
-      code: room.id,
+      code: this.name,
       gameId: "",
       status: "lobby",
       hostId: "",
       players: [],
       scores: {},
     };
-  }
-
-  async onStart() {
-    const stored = await this.room.storage.get<SessionState>("state");
+    const stored = await this.ctx.storage.get<SessionState>("state");
     if (stored) this.state = stored;
   }
 
-  async onConnect(connection: Party.Connection, ctx: Party.ConnectionContext) {
+  async onConnect(connection: Connection, ctx: ConnectionContext) {
     const url = new URL(ctx.request.url);
     const playerId = url.searchParams.get("playerId") ?? connection.id;
     const gameId = url.searchParams.get("gameId") ?? "";
@@ -28,12 +38,12 @@ export default class SessionServer implements Party.Server {
     this.push(connection);
   }
 
-  async onMessage(message: string, sender: Party.Connection) {
+  async onMessage(connection: Connection, message: string | ArrayBuffer) {
     let parsed: ClientMessage;
     try {
-      parsed = JSON.parse(message) as ClientMessage;
+      parsed = JSON.parse(String(message)) as ClientMessage;
     } catch {
-      this.send(sender, { type: "error", message: "Invalid message" });
+      this.send(connection, { type: "error", message: "Invalid message" });
       return;
     }
 
@@ -100,14 +110,14 @@ export default class SessionServer implements Party.Server {
   }
 
   private async persist() {
-    await this.room.storage.put("state", this.state);
+    await this.ctx.storage.put("state", this.state);
   }
 
   private async recordHighScore(playerId: string, score: number) {
     const player = this.state.players.find((item) => item.id === playerId);
     if (!player || !this.state.gameId) return;
-    const stub = this.room.context.parties.leaderboard.get("global");
-    await stub.fetch("/score", {
+    const stub = await getServerByName(this.env.Leaderboard, "global");
+    await stub.fetch("https://leaderboard/score", {
       method: "POST",
       body: JSON.stringify({
         playerId,
@@ -117,20 +127,18 @@ export default class SessionServer implements Party.Server {
         at: new Date().toISOString(),
       }),
     });
-    const response = await stub.fetch(`/list?gameId=${this.state.gameId}`);
+    const response = await stub.fetch(`https://leaderboard/list?gameId=${this.state.gameId}`);
     const entries = await response.json();
-    this.room.broadcast(JSON.stringify({ type: "leaderboard", entries } satisfies ServerMessage));
+    this.broadcast(JSON.stringify({ type: "leaderboard", entries } satisfies ServerMessage));
   }
 
-  private push(connection?: Party.Connection) {
+  private push(connection?: Connection) {
     const payload = JSON.stringify({ type: "state", state: this.state } satisfies ServerMessage);
     if (connection) connection.send(payload);
-    else this.room.broadcast(payload);
+    else this.broadcast(payload);
   }
 
-  private send(connection: Party.Connection, message: ServerMessage) {
+  private send(connection: Connection, message: ServerMessage) {
     connection.send(JSON.stringify(message));
   }
 }
-
-SessionServer satisfies Party.Worker;

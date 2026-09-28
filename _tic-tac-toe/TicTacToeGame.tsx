@@ -122,7 +122,7 @@ export function TicTacToeGame({
 
   return (
     <div className={styles.page} data-name="tic-tac-toe">
-      <SiteHeader roomCode={code} />
+      <SiteHeader roomCode={code} gameId="tic-tac-toe" />
       <div className={styles.content} data-name="content">
         <div className={styles.gameArea} data-name="game-area">
           <div className={styles.players} data-name="players">
@@ -165,7 +165,7 @@ export function TicTacToeGame({
         </div>
       </div>
       <SiteFooter />
-      {shareOpen ? <ShareModal code={code} onClose={() => setShareOpen(false)} /> : null}
+      {shareOpen ? <ShareModal code={code} gameId="tic-tac-toe" onClose={() => setShareOpen(false)} /> : null}
     </div>
   );
 }

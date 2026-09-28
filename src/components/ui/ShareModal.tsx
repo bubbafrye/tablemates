@@ -8,10 +8,11 @@ import styles from "./ShareModal.module.css";
 
 type ShareModalProps = {
   code: string;
+  gameId?: string;
   onClose: () => void;
 };
 
-export function ShareModal({ code, onClose }: ShareModalProps) {
+export function ShareModal({ code, gameId, onClose }: ShareModalProps) {
   const [qr, setQr] = useState("");
   const titleId = useId();
   const origin = useSyncExternalStore(
@@ -19,7 +20,7 @@ export function ShareModal({ code, onClose }: ShareModalProps) {
     () => window.location.origin,
     () => "",
   );
-  const url = origin ? inviteUrl(origin, code) : "";
+  const url = origin ? inviteUrl(origin, code, gameId) : "";
 
   useEffect(() => {
     if (!url) return;
