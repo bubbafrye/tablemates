@@ -1,5 +1,6 @@
 const PLAYER_KEY = "tm.playerId";
 const EMAIL_KEY = "tm.email";
+const NAME_KEY = "tm.playerName";
 const ROOMS_KEY = "tm.rooms";
 
 export type HostedRoom = {
@@ -15,6 +16,18 @@ export function getPlayerId() {
   const id = crypto.randomUUID();
   window.localStorage.setItem(PLAYER_KEY, id);
   return id;
+}
+
+export function getPlayerName() {
+  if (typeof window === "undefined") return "";
+  return window.localStorage.getItem(NAME_KEY)?.trim() ?? "";
+}
+
+export function setPlayerName(name: string) {
+  const trimmed = name.trim().slice(0, 20);
+  if (trimmed) window.localStorage.setItem(NAME_KEY, trimmed);
+  else window.localStorage.removeItem(NAME_KEY);
+  return trimmed;
 }
 
 export function getRegisteredEmail() {

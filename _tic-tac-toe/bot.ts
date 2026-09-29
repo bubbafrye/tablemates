@@ -2,7 +2,7 @@ import type { Cell, Mark } from "./logic";
 import { findWinner } from "./logic";
 
 export const BOT_ID = "bot";
-export const BOT_NAME = "Bot";
+export const BOT_NAME = "HAL";
 
 export function isBotId(id: string | null | undefined): boolean {
   return id === BOT_ID;

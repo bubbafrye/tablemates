@@ -27,6 +27,7 @@ type TicTacToeGameProps = {
   connected: boolean;
   sendGame: (payload: unknown) => void;
   setScore: (playerId: string, absolute: number) => void;
+  setName: (name: string) => void;
 };
 
 export function TicTacToeGame({
@@ -36,6 +37,7 @@ export function TicTacToeGame({
   connected,
   sendGame,
   setScore,
+  setName,
 }: TicTacToeGameProps) {
   const router = useRouter();
   const [shareOpen, setShareOpen] = useState(false);
@@ -182,8 +184,20 @@ export function TicTacToeGame({
       <div className={styles.content} data-name="content">
         <div className={styles.gameArea} data-name="game-area">
           <div className={styles.players} data-name="players">
-            <PlayerBadge mark="X" name={xPlayer.name} active={game.turn === "X" && !game.winner} />
-            <PlayerBadge mark="O" name={oPlayer.name} active={game.turn === "O" && !game.winner} />
+            <PlayerBadge
+              mark="X"
+              name={xPlayer.name}
+              active={game.turn === "X" && !game.winner}
+              editable={game.xPlayerId === playerId}
+              onRename={setName}
+            />
+            <PlayerBadge
+              mark="O"
+              name={oPlayer.name}
+              active={game.turn === "O" && !game.winner}
+              editable={game.oPlayerId === playerId}
+              onRename={setName}
+            />
           </div>
           <div className={styles.boardSlot} data-name="game-board">
             <Board board={game.board} canPlay={canPlay} onCell={handleCell} />

@@ -48,7 +48,7 @@ export class Session extends Server<Env> {
     }
 
     if (parsed.type === "hello") {
-      await this.upsertPlayer(parsed.playerId, parsed.gameId ?? "");
+      await this.upsertPlayer(parsed.playerId, parsed.gameId ?? "", parsed.name);
       this.push();
       return;
     }
@@ -90,15 +90,18 @@ export class Session extends Server<Env> {
     }
   }
 
-  private async upsertPlayer(playerId: string, gameId: string) {
+  private async upsertPlayer(playerId: string, gameId: string, name?: string) {
     if (gameId && !this.state.gameId) this.state.gameId = gameId;
     if (!this.state.hostId) this.state.hostId = playerId;
 
+    const trimmed = name?.trim().slice(0, 20);
     const existing = this.state.players.find((player) => player.id === playerId);
-    if (!existing) {
+    if (existing) {
+      if (trimmed) existing.name = trimmed;
+    } else {
       const player: Player = {
         id: playerId,
-        name: `Player ${this.state.players.length + 1}`,
+        name: trimmed || `Player ${this.state.players.length + 1}`,
         isHost: this.state.hostId === playerId,
         score: this.state.scores[playerId] ?? 0,
       };

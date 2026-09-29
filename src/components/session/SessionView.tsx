@@ -31,6 +31,7 @@ export function SessionView({ code, gameId }: SessionViewProps) {
         connected={session.connected}
         sendGame={session.sendGame}
         setScore={session.setScore}
+        setName={session.setName}
       />
     );
   }
