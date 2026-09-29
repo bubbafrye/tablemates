@@ -10,6 +10,11 @@
   width: 100%;
   aspect-ratio: 360 / 370;
   overflow: visible;
+  /* Playable face = .base box; tiles use the same vars */
+  --base-left: 5.556%;
+  --base-top: 4.054%;
+  --base-width: 88.889%;
+  --base-height: 86.486%;
 }
 
 .surface {
@@ -23,10 +28,10 @@
 .hilight,
 .texture {
   position: absolute;
-  left: 5.556%;
-  top: 4.054%;
-  width: 88.889%;
-  height: 86.486%;
+  left: var(--base-left);
+  top: var(--base-top);
+  width: var(--base-width);
+  height: var(--base-height);
   border-radius: 10px;
 }
 
@@ -108,12 +113,13 @@
   object-fit: cover;
 }
 
+/* Even 3×3 over the .base face — not derived from cuts or mark art */
 .tokens {
   position: absolute;
-  left: 13.333%;
-  top: 12.162%;
-  width: 73.333%;
-  height: 72.162%;
+  left: var(--base-left);
+  top: var(--base-top);
+  width: var(--base-width);
+  height: var(--base-height);
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
@@ -163,16 +169,10 @@
 
   .board {
     aspect-ratio: 440 / 458;
-  }
-
-  .edge,
-  .base,
-  .hilight,
-  .texture {
-    left: 4.545%;
-    top: 3.275%;
-    width: 90.909%;
-    height: 87.336%;
+    --base-left: 4.545%;
+    --base-top: 3.275%;
+    --base-width: 90.909%;
+    --base-height: 87.336%;
   }
 
   .edge {
@@ -185,13 +185,6 @@
 
   .cutsSm {
     display: block;
-  }
-
-  .tokens {
-    left: 7.727%;
-    top: 6.325%;
-    width: 84.406%;
-    height: 81.38%;
   }
 
   .markXsm {

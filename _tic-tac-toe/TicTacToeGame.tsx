@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/layout/SiteHeader";
 import { withBasePath } from "@/platform/site";
 import type { Player, SessionState } from "@/platform/protocol";
 import { Board } from "./Board";
+import { BOT_ID, BOT_NAME, isBotId, pickBotMove } from "./bot";
 import {
   applyMove,
   assignSeats,
@@ -38,12 +39,20 @@ export function TicTacToeGame({
 }: TicTacToeGameProps) {
   const router = useRouter();
   const [shareOpen, setShareOpen] = useState(false);
-  const [local, setLocal] = useState<TicTacToeState>(createInitialState);
+  const [local, setLocal] = useState<TicTacToeState>(() => createInitialState());
   const scoredKey = useRef<string | null>(null);
 
   const players = session?.players ?? [];
   const remote = isTicTacToeState(session?.game) ? session.game : null;
   const game = remote ?? local;
+  const vsBot = isBotId(game.oPlayerId) || isBotId(game.xPlayerId);
+  const canStartBot =
+    connected &&
+    session?.hostId === playerId &&
+    !vsBot &&
+    !game.oPlayerId &&
+    !game.winner &&
+    game.board.every((cell) => cell === null);
 
   useEffect(() => {
     if (!session || !playerId || !connected) return;
@@ -60,6 +69,7 @@ export function TicTacToeGame({
 
   useEffect(() => {
     if (!remote || session?.hostId !== playerId) return;
+    if (vsBot) return;
     const withSeats = assignSeats(
       remote,
       players.map((player) => player.id),
@@ -70,7 +80,7 @@ export function TicTacToeGame({
     ) {
       sendGame(withSeats);
     }
-  }, [remote, players, session?.hostId, playerId, sendGame]);
+  }, [remote, players, session?.hostId, playerId, sendGame, vsBot]);
 
   useEffect(() => {
     if (!remote?.winner) {
@@ -79,7 +89,7 @@ export function TicTacToeGame({
     }
     if (remote.winner === "draw" || session?.hostId !== playerId) return;
     const winnerId = remote.winner === "X" ? remote.xPlayerId : remote.oPlayerId;
-    if (!winnerId) return;
+    if (!winnerId || isBotId(winnerId)) return;
     const key = `${remote.board.join("")}:${remote.winner}`;
     if (scoredKey.current === key) return;
     scoredKey.current = key;
@@ -87,12 +97,54 @@ export function TicTacToeGame({
     setScore(winnerId, current + 1);
   }, [remote, session, playerId, setScore]);
 
+  function publish(next: TicTacToeState) {
+    setLocal(next);
+    sendGame(next);
+  }
+
+  useEffect(() => {
+    if (!vsBot || !connected) return;
+    if (session?.hostId !== playerId) return;
+    if (game.winner || session?.status === "paused") return;
+
+    const botMark =
+      game.xPlayerId === BOT_ID ? "X" : game.oPlayerId === BOT_ID ? "O" : null;
+    if (!botMark || game.turn !== botMark) return;
+
+    const timer = window.setTimeout(() => {
+      const index = pickBotMove(game.board, botMark);
+      if (index < 0) return;
+      const next = applyMove(game, index, BOT_ID);
+      if (!next) return;
+      setLocal(next);
+      sendGame(next);
+    }, 450);
+
+    return () => window.clearTimeout(timer);
+  }, [
+    vsBot,
+    connected,
+    session?.hostId,
+    session?.status,
+    playerId,
+    game,
+    sendGame,
+  ]);
+
   const xPlayer = useMemo(
-    () => players.find((player) => player.id === game.xPlayerId) ?? fallbackPlayer("Player 1", true),
+    () =>
+      isBotId(game.xPlayerId)
+        ? botPlayer()
+        : (players.find((player) => player.id === game.xPlayerId) ??
+          fallbackPlayer("Player 1", true)),
     [players, game.xPlayerId],
   );
   const oPlayer = useMemo(
-    () => players.find((player) => player.id === game.oPlayerId) ?? fallbackPlayer("Player 2", false),
+    () =>
+      isBotId(game.oPlayerId)
+        ? botPlayer()
+        : (players.find((player) => player.id === game.oPlayerId) ??
+          fallbackPlayer("Player 2", false)),
     [players, game.oPlayerId],
   );
 
@@ -104,11 +156,6 @@ export function TicTacToeGame({
     myMark === game.turn &&
     Boolean(game.xPlayerId && game.oPlayerId);
 
-  function publish(next: TicTacToeState) {
-    setLocal(next);
-    sendGame(next);
-  }
-
   function handleCell(index: number) {
     const next = applyMove(game, index, playerId);
     if (!next) return;
@@ -118,6 +165,15 @@ export function TicTacToeGame({
   function handleRematch() {
     if (session?.hostId !== playerId) return;
     publish(resetBoard(game));
+  }
+
+  function handlePlayBot() {
+    if (!canStartBot) return;
+    publish({
+      ...createInitialState(),
+      xPlayerId: playerId,
+      oPlayerId: BOT_ID,
+    });
   }
 
   return (
@@ -148,9 +204,18 @@ export function TicTacToeGame({
           ) : session?.status === "paused" ? (
             <p className={styles.status}>Game paused</p>
           ) : null}
-          <div className={styles.management} data-name="game-management">
+          <div className={styles.actions} data-name="game-management">
             <button className={styles.exit} type="button" data-name="exit" onClick={() => router.push("/")}>
               exit game
+            </button>
+            <button
+              className={styles.bot}
+              type="button"
+              data-name="play-bot"
+              disabled={!canStartBot}
+              onClick={handlePlayBot}
+            >
+              play bot
             </button>
             <button
               className={styles.invite}
@@ -158,7 +223,7 @@ export function TicTacToeGame({
               data-name="invite"
               onClick={() => setShareOpen(true)}
             >
-              <span>Invite others</span>
+              <span>Invite</span>
               <img src={withBasePath("/assets/icon-qr.svg")} alt="" width={22} height={22} />
             </button>
           </div>
@@ -172,4 +237,8 @@ export function TicTacToeGame({
 
 function fallbackPlayer(name: string, isHost: boolean): Player {
   return { id: "", name, isHost, score: 0 };
+}
+
+function botPlayer(): Player {
+  return { id: BOT_ID, name: BOT_NAME, isHost: false, score: 0 };
 }
