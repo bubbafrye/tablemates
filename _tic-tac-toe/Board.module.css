@@ -1,4 +1,4 @@
-/* Mobile / <740 — Figma set Property 1=xsm (360×370, 320 surface) — node 26:8021 */
+/* Mobile / <740 — flattened Figma set xsm (360×374) — node 26:8021 */
 .wrap {
   width: min(100%, 360px);
   margin: 0 auto;
@@ -8,112 +8,32 @@
 .board {
   position: relative;
   width: 100%;
-  aspect-ratio: 360 / 370;
+  aspect-ratio: 360 / 374;
   overflow: visible;
-  /* Playable face = .base box; tiles use the same vars */
+  /* Playable face = Figma base (320²) inside the board frame */
   --base-left: 5.556%;
-  --base-top: 4.054%;
+  --base-top: 4.011%;
   --base-width: 88.889%;
-  --base-height: 86.486%;
+  --base-height: 85.561%;
 }
 
-.surface {
-  position: absolute;
-  inset: 0;
-  overflow: visible;
-}
-
-.edge,
-.base,
-.hilight,
-.texture {
-  position: absolute;
-  left: var(--base-left);
-  top: var(--base-top);
-  width: var(--base-width);
-  height: var(--base-height);
-  border-radius: 10px;
-}
-
-.edge {
-  top: 7.814%;
-  background: linear-gradient(180deg, #997233 93.954%, #622900 100%);
-  border: 2px solid #c4a565;
-}
-
-.base {
-  background: linear-gradient(180deg, #ccb06f 0%, #856345 100%);
-  border: 1px solid #fff2c8;
-}
-
-/* Cuts frame matches Figma layout box; SVG includes filter overflow via negative inset */
-.cuts {
-  position: absolute;
-  overflow: visible;
-  pointer-events: none;
-}
-
-.cutsImg {
-  position: absolute;
+.boardImg {
   display: block;
-  max-width: none;
-}
-
-.cutsXsm {
-  display: block;
-  left: 8.575%;
-  top: 6.287%;
-  width: 82.367%;
-  height: 81.786%;
-}
-
-/* Figma inset-[0_-1.01%_-1.32%_-0.34%] — SVG filter overflow */
-.cutsXsm .cutsImg {
-  top: 0;
-  right: -1.01%;
-  bottom: -1.32%;
-  left: -0.34%;
-}
-
-.cutsSm {
-  display: none;
-  left: 7.633%;
-  top: 5.53%;
-  width: 84.239%;
-  height: 82.59%;
-}
-
-/* Figma inset-[-0.26%_-0.81%_-0.79%_-0.27%] — SVG filter overflow */
-.cutsSm .cutsImg {
-  top: -0.26%;
-  right: -0.81%;
-  bottom: -0.79%;
-  left: -0.27%;
-}
-
-.hilight {
-  background: linear-gradient(
-    154.92deg,
-    rgba(255, 216, 126, 0.45) 7.17%,
-    rgba(166, 118, 15, 0.45) 84.06%
-  );
-}
-
-.texture {
-  overflow: hidden;
-  border-radius: 20px;
-  opacity: 0.3;
-  mix-blend-mode: color-burn;
-  pointer-events: none;
-}
-
-.texture img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: fill;
+  pointer-events: none;
 }
 
-/* Even 3×3 over the .base face — not derived from cuts or mark art */
+.boardXsm {
+  display: block;
+}
+
+.boardSm {
+  display: none;
+}
+
+/* Even 3×3 over the base face */
 .tokens {
   position: absolute;
   left: var(--base-left);
@@ -161,7 +81,7 @@
   overflow: visible;
 }
 
-/* Desktop / 740+ — Figma set Property 1=sm (440×458, 400 surface) — node 26:5601 */
+/* Desktop / 740+ — flattened Figma set sm (440×458) — node 26:5601 */
 @media (min-width: 740px) {
   .wrap {
     width: min(100%, 440px);
@@ -175,15 +95,11 @@
     --base-height: 87.336%;
   }
 
-  .edge {
-    top: 7.072%;
-  }
-
-  .cutsXsm {
+  .boardXsm {
     display: none;
   }
 
-  .cutsSm {
+  .boardSm {
     display: block;
   }
 

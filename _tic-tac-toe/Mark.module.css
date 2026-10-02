@@ -9,7 +9,7 @@
   height: 37px;
 }
 
-/* Centered in the playable cell; width % comes from Mark.tsx (Figma frame / stride). */
+/* Centered in the playable cell; width % comes from Mark.tsx. Shadows baked in PNG. */
 .boardMark {
   display: block;
   height: auto;
@@ -17,24 +17,4 @@
   max-height: 100%;
   object-fit: contain;
   pointer-events: none;
-}
-
-/*
- * Figma outer drop shadows (SVG filters painted opaque boxes on mobile).
- * Values from feOffset / feGaussianBlur / feColorMatrix on mark assets.
- */
-.shadowXSm {
-  filter: drop-shadow(0 4px 6px rgba(68, 0, 0, 0.5));
-}
-
-.shadowOSm {
-  filter: drop-shadow(0 4px 5px rgba(132, 67, 7, 0.55));
-}
-
-.shadowXXsm {
-  filter: drop-shadow(0 2px 2.5px rgba(68, 0, 0, 0.5));
-}
-
-.shadowOXsm {
-  filter: drop-shadow(0 2px 2.5px rgba(132, 67, 7, 0.55));
 }
