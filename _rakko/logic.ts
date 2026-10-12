@@ -96,7 +96,10 @@ export function scoreRack(rack: number[]): { points: number; isRakko: boolean; s
 
 export function syncSeats(state: RakkoState, connectedIds: string[]): RakkoState {
   if (state.phase !== "lobby") return state;
-  const playerIds = connectedIds.slice(0, MAX_PLAYERS);
+  // Keep seat bots (e.g. "bot") that are not websocket players.
+  const bots = state.playerIds.filter((id) => id === "bot");
+  const humans = connectedIds.filter((id) => id !== "bot").slice(0, MAX_PLAYERS - bots.length);
+  const playerIds = [...humans, ...bots].slice(0, MAX_PLAYERS);
   const readyIds = state.readyIds.filter((id) => playerIds.includes(id));
   return { ...state, playerIds, readyIds };
 }
@@ -277,9 +280,11 @@ export function continueAfterRound(state: RakkoState, matchWinnerId: string | nu
 }
 
 export function rematch(state: RakkoState): RakkoState {
+  // Bots stay seated and auto-ready so the host can start immediately.
+  const botIds = state.playerIds.filter((id) => id === "bot");
   return {
     ...createLobbyState(),
     playerIds: state.playerIds,
-    readyIds: [],
+    readyIds: botIds,
   };
 }

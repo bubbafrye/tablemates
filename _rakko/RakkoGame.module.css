@@ -87,6 +87,7 @@
 }
 
 .exit,
+.bot,
 .invite {
   display: inline-flex;
   align-items: center;
@@ -109,6 +110,19 @@
   background: var(--color-brand-primary);
 }
 
+.bot {
+  padding-top: 3px;
+  padding-bottom: 3px;
+  height: auto;
+  min-height: var(--size-button-height);
+  background: var(--color-brand-tertiary-dark);
+}
+
+.bot:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
 .invite {
   padding-top: 3px;
   padding-bottom: 3px;
@@ -118,11 +132,13 @@
 }
 
 .exit:focus,
+.bot:focus,
 .invite:focus {
   outline: none;
 }
 
 .exit:focus-visible,
+.bot:focus-visible,
 .invite:focus-visible {
   box-shadow: var(--shadow-focus);
 }

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { ShareModal } from "@/components/ui/ShareModal";
 import { withBasePath } from "@/platform/site";
 import type { Player, SessionState } from "@/platform/protocol";
+import { BOT_ID, BOT_NAME, isBotId, playBotTurn } from "./bot";
 import { DiscardDraw } from "./DiscardDraw";
 import { Rack } from "./Rack";
 import {
@@ -60,17 +61,23 @@ export function RakkoGame({
   const remote = isRakkoState(session?.game) ? session.game : null;
   const game = remote ?? local;
   const isHost = session?.hostId === playerId;
+  const vsBot = game.playerIds.some(isBotId);
   const turnId = currentPlayerId(game);
-  const turnPlayer = players.find((p) => p.id === turnId);
+  const turnPlayer = resolvePlayer(turnId, players);
   const myRack = game.racks[playerId] ?? [];
   const isMyTurn = turnId === playerId && game.phase === "playing";
   const paused = session?.status === "paused";
+  const canStartBot =
+    connected &&
+    Boolean(isHost) &&
+    !vsBot &&
+    (game.phase === "lobby" || game.phase === "match-end");
 
   const seatedPlayers = useMemo(() => {
     if (game.playerIds.length > 0) {
       return game.playerIds
-        .map((id) => players.find((p) => p.id === id) ?? fallbackPlayer(id))
-        .filter(Boolean);
+        .map((id) => resolvePlayer(id, players))
+        .filter((p): p is Player => Boolean(p));
     }
     return players.slice(0, MAX_PLAYERS);
   }, [game.playerIds, players]);
@@ -90,6 +97,7 @@ export function RakkoGame({
   useEffect(() => {
     if (!remote || !isHost) return;
     if (remote.phase !== "lobby") return;
+    if (remote.playerIds.some(isBotId)) return;
     if (connectedIds.length === 0) return;
     const withSeats = syncSeats(remote, connectedIds);
     if (withSeats.playerIds.join(",") !== remote.playerIds.join(",")) {
@@ -107,6 +115,7 @@ export function RakkoGame({
       remote.roundScores,
     );
     for (const [id, total] of Object.entries(nextScores)) {
+      if (isBotId(id)) continue;
       if ((session?.scores[id] ?? 0) !== total) {
         setScore(id, total);
       }
@@ -121,6 +130,22 @@ export function RakkoGame({
     sendGame(next);
   }
 
+  useEffect(() => {
+    if (!vsBot || !connected) return;
+    if (!isHost) return;
+    if (game.phase !== "playing" || paused) return;
+    if (currentPlayerId(game) !== BOT_ID) return;
+
+    const timer = window.setTimeout(() => {
+      const next = playBotTurn(game);
+      if (!next) return;
+      setLocal(next);
+      sendGame(next);
+    }, 450);
+
+    return () => window.clearTimeout(timer);
+  }, [vsBot, connected, isHost, paused, game, sendGame]);
+
   function seatedGame() {
     return syncSeats(game, connectedIds);
   }
@@ -134,6 +159,19 @@ export function RakkoGame({
   function handleStart() {
     if (!isHost) return;
     const next = startRound(seatedGame());
+    if (!next) return;
+    scoredKey.current = null;
+    publish(next);
+  }
+
+  function handlePlayBot() {
+    if (!canStartBot) return;
+    const lobby: RakkoState = {
+      ...createLobbyState(),
+      playerIds: [playerId, BOT_ID],
+      readyIds: [playerId, BOT_ID],
+    };
+    const next = startRound(lobby);
     if (!next) return;
     scoredKey.current = null;
     publish(next);
@@ -210,9 +248,11 @@ export function RakkoGame({
             isHost={Boolean(isHost)}
             connected={connected}
             canStart={canStart}
+            canStartBot={canStartBot}
             scores={session?.scores ?? {}}
             onReady={handleReady}
             onStart={handleStart}
+            onPlayBot={handlePlayBot}
             onRematch={handleRematch}
             onRename={setName}
             onInvite={() => setShareOpen(true)}
@@ -286,6 +326,15 @@ export function RakkoGame({
                 exit game
               </button>
               <button
+                className={styles.bot}
+                type="button"
+                data-name="play-bot"
+                disabled={!canStartBot}
+                onClick={handlePlayBot}
+              >
+                play bot
+              </button>
+              <button
                 className={styles.invite}
                 type="button"
                 data-name="invite"
@@ -320,9 +369,11 @@ function LobbyPanel({
   isHost,
   connected,
   canStart,
+  canStartBot,
   scores,
   onReady,
   onStart,
+  onPlayBot,
   onRematch,
   onRename,
   onInvite,
@@ -334,9 +385,11 @@ function LobbyPanel({
   isHost: boolean;
   connected: boolean;
   canStart: boolean;
+  canStartBot: boolean;
   scores: Record<string, number>;
   onReady: () => void;
   onStart: () => void;
+  onPlayBot: () => void;
   onRematch: () => void;
   onRename: (name: string) => void;
   onInvite: () => void;
@@ -345,6 +398,7 @@ function LobbyPanel({
   const ready = game.readyIds.includes(playerId);
   const matchOver = game.phase === "match-end";
   const winner = players.find((p) => p.id === game.matchWinnerId);
+  const humanCount = players.filter((p) => !isBotId(p.id)).length;
 
   return (
     <section className={styles.lobby} data-name="lobby">
@@ -379,16 +433,18 @@ function LobbyPanel({
               )}
               <span className={styles.playerScore}>{scores[player.id] ?? 0}</span>
               {!matchOver ? (
-                <span className={styles.readyTag}>{isReady ? "Ready" : "…"}</span>
+                <span className={styles.readyTag}>
+                  {isBotId(player.id) ? "Bot" : isReady ? "Ready" : "…"}
+                </span>
               ) : null}
             </li>
           );
         })}
       </ul>
 
-      {players.length < MIN_PLAYERS ? (
+      {humanCount < MIN_PLAYERS && !players.some((p) => isBotId(p.id)) ? (
         <p className={styles.status}>
-          Waiting for players… ({players.length}/{MIN_PLAYERS} minimum)
+          Waiting for players… ({humanCount}/{MIN_PLAYERS} minimum) — or play bot
         </p>
       ) : null}
 
@@ -410,6 +466,17 @@ function LobbyPanel({
               <Button variant="primary" icon={false} onClick={onStart} disabled={!canStart}>
                 Start round
               </Button>
+            ) : null}
+            {isHost ? (
+              <button
+                className={styles.bot}
+                type="button"
+                data-name="play-bot"
+                disabled={!canStartBot}
+                onClick={onPlayBot}
+              >
+                play bot
+              </button>
             ) : null}
           </>
         )}
@@ -485,6 +552,12 @@ function displayName(player: Player) {
   return player.name?.trim() || "Player";
 }
 
-function fallbackPlayer(id: string): Player {
-  return { id, name: "Player", isHost: false, score: 0 };
+function botPlayer(): Player {
+  return { id: BOT_ID, name: BOT_NAME, isHost: false, score: 0 };
+}
+
+function resolvePlayer(id: string | null | undefined, players: Player[]): Player | null {
+  if (!id) return null;
+  if (isBotId(id)) return botPlayer();
+  return players.find((p) => p.id === id) ?? { id, name: "Player", isHost: false, score: 0 };
 }
