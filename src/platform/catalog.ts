@@ -35,11 +35,16 @@ export const catalog: GameDefinition[] = [
     },
   },
   {
-    id: "placeholder-2",
-    name: "Game Name",
-    description: PLACEHOLDER_DESCRIPTION,
-    ready: false,
-    hero: PLACEHOLDER_HERO,
+    id: "rakko",
+    name: "Rakko",
+    description:
+      "Arrange your rack low to high. Draw, discard, and race to a rakko — first to 500 wins.",
+    ready: true,
+    hero: {
+      lg: "/assets/rakko/hero-lg.png",
+      sm: "/assets/rakko/hero-sm.png",
+      xs: "/assets/rakko/hero-xs.png",
+    },
   },
   {
     id: "placeholder-3",

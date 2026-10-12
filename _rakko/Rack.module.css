@@ -1,0 +1,123 @@
+.rack {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  overflow: clip;
+  width: 469px;
+  max-width: 100%;
+  padding: 1px 0;
+  border: 1px solid #000;
+  border-radius: 25px;
+  background-image: linear-gradient(
+    174.55deg,
+    rgb(208, 56, 29) 7.64%,
+    rgb(157, 39, 35) 51.62%,
+    rgb(93, 40, 9) 96.97%
+  );
+  box-shadow:
+    0 13px 0 0 #5d1400,
+    0 16px 0 0 #000,
+    0 5px 10px 0 rgba(0, 0, 0, 0.25);
+}
+
+.rack::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow:
+    inset 0 4px 4px 0 rgba(255, 140, 0, 0.25),
+    inset 0 0 8px 10px rgba(72, 0, 0, 0.45),
+    inset 0 0 20px 15px rgba(192, 29, 2, 0.5);
+}
+
+.face {
+  display: flex;
+  align-items: center;
+  padding: 0 30px;
+  width: 100%;
+}
+
+.points {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 30px;
+  width: 39px;
+  margin-right: -20px;
+  padding-top: 20px;
+  font-family: var(--font-rakko-face), sans-serif;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.02;
+  text-align: center;
+  color: rgba(255, 130, 130, 0.4);
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.55);
+  flex-shrink: 0;
+}
+
+.point {
+  width: 100%;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  overflow: clip;
+  width: 388px;
+  max-width: calc(100% - 19px);
+  padding: 0 38px;
+  border-radius: 35px;
+  flex-shrink: 0;
+}
+
+.empty {
+  width: 350px;
+  height: 159px;
+  flex-shrink: 0;
+}
+
+.stacked {
+  margin-bottom: -100px;
+}
+
+@media (max-width: 739px) {
+  .rack {
+    width: 100%;
+    max-width: 360px;
+    border-radius: 18px;
+  }
+
+  .face {
+    padding: 0 16px;
+  }
+
+  .points {
+    gap: 22px;
+    width: 28px;
+    margin-right: -12px;
+    padding-top: 12px;
+    font-size: 20px;
+  }
+
+  .cards {
+    width: auto;
+    flex: 1 1 auto;
+    padding: 0 16px;
+    border-radius: 24px;
+  }
+
+  .empty {
+    width: 280px;
+    height: 127px;
+  }
+
+  .stacked {
+    margin-bottom: -80px;
+  }
+}

@@ -1,0 +1,148 @@
+.tray {
+  position: relative;
+  overflow: clip;
+  width: 420px;
+  max-width: 100%;
+  height: 410px;
+  border: 1px solid #000;
+  border-radius: 25px;
+  background-image: linear-gradient(
+    176.4deg,
+    rgb(208, 56, 29) 7.64%,
+    rgb(157, 39, 35) 51.62%,
+    rgb(93, 40, 9) 96.97%
+  );
+  box-shadow:
+    0 13px 0 0 #5d1400,
+    0 16px 0 0 #000,
+    0 5px 10px 0 rgba(0, 0, 0, 0.25);
+}
+
+.sheen {
+  position: absolute;
+  left: 19px;
+  top: 18px;
+  width: 380px;
+  max-width: calc(100% - 38px);
+  height: 44px;
+  border-radius: 12px 12px 12px 0;
+  background-image: linear-gradient(
+    172.88deg,
+    rgba(255, 214, 229, 0.3) 3.4%,
+    rgba(255, 255, 255, 0) 51.37%
+  );
+  box-shadow: -1px -2px 4px 0 rgba(255, 255, 255, 0.25);
+  pointer-events: none;
+}
+
+.face {
+  position: absolute;
+  left: -5px;
+  top: 62px;
+  display: flex;
+  align-items: center;
+  width: 427px;
+  max-width: calc(100% + 10px);
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 50px;
+  width: 421px;
+  max-width: 100%;
+  padding: 0 38px;
+  border-radius: 35px;
+}
+
+.pile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+}
+
+.label {
+  position: relative;
+  margin: 0;
+  width: 351px;
+  max-width: 100%;
+  height: 29px;
+  font-family: var(--font-rakko-face), sans-serif;
+  font-size: 38px;
+  font-weight: 400;
+  line-height: 1.02;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.55);
+}
+
+.stack {
+  position: relative;
+  display: grid;
+  place-items: start;
+  min-height: 107px;
+  width: 100%;
+}
+
+.stack > * {
+  grid-area: 1 / 1;
+}
+
+.under {
+  pointer-events: none;
+  opacity: 0.95;
+}
+
+.emptySlot {
+  width: 350px;
+  max-width: 100%;
+  height: 107px;
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  border-radius: 10px 10px 0 0;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 739px) {
+  .tray {
+    width: 100%;
+    max-width: 340px;
+    height: auto;
+    min-height: 320px;
+    border-radius: 18px;
+  }
+
+  .sheen {
+    left: 12px;
+    top: 12px;
+    width: calc(100% - 24px);
+    height: 32px;
+  }
+
+  .face {
+    position: relative;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 48px 0 28px;
+  }
+
+  .cards {
+    gap: 28px;
+    width: 100%;
+    padding: 0 20px;
+  }
+
+  .label {
+    font-size: 28px;
+    height: auto;
+  }
+
+  .emptySlot {
+    width: 280px;
+    height: 86px;
+  }
+}

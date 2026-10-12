@@ -1,0 +1,14 @@
+**Object of the game**  
+To be the first player to replace cards in your rack by placing cards from the draw or discard pile whose numbers read in any numerical progression from LOW to HIGH. Sequencing all 10 cards in ascending order (not necessarily sequential) results in a ‘rakko’ where that player wins the match. Points are earned at the end of every match, and the player to reach 500 points first, wins the game. 
+
+**The Rack, the Deck & initial setup**  
+Each player has a ‘rack’ with 10 slots. There is a deck of 60 cards, each of which has a single number on it, incrementing from 1 to 60\.  At the start of a game, 10 numbered cards are dealt and placed in the order they were dealt into the rack starting from the top to the bottom.  Cards must be placed in the order they were dealt. Along the side of the rack there are numbers, incrementing by values of 5\. These are used for scoring at the end of a game. The undealt portion of the cards is available as a Draw pile, with the first undealt card revealed next to the face-down Draw pile as the start of a Discard pile. 
+
+**Gameplay**  
+A player is chosen at random to start. Each round, a player must take one card, either the top card from the Draw pile, or the top card of the Discard pile. If they take the top Discard, they must exchange it for one from their rack.  The exchanged card is then added to the Discard pile. If they take the top card from the Draw pile, they may exchange that card for one from their rack, or discard it. When cards are exchanged, they must be placed in the same location as the card that was removed \- players cannot swap cards inside their rack. They can only swap cards with ones drawn from the Draw or Discard pile. 
+
+**Scoring**  
+Starting at the bottom of the rack, each of the 10 slots is worth 5 points.  Players earn 5 points for every card in ascending order, starting at the bottom of the rack. If all 10 cards are in ascending order, then that is a “rakko” and that player earns an additional 25 points.  
+
+**Bonus mode**  
+The object of Bonus mode is for a player to score 50 to 400 extra “Bonus” points by including a sequence or runs of 3 to 6 cards in his rack before going Rakko. All the rules of regular Rackko are used. This game is more of a challenge, as a player must decide to go Rackko with a score of only 75 or wait to improve his rack for a bonus score at the risk of their opponent going rakko first. The bonus is scored only by the player who goes Rackko, his opponents receiving only 5 points for each of the cards in their racks in LOW to HIGH order.                    

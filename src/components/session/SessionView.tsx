@@ -1,5 +1,6 @@
 "use client";
 
+import { RakkoGame } from "@_rakko/RakkoGame";
 import { TicTacToeGame } from "@_tic-tac-toe/TicTacToeGame";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
@@ -25,6 +26,20 @@ export function SessionView({ code, gameId }: SessionViewProps) {
   if (resolvedGameId === "tic-tac-toe") {
     return (
       <TicTacToeGame
+        code={code}
+        playerId={session.playerId}
+        session={session.state}
+        connected={session.connected}
+        sendGame={session.sendGame}
+        setScore={session.setScore}
+        setName={session.setName}
+      />
+    );
+  }
+
+  if (resolvedGameId === "rakko") {
+    return (
+      <RakkoGame
         code={code}
         playerId={session.playerId}
         session={session.state}
