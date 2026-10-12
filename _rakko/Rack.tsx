@@ -27,11 +27,14 @@ export function Rack({ cards, canSelect = false, onSelectSlot }: RackProps) {
         <div className={styles.cards} data-name="cards">
           {slots.map((value, index) => {
             const isLast = index === RACK_SIZE - 1;
+            /* Lower rows sit above higher rows (top card = bottom of z-order). */
+            const order = { zIndex: index + 1 };
             if (value == null) {
               return (
                 <div
                   key={index}
                   className={`${styles.empty} ${isLast ? "" : styles.stacked}`}
+                  style={order}
                   aria-hidden
                 />
               );
@@ -41,7 +44,7 @@ export function Rack({ cards, canSelect = false, onSelectSlot }: RackProps) {
                 key={`${index}-${value}`}
                 value={value}
                 stacked={!isLast}
-                selected={canSelect}
+                style={order}
                 onClick={canSelect ? () => onSelectSlot?.(index) : undefined}
                 disabled={!canSelect}
                 aria-label={`Rack slot ${index + 1}, card ${value}`}

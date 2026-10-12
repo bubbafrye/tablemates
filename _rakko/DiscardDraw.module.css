@@ -84,12 +84,25 @@
   position: relative;
   display: grid;
   place-items: start;
-  min-height: 107px;
+  min-height: 83px;
   width: 100%;
 }
 
 .stack > * {
   grid-area: 1 / 1;
+}
+
+/* Figma: slot lip sits on top of the compact face so cards tuck into the tray. */
+.slot {
+  position: relative;
+  z-index: 2;
+  align-self: end;
+  justify-self: start;
+  left: -7px;
+  width: 364px;
+  height: 8px;
+  margin-bottom: -1px;
+  pointer-events: none;
 }
 
 .under {
@@ -100,7 +113,7 @@
 .emptySlot {
   width: 350px;
   max-width: 100%;
-  height: 107px;
+  height: 83px;
   border: 1px dashed rgba(255, 255, 255, 0.25);
   border-radius: 10px 10px 0 0;
   background: rgba(0, 0, 0, 0.12);
@@ -143,6 +156,6 @@
 
   .emptySlot {
     width: 280px;
-    height: 86px;
+    height: 66px;
   }
 }

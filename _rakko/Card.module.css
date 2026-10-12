@@ -36,6 +36,7 @@
   height: 8px;
   display: block;
   pointer-events: none;
+  z-index: 1;
 }
 
 .face {
@@ -43,7 +44,9 @@
   left: 0;
   top: 52px;
   width: 350px;
-  height: 107px;
+  /* Figma card-slot mask: face only shows through y=115 (52+63). Bottom of the
+     full 107px artboard clears so the slot lip sits under the cream edge. */
+  height: 63px;
   overflow: hidden;
   border: 1px solid #fff;
   border-radius: 10px 10px 0 0;
@@ -97,10 +100,6 @@
     2px 2px 0 #dc0000;
 }
 
-.selected {
-  z-index: 3;
-}
-
 .selected .face {
   transform: translateY(-8px);
   box-shadow: 0 -6px 12px 0 rgba(0, 0, 0, 0.35);
@@ -112,11 +111,13 @@
 
 .compact {
   width: 350px;
-  height: 107px;
+  /* Figma discard-draw card-base mask window is 83px tall. */
+  height: 83px;
 }
 
 .compact .face {
   top: 0;
+  height: 83px;
 }
 
 @media (max-width: 739px) {
@@ -127,7 +128,7 @@
 
   .compact {
     width: 280px;
-    height: 86px;
+    height: 66px;
   }
 
   .slot {
@@ -140,13 +141,13 @@
   .face {
     top: 41.6px;
     width: 280px;
-    height: 85.6px;
+    height: 50.4px;
     border-radius: 8px 8px 0 0;
   }
 
   .compact .face {
     top: 0;
-    height: 86px;
+    height: 66px;
   }
 
   .cascade {

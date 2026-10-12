@@ -1,3 +1,4 @@
+import { withBasePath } from "@/platform/site";
 import { Card } from "./Card";
 import styles from "./DiscardDraw.module.css";
 
@@ -90,6 +91,15 @@ export function DiscardDraw({
               ) : (
                 <div className={styles.emptySlot} aria-hidden />
               )}
+              <img
+                className={styles.slot}
+                src={withBasePath("/assets/rakko/slot.svg")}
+                alt=""
+                width={364}
+                height={8}
+                aria-hidden
+                data-name="slot"
+              />
             </div>
           </section>
 
@@ -137,6 +147,15 @@ export function DiscardDraw({
               ) : (
                 <div className={styles.emptySlot} aria-hidden />
               )}
+              <img
+                className={styles.slot}
+                src={withBasePath("/assets/rakko/slot.svg")}
+                alt=""
+                width={364}
+                height={8}
+                aria-hidden
+                data-name="slot"
+              />
             </div>
           </section>
         </div>

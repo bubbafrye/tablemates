@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { withBasePath } from "@/platform/site";
 import styles from "./Card.module.css";
 
@@ -7,6 +8,7 @@ type CardProps = {
   selected?: boolean;
   stacked?: boolean;
   compact?: boolean;
+  style?: CSSProperties;
   onClick?: () => void;
   disabled?: boolean;
   "aria-label"?: string;
@@ -19,6 +21,7 @@ export function Card({
   selected = false,
   stacked = false,
   compact = false,
+  style,
   onClick,
   disabled = false,
   "aria-label": ariaLabel,
@@ -38,6 +41,7 @@ export function Card({
     <Tag
       type={onClick ? "button" : undefined}
       className={className}
+      style={style}
       onClick={onClick}
       disabled={onClick ? disabled : undefined}
       aria-label={ariaLabel ?? (face === "back" ? "Card back" : `Card ${value}`)}
@@ -45,6 +49,21 @@ export function Card({
       data-face={face}
       data-interactive={onClick ? "true" : undefined}
     >
+      <span className={styles.face} data-name="card">
+        {face === "back" ? null : (
+          <>
+            {/* Only the value at its cascade index; preceding number slots are omitted. */}
+            <span className={styles.cascade} aria-hidden>
+              <span
+                className={styles.tooth}
+                style={{ left: `${(teeth - 1) * 5}px`, zIndex: teeth }}
+              >
+                {value}
+              </span>
+            </span>
+          </>
+        )}
+      </span>
       {!compact ? (
         <img
           className={styles.slot}
@@ -56,24 +75,6 @@ export function Card({
           data-name="slot"
         />
       ) : null}
-      <span className={styles.face} data-name="card">
-        {face === "back" ? null : (
-          <>
-            {/* Figma: staggered "1" glyphs form the comb; only the last number is the value. */}
-            <span className={styles.cascade} aria-hidden>
-              {Array.from({ length: teeth }, (_, i) => (
-                <span
-                  key={i}
-                  className={styles.tooth}
-                  style={{ left: `${i * 5}px`, zIndex: i + 1 }}
-                >
-                  {i === teeth - 1 ? value : "1"}
-                </span>
-              ))}
-            </span>
-          </>
-        )}
-      </span>
     </Tag>
   );
 }
