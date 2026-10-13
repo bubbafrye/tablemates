@@ -1,161 +1,252 @@
+/* Figma draw-discard-tray: horizontal <900 (560×135), vertical ≥900 (280×311). */
 .tray {
-  position: relative;
-  overflow: clip;
-  width: 420px;
-  max-width: 100%;
-  height: 410px;
-  border: 1px solid #000;
-  border-radius: 25px;
-  background-image: linear-gradient(
-    176.4deg,
-    rgb(208, 56, 29) 7.64%,
-    rgb(157, 39, 35) 51.62%,
-    rgb(93, 40, 9) 96.97%
-  );
-  box-shadow:
-    0 13px 0 0 #5d1400,
-    0 16px 0 0 #000,
-    0 5px 10px 0 rgba(0, 0, 0, 0.25);
-}
-
-.sheen {
-  position: absolute;
-  left: 19px;
-  top: 18px;
-  width: 380px;
-  max-width: calc(100% - 38px);
-  height: 44px;
-  border-radius: 12px 12px 12px 0;
-  background-image: linear-gradient(
-    172.88deg,
-    rgba(255, 214, 229, 0.3) 3.4%,
-    rgba(255, 255, 255, 0) 51.37%
-  );
-  box-shadow: -1px -2px 4px 0 rgba(255, 255, 255, 0.25);
-  pointer-events: none;
-}
-
-.face {
-  position: absolute;
-  left: -5px;
-  top: 62px;
   display: flex;
-  align-items: center;
-  width: 427px;
-  max-width: calc(100% + 10px);
-}
-
-.cards {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 50px;
-  width: 421px;
-  max-width: 100%;
-  padding: 0 38px;
-  border-radius: 35px;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 560px;
+  max-width: min(560px, 100vw);
+  height: 135px;
 }
 
 .pile {
+  position: relative;
+  width: 280px;
+  height: 135px;
+  flex-shrink: 0;
+}
+
+/* Figma Group 7: draw block starts 5px lower; holder at y=65 within group. */
+.pile[data-name="draw"] {
+  margin-top: 5px;
+  height: 125px;
+}
+
+.pile[data-name="draw"] .holder {
+  top: 65px;
+}
+
+/*
+ * Figma draw-discard-pile Default (168:31627): 249×80
+ * card-slot (masked) + ONE slot in front at y=73.
+ */
+.pileBody {
+  position: absolute;
+  left: 18px;
+  top: 0;
+  z-index: 1;
+  width: 249px;
+  height: 80px;
+}
+
+/* Variant2 / CardBase Variant6: slightly shorter; slot at y=61 */
+.drawPileBody {
+  height: 67px;
+}
+
+/*
+ * Mask must reach the slot so cards paint under the lip.
+ * Figma mask artboard is 70/56, but stopping there leaves a cream gap
+ * between mask bottom and slot top (white gap in localhost).
+ */
+.cardSlot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 249px;
+  height: 78px;
+  -webkit-mask-image: url("/assets/rakko/pile-mask.svg");
+  mask-image: url("/assets/rakko/pile-mask.svg");
+  -webkit-mask-size: 249px 78px;
+  mask-size: 249px 78px;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+.drawCardSlot {
+  height: 66px;
+  -webkit-mask-size: 249px 66px;
+  mask-size: 249px 66px;
+}
+
+/* Figma discard under cards: -2deg / +1.5deg, rising behind front */
+.discardBack {
+  position: absolute;
+  left: 6.83px;
+  top: 18.92px;
+  width: 237.335px;
+  height: 79.158px;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 20px;
-  width: 100%;
-}
-
-.label {
-  position: relative;
-  margin: 0;
-  width: 351px;
-  max-width: 100%;
-  height: 29px;
-  font-family: var(--font-rakko-face), sans-serif;
-  font-size: 38px;
-  font-weight: 400;
-  line-height: 1.02;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.8);
-  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.55);
-}
-
-.stack {
-  position: relative;
-  display: grid;
-  place-items: start;
-  min-height: 83px;
-  width: 100%;
-}
-
-.stack > * {
-  grid-area: 1 / 1;
-}
-
-/* Figma: slot lip sits on top of the compact face so cards tuck into the tray. */
-.slot {
-  position: relative;
-  z-index: 2;
-  align-self: end;
-  justify-self: start;
-  left: -7px;
-  width: 364px;
-  height: 8px;
-  margin-bottom: -1px;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-2deg);
+  transform-origin: center center;
   pointer-events: none;
 }
 
-.under {
+.discardMid {
+  position: absolute;
+  left: 7.11px;
+  top: 22.94px;
+  width: 236.778px;
+  height: 77.127px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(1.5deg);
+  transform-origin: center center;
   pointer-events: none;
-  opacity: 0.95;
 }
 
-.emptySlot {
-  width: 350px;
-  max-width: 100%;
-  height: 83px;
+.discardFront {
+  position: absolute;
+  left: 6px;
+  top: 31px;
+  width: 235px;
+  height: 71px;
+  z-index: 1;
+}
+
+/* Figma draw Variant6 card positions */
+.drawBack {
+  position: absolute;
+  left: 6px;
+  top: 15px;
+  width: 236px;
+  height: 71px;
+  pointer-events: none;
+}
+
+.drawMid {
+  position: absolute;
+  left: 6.75px;
+  top: 17.59px;
+  width: 238.5px;
+  height: 79.83px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.drawFront {
+  position: absolute;
+  left: 7px;
+  top: 28px;
+  width: 236px;
+  height: 71px;
+  z-index: 1;
+}
+
+.emptyFace {
+  position: absolute;
+  left: 6px;
+  top: 31px;
+  width: 235px;
+  height: 40px;
   border: 1px dashed rgba(255, 255, 255, 0.25);
   border-radius: 10px 10px 0 0;
   background: rgba(0, 0, 0, 0.12);
 }
 
-@media (max-width: 739px) {
+/*
+ * ONE slot in front of the card array (Figma z-order).
+ * slot-sm.svg is 249×6: 5px lip + 1px light drop-shadow below.
+ * Figma Slot sm uses inset bottom -20% so the shadow sits on the holder —
+ * forcing height:5px crushed that fringe into a bright “white gap”.
+ */
+.pileSlot {
+  position: absolute;
+  left: 0;
+  top: 73px;
+  z-index: 2;
+  display: block;
+  width: 249px;
+  height: 6px;
+  max-width: none;
+  pointer-events: none;
+}
+
+.drawPileSlot {
+  left: 1px;
+  top: 61px;
+  width: 247px;
+}
+
+.holder {
+  position: absolute;
+  left: 18px;
+  top: 75px;
+  /* Behind pile body so cards+slot sit in the tray opening */
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 249px;
+  height: 60px;
+  overflow: clip;
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+
+.holder::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 -8px 4px 0 rgba(97, 22, 22, 0.25);
+  pointer-events: none;
+}
+
+.discardHolder {
+  background-image: linear-gradient(180deg, #aa3621 0%, #731f0b 100%);
+}
+
+.drawHolder {
+  background-image: linear-gradient(180deg, #aa3621 0%, #84200f 100%);
+}
+
+.label {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  width: 280px;
+  font-family: var(--font-rakko-tray), var(--font-rakko-face), sans-serif;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.02;
+  text-align: center;
+  color: rgba(255, 143, 143, 0.4);
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.55);
+}
+
+@media (max-width: 559px) {
   .tray {
-    width: 100%;
-    max-width: 340px;
-    height: auto;
-    min-height: 320px;
-    border-radius: 18px;
+    transform: scale(calc(100vw / 560));
+    transform-origin: top center;
+    margin-bottom: calc(135px * (100vw / 560 - 1));
   }
+}
 
-  .sheen {
-    left: 12px;
-    top: 12px;
-    width: calc(100% - 24px);
-    height: 32px;
-  }
-
-  .face {
-    position: relative;
-    left: 0;
-    top: 0;
-    width: 100%;
-    padding: 48px 0 28px;
-  }
-
-  .cards {
-    gap: 28px;
-    width: 100%;
-    padding: 0 20px;
-  }
-
-  .label {
-    font-size: 28px;
-    height: auto;
-  }
-
-  .emptySlot {
+@media (min-width: 900px) {
+  .tray {
+    flex-direction: column;
+    align-items: stretch;
     width: 280px;
-    height: 66px;
+    max-width: 280px;
+    height: 311px;
+    transform: none;
+    margin-bottom: 0;
+  }
+
+  .pile[data-name="draw"] {
+    order: -1;
+    margin-top: 0;
+    height: 125px;
+  }
+
+  .pile[data-name="discard"] {
+    margin-top: 51px;
+    height: 135px;
   }
 }

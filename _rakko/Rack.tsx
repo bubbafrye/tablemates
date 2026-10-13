@@ -1,8 +1,7 @@
+import { withBasePath } from "@/platform/site";
 import { Card } from "./Card";
 import { RACK_SIZE } from "./logic";
 import styles from "./Rack.module.css";
-
-const POINT_LABELS = [100, 90, 80, 70, 60, 50, 40, 30, 20, 10] as const;
 
 type RackProps = {
   cards: number[];
@@ -10,20 +9,22 @@ type RackProps = {
   onSelectSlot?: (index: number) => void;
 };
 
-/** Figma rack: red tray, point labels 100→10, ten overlapping card slots. */
+/** Figma rack (sm): PNG tray + default-sm cards. Points are baked into the PNG. */
 export function Rack({ cards, canSelect = false, onSelectSlot }: RackProps) {
   const slots = Array.from({ length: RACK_SIZE }, (_, i) => cards[i] ?? null);
 
   return (
     <div className={styles.rack} data-name="rack">
+      <img
+        className={styles.base}
+        src={withBasePath("/assets/rakko/rack-base-med.png")}
+        alt=""
+        width={342}
+        height={500}
+        aria-hidden
+        data-name="rack-base"
+      />
       <div className={styles.face} data-name="face">
-        <div className={styles.points} data-name="points" aria-hidden>
-          {POINT_LABELS.map((label) => (
-            <span key={label} className={styles.point}>
-              {label}
-            </span>
-          ))}
-        </div>
         <div className={styles.cards} data-name="cards">
           {slots.map((value, index) => {
             const isLast = index === RACK_SIZE - 1;
@@ -42,6 +43,7 @@ export function Rack({ cards, canSelect = false, onSelectSlot }: RackProps) {
             return (
               <Card
                 key={`${index}-${value}`}
+                size="sm"
                 value={value}
                 stacked={!isLast}
                 style={order}

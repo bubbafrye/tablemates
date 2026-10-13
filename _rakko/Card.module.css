@@ -1,8 +1,6 @@
 .card {
   position: relative;
   display: block;
-  width: 350px;
-  height: 159px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -10,156 +8,403 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Only the Figma bounds layer receives taps (stacked rows stay hittable). */
 .card[data-interactive="true"] {
+  pointer-events: none;
+}
+
+.card[data-interactive="true"] .bounds {
+  pointer-events: auto;
   cursor: pointer;
 }
 
-.card:disabled {
+.bounds {
+  position: absolute;
+  z-index: 2;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bounds:disabled {
   cursor: default;
 }
 
-.card:focus {
+.bounds:focus {
   outline: none;
 }
 
-.card:focus-visible .face {
-  box-shadow:
-    0 -3px 5px 0 rgba(0, 0, 0, 0.3),
-    var(--shadow-focus);
+.card:has(.bounds:focus-visible) .face {
+  outline: 2px solid var(--color-border-focus, #4c9aff);
+  outline-offset: 2px;
 }
 
-.slot {
+/*
+ * Mask on .face clips box-shadow. Cast Figma's -y shadow from an unmasked
+ * opaque silhouette behind the face (covered by .face; shadow paints above).
+ */
+.faceShadow {
   position: absolute;
-  left: -7px;
-  top: 109px;
-  width: 364px;
-  height: 8px;
-  display: block;
+  z-index: 0;
   pointer-events: none;
-  z-index: 1;
+  background: #faf8f2;
+  filter: drop-shadow(0 -3px 5px rgba(0, 0, 0, 0.3));
 }
 
 .face {
   position: absolute;
-  left: 0;
-  top: 52px;
-  width: 350px;
-  /* Figma card-slot mask: face only shows through y=115 (52+63). Bottom of the
-     full 107px artboard clears so the slot lip sits under the cream edge. */
-  height: 63px;
-  overflow: hidden;
+  z-index: 1;
+  overflow: visible;
+  border-radius: 10px;
+}
+
+.card[data-face="front"] .face {
   border: 1px solid #fff;
-  border-radius: 10px 10px 0 0;
-  background: #faf8f2;
-  box-shadow: 0 -3px 5px 0 rgba(0, 0, 0, 0.3);
+  background-color: #faf8f2;
 }
 
 .card[data-face="back"] .face {
-  /* Figma card-back: cyan field + white diamond lattice */
-  background-color: #1196bb;
-  background-image: repeating-conic-gradient(
-    from 45deg at 50% 50%,
-    #1196bb 0deg 90deg,
-    #ffffff 90deg 180deg
-  );
-  background-size: 15px 15px;
+  border: 0;
+  background: transparent;
+}
+
+.backArt {
+  position: absolute;
+  display: block;
+  max-width: none;
+  pointer-events: none;
+  object-fit: cover;
 }
 
 .cascade {
   position: absolute;
-  left: 2px;
-  top: 4px;
-  height: 37px;
-  width: 335px;
   pointer-events: none;
 }
 
 .tooth {
   position: absolute;
   top: 0;
-  width: 40px;
-  height: 37px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-rakko-face), sans-serif;
-  font-size: 38px;
   font-weight: 400;
   line-height: 1.02;
-  color: #cd3419;
-  text-shadow: 2px 2px 0 #dc0000;
+  letter-spacing: -1px;
   white-space: nowrap;
 }
 
-.tooth:last-child {
-  text-shadow:
-    -1px -1px 0 #fff,
-    1px -1px 0 #fff,
-    -1px 1px 0 #fff,
-    1px 1px 0 #fff,
-    2px 2px 0 #dc0000;
+/*
+ * Figma Number: strokeAlign OUTSIDE 1px #f5f5f5 + hard drop shadow.
+ * Centered -webkit-text-stroke alone is too thin / eaten by fill — paint a
+ * stroke+shadow layer behind a clean fill layer.
+ */
+.toothStroke {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f5f5f5;
+  -webkit-text-stroke: 2px #f5f5f5;
+  paint-order: stroke fill;
+  pointer-events: none;
 }
 
-.selected .face {
+.toothFill {
+  position: relative;
+  z-index: 1;
+  color: #cd3419;
+  -webkit-text-stroke: 0;
+}
+
+.slot {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.selected .face,
+.selected .faceShadow {
+  transform: translateY(-4px);
+}
+
+.selected .faceShadow {
+  filter: drop-shadow(0 -6px 12px rgba(0, 0, 0, 0.35));
+}
+
+/* ——— default-sm (Figma 165:24011): 249×49 ——— */
+.sm {
+  width: 249px;
+  height: 49px;
+}
+
+.sm.stacked {
+  /* Card advance 41: height 49 − overlap 8 */
+  margin-bottom: -8px;
+}
+
+.sm .bounds {
+  /* Figma bounds: x=5 y=10 w=239 h=34 */
+  left: 5px;
+  top: 10px;
+  width: 239px;
+  height: 34px;
+  border-radius: 8px 8px 0 0;
+}
+
+.sm.selected .bounds {
+  top: 6px;
+  height: 38px;
+}
+
+.sm .faceShadow {
+  /* Visible cream above slot: matches face x/y/w; height to slot lip */
+  left: 9px;
+  top: 6px;
+  width: 235px;
+  height: 37px;
+  border-radius: 10px 10px 0 0;
+}
+
+.sm .face {
+  /* Figma front-sm card: x=9 y≈6.15 w=235 h=71, masked to artboard */
+  left: 9px;
+  top: 6px;
+  width: 235px;
+  height: 71px;
+  border-radius: 10px;
+  -webkit-mask-image: url("/assets/rakko/card-mask-sm.svg");
+  mask-image: url("/assets/rakko/card-mask-sm.svg");
+  -webkit-mask-size: 249px 49px;
+  mask-size: 249px 49px;
+  -webkit-mask-position: -9px -6px;
+  mask-position: -9px -6px;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+.sm[data-face="back"] .face {
+  /* Figma back-sm: 236×71 */
+  width: 236px;
+}
+
+.sm .backArt {
+  /* Figma image 3: x=-3 y=-5 w=241 h=77 within back-sm */
+  left: -3px;
+  top: -5px;
+  width: 241px;
+  height: 77px;
+}
+
+.sm .cascade {
+  /* Figma numbers on front-sm: ~3.74% from card top */
+  left: 0;
+  top: 2.65px;
+  width: 235px;
+  height: 19px;
+}
+
+.sm .tooth {
+  width: 27px;
+  height: 19px;
+  font-size: 22px;
+}
+
+.sm .toothStroke {
+  text-shadow: 1px 1px 0 #dc0000;
+}
+
+.sm .slot {
+  /* Figma slot: x=4 y≈43.15 w=245 h=5 */
+  left: 4px;
+  top: 43px;
+  width: 245px;
+  height: 5px;
+}
+
+/* ——— default-lg (Figma 93:9295): 369×120 artboard ——— */
+.lg {
+  width: 369px;
+  height: 120px;
+}
+
+.lg.stacked {
+  margin-bottom: -61px;
+}
+
+.lg .bounds {
+  /* Figma bounds: x≈9 y=57 w≈353 h=51 */
+  left: 9px;
+  top: 57px;
+  width: 353px;
+  height: 51px;
+  border-radius: 10px 10px 0 0;
+}
+
+.lg.selected .bounds {
+  /* Figma selected-lg bounds: y=18 h=79 */
+  top: 18px;
+  height: 79px;
+}
+
+.lg .faceShadow {
+  left: 2px;
+  top: 56px;
+  width: 355px;
+  height: 56px;
+  border-radius: 10px 10px 0 0;
+}
+
+.lg .face {
+  /* Figma card: left≈2.1 top=56 w≈355 h=107 */
+  left: 2px;
+  top: 56px;
+  width: 355px;
+  height: 107px;
+  -webkit-mask-image: url("/assets/rakko/card-mask.svg");
+  mask-image: url("/assets/rakko/card-mask.svg");
+  -webkit-mask-size: 355px 118px;
+  mask-size: 355px 118px;
+  -webkit-mask-position: 0 -56px;
+  mask-position: 0 -56px;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+.lg .backArt {
+  /* Figma card-back image: x=-5 y=-8 w=365 h=117 */
+  left: -5px;
+  top: -8px;
+  width: 365px;
+  height: 117px;
+}
+
+.lg .cascade {
+  /* Figma numbers: ~3.74% from card top */
+  left: 0;
+  top: 4px;
+  width: 355px;
+  height: 37px;
+}
+
+.lg .tooth {
+  width: 40px;
+  height: 37px;
+  font-size: 38px;
+}
+
+.lg .toothStroke {
+  text-shadow: 2px 2px 0 #dc0000;
+}
+
+.lg .slot {
+  /* Figma slot: x=0 y=112 w=364 h=8 */
+  left: 0;
+  top: 112px;
+  width: 364px;
+  height: 8px;
+}
+
+.lg.selected .face,
+.lg.selected .faceShadow {
   transform: translateY(-8px);
+}
+
+/* ——— Figma front-sm / back-sm (169:40105) — pile faces, no per-card slot ——— */
+.faceOnly {
+  position: relative;
+  display: block;
+  width: 235px;
+  height: 71px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.faceOnly[data-face="back"] {
+  width: 236px;
+}
+
+.faceOnly[data-interactive="true"] {
+  pointer-events: none;
+}
+
+.faceOnly[data-interactive="true"] .faceOnlyBounds {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.faceOnlyBounds {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.faceOnlyBounds:disabled {
+  cursor: default;
+}
+
+.faceOnlyBounds:focus {
+  outline: none;
+}
+
+.faceOnlyPlate {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border: 1px solid #fff;
+  border-radius: 10px;
+  /* Figma cardbase fill — not #fff */
+  background-color: #faf8f2;
+  box-shadow: 0 -3px 5px 0 rgba(0, 0, 0, 0.3);
+}
+
+.faceOnly[data-face="back"] .faceOnlyPlate {
+  border: 0;
+  background-color: transparent;
+  box-shadow: 0 -3px 5px 0 rgba(0, 0, 0, 0.3);
+}
+
+.backArtFace {
+  position: absolute;
+  left: -3px;
+  top: -5px;
+  width: 241px;
+  height: 77px;
+  display: block;
+  max-width: none;
+  pointer-events: none;
+  object-fit: cover;
+}
+
+.cascadeFace {
+  position: absolute;
+  left: 0;
+  top: 2.65px;
+  width: 235px;
+  height: 19px;
+  pointer-events: none;
+}
+
+.cascadeFace .tooth {
+  width: 27px;
+  height: 19px;
+  font-size: 22px;
+}
+
+.cascadeFace .toothStroke {
+  text-shadow: 1px 1px 0 #dc0000;
+}
+
+.selectedFace .faceOnlyPlate {
+  transform: translateY(-4px);
   box-shadow: 0 -6px 12px 0 rgba(0, 0, 0, 0.35);
-}
-
-.stacked {
-  margin-bottom: -100px;
-}
-
-.compact {
-  width: 350px;
-  /* Figma discard-draw card-base mask window is 83px tall. */
-  height: 83px;
-}
-
-.compact .face {
-  top: 0;
-  height: 83px;
-}
-
-@media (max-width: 739px) {
-  .card {
-    width: 280px;
-    height: 127px;
-  }
-
-  .compact {
-    width: 280px;
-    height: 66px;
-  }
-
-  .slot {
-    left: -5.6px;
-    top: 87.2px;
-    width: 291.2px;
-    height: 6.4px;
-  }
-
-  .face {
-    top: 41.6px;
-    width: 280px;
-    height: 50.4px;
-    border-radius: 8px 8px 0 0;
-  }
-
-  .compact .face {
-    top: 0;
-    height: 66px;
-  }
-
-  .cascade {
-    left: 1.6px;
-    top: 3.2px;
-    height: 30px;
-    width: 268px;
-  }
-
-  .tooth {
-    width: 32px;
-    height: 30px;
-    font-size: 30px;
-  }
 }

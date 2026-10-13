@@ -5,76 +5,173 @@ import styles from "./Card.module.css";
 type CardProps = {
   value?: number;
   face?: "front" | "back";
+  /** Figma card-base artboard (rack) vs raw front-sm/back-sm face (piles). */
+  frame?: "base" | "face";
+  /** Figma card-base: default-sm or default-lg. Ignored when frame="face". */
+  size?: "sm" | "lg";
   selected?: boolean;
   stacked?: boolean;
-  compact?: boolean;
+  /** Cream face with no value — stack under-cards. */
+  blank?: boolean;
+  /** Per-card slot lip. Rack only — piles use one shared slot in front. */
+  slot?: boolean;
   style?: CSSProperties;
   onClick?: () => void;
   disabled?: boolean;
   "aria-label"?: string;
 };
 
-/** Figma card-base: cream face + Anton cascade + value, or cyan diamond back. */
+/** Cascade step: 5px on lg face (~355); scale with sm face width (235). */
+const STEP_LG = 5;
+const STEP_SM = (5 * 235) / 350;
+
+/** Figma card / card-base: cream + Anton value, or PNG card-back. */
 export function Card({
   value = 1,
   face = "front",
+  frame = "base",
+  size = "sm",
   selected = false,
   stacked = false,
-  compact = false,
+  blank = false,
+  slot = true,
   style,
   onClick,
   disabled = false,
   "aria-label": ariaLabel,
 }: CardProps) {
-  const Tag = onClick ? "button" : "div";
-  const teeth = face === "front" ? Math.max(1, Math.min(60, value)) : 0;
+  const teeth =
+    face === "front" && !blank ? Math.max(1, Math.min(60, value)) : 0;
+  const interactive = Boolean(onClick);
+  const step = size === "sm" || frame === "face" ? STEP_SM : STEP_LG;
+  const label = ariaLabel ?? (face === "back" ? "Card back" : `Card ${value}`);
+  const backSrc = withBasePath("/assets/rakko/card-back.png");
+
+  if (frame === "face") {
+    /* Figma front-sm / back-sm — used inside draw-discard-pile under a group mask. */
+    const className = [
+      styles.faceOnly,
+      selected ? styles.selectedFace : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+    return (
+      <div
+        className={className}
+        style={style}
+        data-name={face === "back" ? "back-sm" : "front-sm"}
+        data-face={face}
+        data-interactive={interactive ? "true" : undefined}
+      >
+        {interactive ? (
+          <button
+            type="button"
+            className={styles.faceOnlyBounds}
+            onClick={onClick}
+            disabled={disabled}
+            aria-label={label}
+            data-name="bounds"
+          />
+        ) : null}
+        <span className={styles.faceOnlyPlate} data-name="cardbase" aria-hidden={interactive || undefined}>
+          {face === "back" ? (
+            <img
+              className={styles.backArtFace}
+              src={backSrc}
+              alt=""
+              width={241}
+              height={77}
+              aria-hidden
+              data-name="card-back"
+            />
+          ) : teeth > 0 ? (
+            <span className={styles.cascadeFace} aria-hidden>
+              <span
+                className={styles.tooth}
+                style={{ left: `${(teeth - 1) * step}px`, zIndex: teeth }}
+              >
+                {/* Stroke+shadow layer behind fill — Figma Number strokeAlign OUTSIDE */}
+                <span className={styles.toothStroke} aria-hidden>
+                  {value}
+                </span>
+                <span className={styles.toothFill}>{value}</span>
+              </span>
+            </span>
+          ) : null}
+        </span>
+      </div>
+    );
+  }
+
   const className = [
     styles.card,
+    size === "lg" ? styles.lg : styles.sm,
     selected ? styles.selected : "",
     stacked ? styles.stacked : "",
-    compact ? styles.compact : "",
   ]
     .filter(Boolean)
     .join(" ");
+  const slotSrc = withBasePath(
+    size === "sm" ? "/assets/rakko/slot-sm.svg" : "/assets/rakko/slot.svg",
+  );
 
   return (
-    <Tag
-      type={onClick ? "button" : undefined}
+    <div
       className={className}
       style={style}
-      onClick={onClick}
-      disabled={onClick ? disabled : undefined}
-      aria-label={ariaLabel ?? (face === "back" ? "Card back" : `Card ${value}`)}
       data-name="card-base"
       data-face={face}
-      data-interactive={onClick ? "true" : undefined}
+      data-size={size}
+      data-interactive={interactive ? "true" : undefined}
     >
-      <span className={styles.face} data-name="card">
-        {face === "back" ? null : (
-          <>
+      {interactive ? (
+        <button
+          type="button"
+          className={styles.bounds}
+          onClick={onClick}
+          disabled={disabled}
+          aria-label={label}
+          data-name="bounds"
+        />
+      ) : null}
+      <span className={styles.faceShadow} aria-hidden data-name="face-shadow" />
+      <span className={styles.face} data-name="card" aria-hidden={interactive || undefined}>
+        {face === "back" ? (
+          <img
+            className={styles.backArt}
+            src={backSrc}
+            alt=""
+            width={size === "sm" ? 241 : 365}
+            height={size === "sm" ? 77 : 117}
+            aria-hidden
+            data-name="card-back"
+          />
+        ) : teeth > 0 ? (
+          <span className={styles.cascade} aria-hidden>
             {/* Only the value at its cascade index; preceding number slots are omitted. */}
-            <span className={styles.cascade} aria-hidden>
-              <span
-                className={styles.tooth}
-                style={{ left: `${(teeth - 1) * 5}px`, zIndex: teeth }}
-              >
+            <span
+              className={styles.tooth}
+              style={{ left: `${(teeth - 1) * step}px`, zIndex: teeth }}
+            >
+              <span className={styles.toothStroke} aria-hidden>
                 {value}
               </span>
+              <span className={styles.toothFill}>{value}</span>
             </span>
-          </>
-        )}
+          </span>
+        ) : null}
       </span>
-      {!compact ? (
+      {slot ? (
         <img
           className={styles.slot}
-          src={withBasePath("/assets/rakko/slot.svg")}
+          src={slotSrc}
           alt=""
-          width={364}
-          height={8}
+          width={size === "sm" ? 249 : 364}
+          height={size === "sm" ? 5 : 8}
           aria-hidden
           data-name="slot"
         />
       ) : null}
-    </Tag>
+    </div>
   );
 }
