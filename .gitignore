@@ -47,3 +47,6 @@ storybook-static
 # partykit / wrangler local state
 .partykit/
 .wrangler/
+
+# local visual-audit screenshots / reference dumps
+.audit/
