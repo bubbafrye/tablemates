@@ -72,11 +72,13 @@ export function DiscardDraw({
                 />
               </div>
             ) : discardTop != null ? (
-              <div className={styles.discardFront}>
+              <div
+                className={`${styles.discardFront} ${holdingDraw ? styles.discardFrontLocked : ""}`}
+              >
                 <Card
                   frame="face"
                   value={discardTop}
-                  selected={canDiscardHeld}
+                  /* Don't lift as a target — after draw, pile is tucked/locked for take. */
                   onClick={
                     canTakeDiscard
                       ? onTakeDiscard
@@ -88,7 +90,9 @@ export function DiscardDraw({
                   aria-label={
                     canDiscardHeld
                       ? `Discard held card ${held}`
-                      : `Take discard ${discardTop}`
+                      : canTakeDiscard
+                        ? `Take discard ${discardTop}`
+                        : `Discard ${discardTop} (unavailable)`
                   }
                 />
               </div>

@@ -107,6 +107,11 @@
   z-index: 1;
 }
 
+/* After draw: tuck discard top under the slot lip (still masked by card-slot). */
+.discardFrontLocked {
+  top: 46px; /* 31 + 15 */
+}
+
 /* Figma draw Variant6 card positions */
 .drawBack {
   position: absolute;

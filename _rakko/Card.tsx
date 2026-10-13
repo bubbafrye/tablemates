@@ -1,4 +1,6 @@
-import type { CSSProperties } from "react";
+"use client";
+
+import { useState, type CSSProperties } from "react";
 import { withBasePath } from "@/platform/site";
 import styles from "./Card.module.css";
 
@@ -40,6 +42,7 @@ export function Card({
   disabled = false,
   "aria-label": ariaLabel,
 }: CardProps) {
+  const [hovered, setHovered] = useState(false);
   const teeth =
     face === "front" && !blank ? Math.max(1, Math.min(60, value)) : 0;
   const interactive = Boolean(onClick);
@@ -90,7 +93,6 @@ export function Card({
                 className={styles.tooth}
                 style={{ left: `${(teeth - 1) * step}px`, zIndex: teeth }}
               >
-                {/* Stroke+shadow layer behind fill — Figma Number strokeAlign OUTSIDE */}
                 <span className={styles.toothStroke} aria-hidden>
                   {value}
                 </span>
@@ -103,10 +105,12 @@ export function Card({
     );
   }
 
+  /* Figma selected-sm / selected-lg — also used for hover on selectable rack cards. */
+  const lifted = selected || (hovered && interactive && !disabled);
   const className = [
     styles.card,
     size === "lg" ? styles.lg : styles.sm,
-    selected ? styles.selected : "",
+    lifted ? styles.selected : "",
     stacked ? styles.stacked : "",
   ]
     .filter(Boolean)
@@ -124,14 +128,27 @@ export function Card({
     maskImage: `url("${maskSrc}")`,
   } satisfies CSSProperties;
 
+  /* Lift above stacked neighbors while tilted (inline zIndex from Rack). */
+  const baseZ =
+    typeof style?.zIndex === "number"
+      ? style.zIndex
+      : typeof style?.zIndex === "string"
+        ? Number.parseInt(style.zIndex, 10) || 0
+        : 0;
+  const mergedStyle: CSSProperties = {
+    ...style,
+    ...(lifted ? { zIndex: baseZ + 100 } : null),
+  };
+
   return (
     <div
       className={className}
-      style={style}
+      style={mergedStyle}
       data-name="card-base"
       data-face={face}
       data-size={size}
       data-interactive={interactive ? "true" : undefined}
+      data-selected={lifted ? "true" : undefined}
     >
       {interactive ? (
         <button
@@ -140,40 +157,47 @@ export function Card({
           onClick={onClick}
           disabled={disabled}
           aria-label={label}
+          aria-pressed={selected || undefined}
           data-name="bounds"
+          onPointerEnter={() => setHovered(true)}
+          onPointerLeave={() => setHovered(false)}
         />
       ) : null}
-      <span className={styles.faceShadow} aria-hidden data-name="face-shadow" />
-      <span
-        className={styles.face}
-        style={faceMaskStyle}
-        data-name="card"
-        aria-hidden={interactive || undefined}
-      >
-        {face === "back" ? (
-          <img
-            className={styles.backArt}
-            src={backSrc}
-            alt=""
-            width={size === "sm" ? 241 : 365}
-            height={size === "sm" ? 77 : 117}
-            aria-hidden
-            data-name="card-back"
-          />
-        ) : teeth > 0 ? (
-          <span className={styles.cascade} aria-hidden>
-            {/* Only the value at its cascade index; preceding number slots are omitted. */}
-            <span
-              className={styles.tooth}
-              style={{ left: `${(teeth - 1) * step}px`, zIndex: teeth }}
-            >
-              <span className={styles.toothStroke} aria-hidden>
-                {value}
+      {/*
+        Mask stays axis-aligned (Figma card-slot mask); face tilts inside.
+        mask-image via withBasePath for GitHub Pages subpath.
+      */}
+      <span className={styles.faceClip} style={faceMaskStyle} data-name="card-slot">
+        <span className={styles.faceShadow} aria-hidden data-name="face-shadow" />
+        <span
+          className={styles.face}
+          data-name="card"
+          aria-hidden={interactive || undefined}
+        >
+          {face === "back" ? (
+            <img
+              className={styles.backArt}
+              src={backSrc}
+              alt=""
+              width={size === "sm" ? 241 : 365}
+              height={size === "sm" ? 77 : 117}
+              aria-hidden
+              data-name="card-back"
+            />
+          ) : teeth > 0 ? (
+            <span className={styles.cascade} aria-hidden>
+              <span
+                className={styles.tooth}
+                style={{ left: `${(teeth - 1) * step}px`, zIndex: teeth }}
+              >
+                <span className={styles.toothStroke} aria-hidden>
+                  {value}
+                </span>
+                <span className={styles.toothFill}>{value}</span>
               </span>
-              <span className={styles.toothFill}>{value}</span>
             </span>
-          </span>
-        ) : null}
+          ) : null}
+        </span>
       </span>
       {slot ? (
         <img

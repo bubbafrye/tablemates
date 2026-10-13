@@ -41,9 +41,18 @@
 }
 
 /*
- * Mask on .face clips box-shadow. Cast Figma's -y shadow from an unmasked
- * opaque silhouette behind the face (covered by .face; shadow paints above).
+ * Axis-aligned Figma card-slot mask. Face/faceShadow tilt inside so the
+ * mask does not rotate with selected-sm / selected-lg.
+ * mask-image set in TSX via withBasePath (GitHub Pages subpath).
  */
+.faceClip {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
 .faceShadow {
   position: absolute;
   z-index: 0;
@@ -126,15 +135,6 @@
   z-index: 1;
 }
 
-.selected .face,
-.selected .faceShadow {
-  transform: translateY(-4px);
-}
-
-.selected .faceShadow {
-  filter: drop-shadow(0 -6px 12px rgba(0, 0, 0, 0.35));
-}
-
 /* ——— default-sm (Figma 165:24011): 249×49 ——— */
 .sm {
   width: 249px;
@@ -155,9 +155,15 @@
   border-radius: 8px 8px 0 0;
 }
 
-.sm.selected .bounds {
-  top: 6px;
-  height: 38px;
+.sm .faceClip {
+  left: 0;
+  top: 0;
+  width: 249px;
+  height: 49px;
+  -webkit-mask-size: 249px 49px;
+  mask-size: 249px 49px;
+  -webkit-mask-position: 0 0;
+  mask-position: 0 0;
 }
 
 .sm .faceShadow {
@@ -170,23 +176,58 @@
 }
 
 .sm .face {
-  /* Figma front-sm card: x=9 y≈6.15 w=235 h=71, masked to artboard */
+  /* Figma front-sm card: x=9 y≈6.15 w=235 h=71 */
   left: 9px;
   top: 6px;
   width: 235px;
   height: 71px;
   border-radius: 10px;
-  /* mask-image set in TSX via withBasePath (GitHub Pages subpath) */
-  -webkit-mask-size: 249px 49px;
-  mask-size: 249px 49px;
-  -webkit-mask-position: -9px -6px;
-  mask-position: -9px -6px;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
 }
 
 .sm[data-face="back"] .face {
   /* Figma back-sm: 236×71 */
+  width: 236px;
+}
+
+/*
+ * Figma selected-sm (169:66111): card at (16.3, -19.2),
+ * mask expands to 251×73 at y=-22.85. Same treatment for hover + selected.
+ * Figma reports rot −7.13°, but that reads left-high in screenshots —
+ * CSS needs +7.13° for the same lean (Figma/CSS rotation signs differ).
+ */
+.sm.selected .faceClip,
+.sm:has(.bounds:hover:not(:disabled)) .faceClip,
+.sm:has(.bounds:focus-visible) .faceClip {
+  top: -23px;
+  width: 251px;
+  height: 72px;
+  -webkit-mask-size: 251px 73px;
+  mask-size: 251px 73px;
+}
+
+.sm.selected .face,
+.sm.selected .faceShadow,
+.sm:has(.bounds:hover:not(:disabled)) .face,
+.sm:has(.bounds:hover:not(:disabled)) .faceShadow,
+.sm:has(.bounds:focus-visible) .face,
+.sm:has(.bounds:focus-visible) .faceShadow {
+  left: 16.31px;
+  top: 3.69px; /* artboard -19.16 relative to clip top -23 */
+  width: 235px;
+  transform: rotate(7.13deg);
+  transform-origin: center center;
+}
+
+.sm.selected .faceShadow,
+.sm:has(.bounds:hover:not(:disabled)) .faceShadow,
+.sm:has(.bounds:focus-visible) .faceShadow {
+  height: 71px;
+  filter: drop-shadow(0 -3px 5px rgba(0, 0, 0, 0.3));
+}
+
+.sm.selected[data-face="back"] .face,
+.sm:has(.bounds:hover:not(:disabled))[data-face="back"] .face,
+.sm:has(.bounds:focus-visible)[data-face="back"] .face {
   width: 236px;
 }
 
@@ -249,8 +290,20 @@
   height: 79px;
 }
 
+.lg .faceClip {
+  left: 5px;
+  top: 0;
+  width: 355px;
+  height: 118px;
+  -webkit-mask-size: 355px 118px;
+  mask-size: 355px 118px;
+  -webkit-mask-position: 0 0;
+  mask-position: 0 0;
+}
+
 .lg .faceShadow {
-  left: 2px;
+  /* Relative to faceClip (x=5): artboard x≈2 → left -3 */
+  left: -3px;
   top: 56px;
   width: 355px;
   height: 56px;
@@ -258,18 +311,47 @@
 }
 
 .lg .face {
-  /* Figma card: left≈2.1 top=56 w≈355 h=107 */
-  left: 2px;
+  /* Figma card: left≈2.1 top=56 w≈355 h=107 — relative to faceClip at x=5 */
+  left: -3px;
   top: 56px;
   width: 355px;
   height: 107px;
-  /* mask-image set in TSX via withBasePath (GitHub Pages subpath) */
-  -webkit-mask-size: 355px 118px;
-  mask-size: 355px 118px;
-  -webkit-mask-position: 0 -56px;
-  mask-position: 0 -56px;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
+}
+
+/*
+ * Figma selected-lg (93:12593): card ≈(18.9, 11.5), mask 366×118.
+ * faceClip is at x=5; selected card left within clip ≈ 18.9 − 5.
+ * Figma reports rot −7.08°; CSS uses +7.08° to match the left-high lean.
+ */
+.lg.selected .faceClip,
+.lg:has(.bounds:hover:not(:disabled)) .faceClip,
+.lg:has(.bounds:focus-visible) .faceClip {
+  left: 5px;
+  top: 0;
+  width: 366px;
+  height: 118px;
+  -webkit-mask-size: 366px 118px;
+  mask-size: 366px 118px;
+}
+
+.lg.selected .face,
+.lg.selected .faceShadow,
+.lg:has(.bounds:hover:not(:disabled)) .face,
+.lg:has(.bounds:hover:not(:disabled)) .faceShadow,
+.lg:has(.bounds:focus-visible) .face,
+.lg:has(.bounds:focus-visible) .faceShadow {
+  left: 13.93px; /* 18.93 − 5 */
+  top: 11.55px;
+  width: 348px;
+  height: 105px;
+  transform: rotate(7.08deg);
+  transform-origin: center center;
+}
+
+.lg.selected .faceShadow,
+.lg:has(.bounds:hover:not(:disabled)) .faceShadow,
+.lg:has(.bounds:focus-visible) .faceShadow {
+  filter: drop-shadow(0 -3px 5px rgba(0, 0, 0, 0.3));
 }
 
 .lg .backArt {
@@ -306,9 +388,28 @@
   height: 8px;
 }
 
-.lg.selected .face,
-.lg.selected .faceShadow {
-  transform: translateY(-8px);
+@media (prefers-reduced-motion: no-preference) {
+  .sm .face,
+  .sm .faceShadow,
+  .lg .face,
+  .lg .faceShadow {
+    transition:
+      transform 160ms ease,
+      left 160ms ease,
+      top 160ms ease,
+      width 160ms ease,
+      height 160ms ease;
+  }
+
+  .sm .faceClip,
+  .lg .faceClip {
+    transition:
+      top 160ms ease,
+      height 160ms ease,
+      width 160ms ease,
+      -webkit-mask-size 160ms ease,
+      mask-size 160ms ease;
+  }
 }
 
 /* ——— Figma front-sm / back-sm (169:40105) — pile faces, no per-card slot ——— */
