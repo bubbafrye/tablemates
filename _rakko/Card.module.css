@@ -176,8 +176,7 @@
   width: 235px;
   height: 71px;
   border-radius: 10px;
-  -webkit-mask-image: url("/assets/rakko/card-mask-sm.svg");
-  mask-image: url("/assets/rakko/card-mask-sm.svg");
+  /* mask-image set in TSX via withBasePath (GitHub Pages subpath) */
   -webkit-mask-size: 249px 49px;
   mask-size: 249px 49px;
   -webkit-mask-position: -9px -6px;
@@ -264,8 +263,7 @@
   top: 56px;
   width: 355px;
   height: 107px;
-  -webkit-mask-image: url("/assets/rakko/card-mask.svg");
-  mask-image: url("/assets/rakko/card-mask.svg");
+  /* mask-image set in TSX via withBasePath (GitHub Pages subpath) */
   -webkit-mask-size: 355px 118px;
   mask-size: 355px 118px;
   -webkit-mask-position: 0 -56px;

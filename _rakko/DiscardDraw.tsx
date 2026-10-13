@@ -38,12 +38,21 @@ export function DiscardDraw({
   const underDiscard = Math.min(2, Math.max(0, discardCount - (discardTop != null ? 1 : 0)));
   const underDraw = Math.min(2, Math.max(0, drawCount - 1));
   const slotSrc = withBasePath("/assets/rakko/slot-sm.svg");
+  const pileMaskSrc = withBasePath("/assets/rakko/pile-mask.svg");
+  const pileMaskStyle = {
+    WebkitMaskImage: `url("${pileMaskSrc}")`,
+    maskImage: `url("${pileMaskSrc}")`,
+  };
 
   return (
     <div className={styles.tray} data-name="draw-discard-tray">
       <section className={styles.pile} data-name="discard">
         <div className={styles.pileBody} data-name="discard-pile">
-          <div className={styles.cardSlot} data-name="card-slot">
+          <div
+            className={styles.cardSlot}
+            style={pileMaskStyle}
+            data-name="card-slot"
+          >
             {Array.from({ length: underDiscard }, (_, i) => (
               <div
                 key={`d-under-${i}`}
@@ -116,7 +125,11 @@ export function DiscardDraw({
 
       <section className={styles.pile} data-name="draw">
         <div className={`${styles.pileBody} ${styles.drawPileBody}`} data-name="draw-pile">
-          <div className={`${styles.cardSlot} ${styles.drawCardSlot}`} data-name="card-slot">
+          <div
+            className={`${styles.cardSlot} ${styles.drawCardSlot}`}
+            style={pileMaskStyle}
+            data-name="card-slot"
+          >
             {holdingDraw && held != null ? (
               <>
                 {drawCount > 0 ? (

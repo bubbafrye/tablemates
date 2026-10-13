@@ -114,6 +114,15 @@ export function Card({
   const slotSrc = withBasePath(
     size === "sm" ? "/assets/rakko/slot-sm.svg" : "/assets/rakko/slot.svg",
   );
+  const maskSrc = withBasePath(
+    size === "sm"
+      ? "/assets/rakko/card-mask-sm.svg"
+      : "/assets/rakko/card-mask.svg",
+  );
+  const faceMaskStyle = {
+    WebkitMaskImage: `url("${maskSrc}")`,
+    maskImage: `url("${maskSrc}")`,
+  } satisfies CSSProperties;
 
   return (
     <div
@@ -135,7 +144,12 @@ export function Card({
         />
       ) : null}
       <span className={styles.faceShadow} aria-hidden data-name="face-shadow" />
-      <span className={styles.face} data-name="card" aria-hidden={interactive || undefined}>
+      <span
+        className={styles.face}
+        style={faceMaskStyle}
+        data-name="card"
+        aria-hidden={interactive || undefined}
+      >
         {face === "back" ? (
           <img
             className={styles.backArt}

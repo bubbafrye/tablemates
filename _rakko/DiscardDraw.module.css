@@ -56,8 +56,7 @@
   top: 0;
   width: 249px;
   height: 79px;
-  -webkit-mask-image: url("/assets/rakko/pile-mask.svg");
-  mask-image: url("/assets/rakko/pile-mask.svg");
+  /* mask-image set in TSX via withBasePath (GitHub Pages subpath) */
   -webkit-mask-size: 249px 79px;
   mask-size: 249px 79px;
   -webkit-mask-repeat: no-repeat;
