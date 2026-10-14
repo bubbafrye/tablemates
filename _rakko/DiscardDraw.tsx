@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import { withBasePath } from "@/platform/site";
 import { Card } from "./Card";
 import styles from "./DiscardDraw.module.css";
@@ -26,6 +29,10 @@ type DiscardDrawProps = {
  * Pile variants:
  * - discard-default / discard-disabled (tucked when draw is active)
  * - draw-default / draw-selected (face-up held card lifted on draw)
+ *
+ * Motions:
+ * - discard-anim-in (202:121332): front card entrance when a card is added
+ * - draw-pile-flip-anim (169:81712): back→front flip when draw is taken
  */
 export function DiscardDraw({
   discardTop,
@@ -67,8 +74,57 @@ export function DiscardDraw({
     discardVariant === "discard-disabled"
       ? styles.discardDisabled
       : styles.discardDefault;
+
+  /* Figma discard-anim-in: play once when a card is added to discard. */
+  const prevDiscardCount = useRef(discardCount);
+  const [discardAnimIn, setDiscardAnimIn] = useState(false);
+  useEffect(() => {
+    if (
+      discardCount > prevDiscardCount.current &&
+      discardTop != null &&
+      discardVariant === "discard-default"
+    ) {
+      setDiscardAnimIn(true);
+    }
+    prevDiscardCount.current = discardCount;
+  }, [discardCount, discardTop, discardVariant]);
+
+  /* Figma draw-pile-flip-anim: play once when draw is taken. */
+  const wasHoldingDraw = useRef(false);
+  const [drawFlipAnim, setDrawFlipAnim] = useState(false);
+  useEffect(() => {
+    if (holdingDraw && !wasHoldingDraw.current) {
+      setDrawFlipAnim(true);
+    }
+    if (!holdingDraw) {
+      setDrawFlipAnim(false);
+    }
+    wasHoldingDraw.current = holdingDraw;
+  }, [holdingDraw]);
+  useEffect(() => {
+    if (!drawFlipAnim) return;
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const id = window.setTimeout(
+      () => setDrawFlipAnim(false),
+      reduce ? 0 : 1010,
+    );
+    return () => window.clearTimeout(id);
+  }, [drawFlipAnim]);
+
+  /* During flip, keep mid/back on draw-default geometry (only front animates). */
   const drawVariantClass =
-    drawVariant === "draw-selected" ? styles.drawSelected : styles.drawDefault;
+    drawFlipAnim || drawVariant === "draw-default"
+      ? styles.drawDefault
+      : styles.drawSelected;
+
+  const discardFrontClass = [
+    styles.discardFront,
+    discardAnimIn ? styles.discardAnimIn : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <div className={styles.tray} data-name="draw-discard-tray">
@@ -101,7 +157,11 @@ export function DiscardDraw({
                 />
               </div>
             ) : discardTop != null ? (
-              <div className={styles.discardFront}>
+              <div
+                className={discardFrontClass}
+                data-name="anim-in"
+                onAnimationEnd={() => setDiscardAnimIn(false)}
+              >
                 <Card
                   frame="face"
                   value={discardTop}
@@ -185,15 +245,17 @@ export function DiscardDraw({
                     <Card frame="face" face="back" />
                   </div>
                 ) : null}
-                <div className={styles.drawFront}>
-                  <Card
-                    frame="face"
-                    value={held}
-                    onClick={canDiscardHeld ? onDiscardHeld : undefined}
-                    disabled={!canDiscardHeld}
-                    aria-label={`Held card ${held}. Discard or place in rack.`}
-                  />
-                </div>
+                {!drawFlipAnim ? (
+                  <div className={styles.drawFront}>
+                    <Card
+                      frame="face"
+                      value={held}
+                      onClick={canDiscardHeld ? onDiscardHeld : undefined}
+                      disabled={!canDiscardHeld}
+                      aria-label={`Held card ${held}. Discard or place in rack.`}
+                    />
+                  </div>
+                ) : null}
               </>
             ) : drawCount > 0 ? (
               <>
@@ -220,6 +282,27 @@ export function DiscardDraw({
               <div className={styles.emptyFace} aria-hidden />
             )}
           </div>
+          {/* Flip in its own bottom clip — mid/back stay in cardSlot. */}
+          {holdingDraw && held != null && drawFlipAnim ? (
+            <div className={styles.drawFlipMask} data-name="draw-pile-flip-anim">
+              <div className={styles.drawFrontFlipping}>
+                <div
+                  className={styles.drawFlipBack}
+                  data-name="front"
+                  aria-hidden
+                >
+                  <Card frame="face" face="back" />
+                </div>
+                <div className={styles.drawFlipFace} data-name="front-face">
+                  <Card
+                    frame="face"
+                    value={held}
+                    aria-label={`Held card ${held}. Discard or place in rack.`}
+                  />
+                </div>
+              </div>
+            </div>
+          ) : null}
           <img
             className={`${styles.pileSlot} ${styles.drawPileSlot}`}
             src={slotSrc}

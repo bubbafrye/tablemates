@@ -116,6 +116,54 @@
   z-index: 1;
 }
 
+/*
+ * Figma discard-anim-in (202:121332) — animated node "top" (202:120593).
+ * opacity 0→1, rotate −5°→0, y −27→0 over 2s (once in-game; Figma loops for preview).
+ */
+@keyframes discardAnimInOpacity {
+  0% {
+    opacity: 0;
+  }
+  12.15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes discardAnimInTransform {
+  0% {
+    transform: translateY(-27px) rotate(-5deg);
+  }
+  8.04% {
+    transform: translateY(-27px) rotate(-5deg);
+  }
+  /* rotate settled; y still easing toward 0 */
+  27.19% {
+    transform: translateY(-8px) rotate(0deg);
+  }
+  40.62% {
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+.discardAnimIn {
+  transform-origin: center center;
+  animation:
+    discardAnimInOpacity 2s cubic-bezier(0.5, 0, 0.5, 1) forwards,
+    discardAnimInTransform 2s cubic-bezier(0.22, 1.2, 0.36, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .discardAnimIn {
+    animation: none;
+  }
+}
+
 /* ——— discard-disabled (186:118608): tucked when draw is active ——— */
 .discardDisabled .discardBack {
   left: 6.83px;
@@ -174,6 +222,154 @@
   left: 7px;
   top: 12px;
   width: 235px;
+}
+
+/*
+ * Figma draw-pile-flip-anim (169:81712) — ~1.009s cohort.
+ * Front flips in its own clip (mid/back stay in cardSlot). Clip bottom at
+ * the slot lip (pileBody y=61) while allowing lift above.
+ */
+.drawFlipMask {
+  position: absolute;
+  left: 0;
+  top: -80px;
+  z-index: 1;
+  width: 249px;
+  /* -80 → 61 (slot); bottoms tucked, tops free to fly */
+  height: 141px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.drawFrontFlipping {
+  position: absolute;
+  /* pileBody top 28 → local to mask: 28 - (-80) */
+  left: 7px;
+  top: 108px;
+  width: 236px;
+  height: 71px;
+  pointer-events: none;
+}
+
+.drawFlipBack,
+.drawFlipFace {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  transform-origin: center center;
+  backface-visibility: hidden;
+  pointer-events: none;
+}
+
+.drawFlipBack {
+  animation:
+    drawFlipBackTransform 1.009s cubic-bezier(0.5, 0, 0.5, 1) forwards,
+    drawFlipBackZ 1.009s linear forwards;
+}
+
+.drawFlipFace {
+  animation:
+    drawFlipFaceTransform 1.009s cubic-bezier(0.5, 0, 0.5, 1) forwards,
+    drawFlipFaceZ 1.009s linear forwards;
+}
+
+@keyframes drawFlipBackZ {
+  0%,
+  53.9% {
+    z-index: 2;
+  }
+  54%,
+  100% {
+    z-index: 1;
+  }
+}
+
+@keyframes drawFlipFaceZ {
+  0%,
+  53.9% {
+    z-index: 1;
+  }
+  54%,
+  100% {
+    z-index: 2;
+  }
+}
+
+/* front (169:104947) — back-sm */
+@keyframes drawFlipBackTransform {
+  0% {
+    transform: translateY(0) rotate(0deg) scaleX(1) scaleY(1);
+  }
+  3.13% {
+    transform: translateY(5.775px) rotate(0deg) scaleX(1) scaleY(1);
+  }
+  35.81% {
+    transform: translateY(-20px) rotate(-1.558deg) scaleX(0.99) scaleY(0.99);
+  }
+  54.06% {
+    transform: translateY(-54.225px) rotate(6.702deg) scaleX(0.02) scaleY(0.99);
+  }
+  63.95% {
+    transform: translateY(-46.58px) rotate(0deg) scaleX(1) scaleY(0.99);
+  }
+  69.79% {
+    transform: translateY(-5.58px) rotate(0deg) scaleX(1) scaleY(0.99);
+  }
+  /* Land at draw-selected lift (top 28 → 12). */
+  100% {
+    transform: translateY(-16px) rotate(0deg) scaleX(1) scaleY(1);
+    opacity: 0;
+  }
+}
+
+/* front-face (169:81723) — front-sm */
+@keyframes drawFlipFaceTransform {
+  0% {
+    transform: translate(1.333px, -1px) rotate(0deg) scaleX(1) scaleY(1);
+  }
+  3.13% {
+    transform: translate(1.333px, 6.219px) rotate(0deg) scaleX(1) scaleY(1);
+  }
+  35.77% {
+    transform: translate(0, -20px) rotate(-1.558deg) scaleX(0.99) scaleY(0.99);
+  }
+  54.06% {
+    transform: translate(0, -53.781px) rotate(6.702deg) scaleX(0.02) scaleY(0.99);
+  }
+  73.48% {
+    transform: translate(0, -46.136px) rotate(0deg) scaleX(1) scaleY(0.99);
+  }
+  79.32% {
+    transform: translate(0, -5.136px) rotate(0deg) scaleX(1) scaleY(0.99);
+  }
+  79.52% {
+    transform: translate(0, 1.864px) rotate(0deg) scaleX(1) scaleY(0.99);
+  }
+  83.39% {
+    transform: translate(0, -3.136px) rotate(0deg) scaleX(1) scaleY(0.99);
+  }
+  /* Land at draw-selected lift (top 28 → 12). */
+  100% {
+    transform: translate(0, -16px) rotate(0deg) scaleX(1) scaleY(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawFlipBack,
+  .drawFlipFace {
+    animation: none;
+  }
+
+  .drawFlipBack {
+    visibility: hidden;
+  }
+
+  .drawFlipFace {
+    z-index: 2;
+    transform: none;
+  }
 }
 
 .emptyFace {
