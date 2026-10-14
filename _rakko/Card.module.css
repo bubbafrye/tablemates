@@ -240,9 +240,9 @@
 }
 
 .sm .cascade {
-  /* Figma numbers on front-sm: ~3.74% from card top */
+  /* Figma front-sm numbers (169:49167): y=7.65 */
   left: 0;
-  top: 2.65px;
+  top: 7.65px;
   width: 235px;
   height: 19px;
 }
@@ -363,9 +363,9 @@
 }
 
 .lg .cascade {
-  /* Figma numbers: ~3.74% from card top */
+  /* Figma card-front numbers (169:40104): y=14 */
   left: 0;
-  top: 4px;
+  top: 14px;
   width: 355px;
   height: 37px;
 }
@@ -487,7 +487,7 @@
 .cascadeFace {
   position: absolute;
   left: 0;
-  top: 2.65px;
+  top: 7.65px;
   width: 235px;
   height: 19px;
   pointer-events: none;
