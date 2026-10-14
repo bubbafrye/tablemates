@@ -190,19 +190,19 @@
 }
 
 /*
- * Figma selected-sm (169:66111): card at (16.3, -19.2),
- * mask expands to 251×73 at y=-22.85. Same treatment for hover + selected.
- * Figma reports rot −7.13°, but that reads left-high in screenshots —
- * CSS needs +7.13° for the same lean (Figma/CSS rotation signs differ).
+ * Figma card-front-selected-sm (169:66111):
+ * mask 250×65 at y=-18; card at (13.76, -5) rot −4°.
+ * Figma negative rotation reads left-high — CSS uses +4deg.
+ * Same treatment for hover + selected.
  */
 .sm.selected .faceClip,
 .sm:has(.bounds:hover:not(:disabled)) .faceClip,
 .sm:has(.bounds:focus-visible) .faceClip {
-  top: -23px;
-  width: 251px;
-  height: 72px;
-  -webkit-mask-size: 251px 73px;
-  mask-size: 251px 73px;
+  top: -18px;
+  width: 250px;
+  height: 65px;
+  -webkit-mask-size: 250px 65px;
+  mask-size: 250px 65px;
 }
 
 .sm.selected .face,
@@ -211,10 +211,10 @@
 .sm:has(.bounds:hover:not(:disabled)) .faceShadow,
 .sm:has(.bounds:focus-visible) .face,
 .sm:has(.bounds:focus-visible) .faceShadow {
-  left: 16.31px;
-  top: 3.69px; /* artboard -19.16 relative to clip top -23 */
+  left: 13.76px;
+  top: 13px; /* artboard -5 relative to clip top -18 */
   width: 235px;
-  transform: rotate(7.13deg);
+  transform: rotate(4deg);
   transform-origin: center center;
 }
 
@@ -503,7 +503,5 @@
   text-shadow: 1px 1px 0 #dc0000;
 }
 
-.selectedFace .faceOnlyPlate {
-  transform: translateY(-4px);
-  box-shadow: 0 -6px 12px 0 rgba(0, 0, 0, 0.35);
-}
+/* Pile faces use DrawDiscardPile variant geometry — no extra face-only lift. */
+

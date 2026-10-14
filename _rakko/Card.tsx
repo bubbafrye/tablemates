@@ -52,19 +52,14 @@ export function Card({
 
   if (frame === "face") {
     /* Figma front-sm / back-sm — used inside draw-discard-pile under a group mask. */
-    const className = [
-      styles.faceOnly,
-      selected ? styles.selectedFace : "",
-    ]
-      .filter(Boolean)
-      .join(" ");
     return (
       <div
-        className={className}
+        className={styles.faceOnly}
         style={style}
         data-name={face === "back" ? "back-sm" : "front-sm"}
         data-face={face}
         data-interactive={interactive ? "true" : undefined}
+        data-selected={selected ? "true" : undefined}
       >
         {interactive ? (
           <button

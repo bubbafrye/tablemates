@@ -1,4 +1,4 @@
-/* Figma draw-discard-tray: horizontal <900 (560×135), vertical ≥900 (280×311). */
+/* Figma draw-discard-tray (186:119537): horizontal <900, vertical ≥900. */
 .tray {
   display: flex;
   flex-direction: row;
@@ -15,7 +15,7 @@
   flex-shrink: 0;
 }
 
-/* Figma Group 7: draw block starts 5px lower; holder at y=65 within group. */
+/* Figma draw tray: pile sits 5px lower; holder at y=65 within group. */
 .pile[data-name="draw"] {
   margin-top: 5px;
   height: 125px;
@@ -26,8 +26,8 @@
 }
 
 /*
- * Figma draw-discard-pile Default (168:31627): 249×80
- * card-slot (masked) + ONE slot in front at y=73.
+ * Figma draw-discard-pile (168:32386): 249×80
+ * Variants: discard-default | discard-disabled | draw-default | draw-selected
  */
 .pileBody {
   position: absolute;
@@ -38,62 +38,71 @@
   height: 80px;
 }
 
-/* Variant2 / CardBase Variant6: slightly shorter; slot at y=61 */
 .drawPileBody {
+  /* card-back-sm / card-back-selected-sm artboard height */
   height: 67px;
 }
 
-/*
- * Mask through the slot lip so cards tuck under it.
- * Figma discard mask artboard is 70px (ends ~y76 with slot at 73);
- * draw Variant6 mask is 56px (slot at 61). Extend a few px past the
- * lip so the notch shows card pixels, not page bg — but stop before
- * painting over the holder label (pileBody stacks above holder).
- */
 .cardSlot {
   position: absolute;
   left: 0;
   top: 0;
   width: 249px;
-  height: 79px;
-  /* mask-image set in TSX via withBasePath (GitHub Pages subpath) */
-  -webkit-mask-size: 249px 79px;
-  mask-size: 249px 79px;
+  height: 76px;
+  /* mask-image set in TSX via withBasePath */
+  -webkit-mask-size: 249px 70px;
+  mask-size: 249px 70px;
+  -webkit-mask-position: 0 6px;
+  mask-position: 0 6px;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
 }
 
-.drawCardSlot {
+/* draw-default mask: 249×56 at y=9 */
+.drawDefault .cardSlot {
   height: 67px;
-  -webkit-mask-size: 249px 67px;
-  mask-size: 249px 67px;
+  -webkit-mask-size: 249px 56px;
+  mask-size: 249px 56px;
+  -webkit-mask-position: 0 9px;
+  mask-position: 0 9px;
 }
 
-/* Figma discard under cards: -2deg / +1.5deg, rising behind front */
+/* draw-selected mask: 250×65 at y=0 */
+.drawSelected .cardSlot {
+  width: 250px;
+  height: 67px;
+  -webkit-mask-size: 250px 65px;
+  mask-size: 250px 65px;
+  -webkit-mask-position: 0 0;
+  mask-position: 0 0;
+}
+
+/* Variant markers (geometry lives on child classes / disabled overrides). */
+.discardDefault {
+}
+
+.drawDefault {
+}
+
+/* ——— discard-default (168:31627) ——— */
 .discardBack {
   position: absolute;
   left: 6.83px;
-  top: 18.92px;
-  width: 237.335px;
-  height: 79.158px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform: rotate(-2deg);
+  top: 27.12px;
+  width: 235px;
+  height: 71px;
+  transform: rotate(2deg);
   transform-origin: center center;
   pointer-events: none;
 }
 
 .discardMid {
   position: absolute;
-  left: 7.11px;
+  left: 8.97px;
   top: 22.94px;
-  width: 236.778px;
-  height: 77.127px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform: rotate(1.5deg);
+  width: 235px;
+  height: 71px;
+  transform: rotate(-1.5deg);
   transform-origin: center center;
   pointer-events: none;
 }
@@ -107,30 +116,47 @@
   z-index: 1;
 }
 
-/* After draw: tuck discard top under the slot lip (still masked by card-slot). */
-.discardFrontLocked {
-  top: 46px; /* 31 + 15 */
+/* ——— discard-disabled (186:118608): tucked when draw is active ——— */
+.discardDisabled .discardBack {
+  left: 6.83px;
+  top: 42.12px;
+  transform: rotate(2deg);
 }
 
-/* Figma draw Variant6 card positions */
+.discardDisabled .discardMid {
+  left: 8.31px;
+  top: 41.98px;
+  transform: rotate(-0.5deg);
+}
+
+.discardDisabled .discardFront {
+  left: 4.83px;
+  top: 61.12px;
+  width: 235px;
+  transform: rotate(2deg);
+  pointer-events: none;
+}
+
+/* ——— draw-default (168:32387 / card-back-sm) ——— */
 .drawBack {
   position: absolute;
   left: 6px;
   top: 15px;
   width: 236px;
   height: 71px;
+  transform: rotate(1.58deg);
+  transform-origin: center center;
   pointer-events: none;
 }
 
 .drawMid {
   position: absolute;
-  left: 6.75px;
+  left: 9.42px;
   top: 17.59px;
-  width: 238.5px;
-  height: 79.83px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 236px;
+  height: 71px;
+  transform: rotate(-2.16deg);
+  transform-origin: center center;
   pointer-events: none;
 }
 
@@ -141,6 +167,13 @@
   width: 236px;
   height: 71px;
   z-index: 1;
+}
+
+/* ——— draw-selected (186:118986 / card-back-selected-sm): face-up front lifted ——— */
+.drawSelected .drawFront {
+  left: 7px;
+  top: 12px;
+  width: 235px;
 }
 
 .emptyFace {
@@ -157,8 +190,6 @@
 /*
  * ONE slot in front of the card array (Figma z-order).
  * slot-sm.svg is 249×6: 5px lip + 1px light drop-shadow below.
- * Figma Slot sm uses inset bottom -20% so the shadow sits on the holder —
- * forcing height:5px crushed that fringe into a bright “white gap”.
  */
 .pileSlot {
   position: absolute;
@@ -182,7 +213,6 @@
   position: absolute;
   left: 18px;
   top: 75px;
-  /* Behind pile body so cards+slot sit in the tray opening */
   z-index: 0;
   display: flex;
   align-items: center;

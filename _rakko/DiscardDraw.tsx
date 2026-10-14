@@ -2,6 +2,10 @@ import { withBasePath } from "@/platform/site";
 import { Card } from "./Card";
 import styles from "./DiscardDraw.module.css";
 
+/** Figma draw-discard-pile (168:32386) Property 1 variants. */
+export type DiscardPileVariant = "discard-default" | "discard-disabled";
+export type DrawPileVariant = "draw-default" | "draw-selected";
+
 type DiscardDrawProps = {
   discardTop: number | null;
   discardCount: number;
@@ -17,8 +21,11 @@ type DiscardDrawProps = {
 };
 
 /**
- * Figma draw-discard-tray + draw-discard-pile (168:32386):
- * card array under a mask, ONE slot in front of the array, holder below.
+ * Figma draw-discard-tray (186:119537) + draw-discard-pile (168:32386).
+ *
+ * Pile variants:
+ * - discard-default / discard-disabled (tucked when draw is active)
+ * - draw-default / draw-selected (face-up held card lifted on draw)
  */
 export function DiscardDraw({
   discardTop,
@@ -35,8 +42,20 @@ export function DiscardDraw({
 }: DiscardDrawProps) {
   const holdingDraw = held !== null && heldSource === "draw";
   const holdingDiscard = held !== null && heldSource === "discard";
-  const underDiscard = Math.min(2, Math.max(0, discardCount - (discardTop != null ? 1 : 0)));
-  const underDraw = Math.min(2, Math.max(0, drawCount - 1));
+
+  const discardVariant: DiscardPileVariant = holdingDraw
+    ? "discard-disabled"
+    : "discard-default";
+  const drawVariant: DrawPileVariant = holdingDraw
+    ? "draw-selected"
+    : "draw-default";
+
+  const underDiscard = Math.min(
+    2,
+    Math.max(0, discardCount - (discardTop != null || holdingDiscard ? 1 : 0)),
+  );
+  const underDraw = Math.min(2, Math.max(0, drawCount - (holdingDraw ? 0 : 1)));
+
   const slotSrc = withBasePath("/assets/rakko/slot-sm.svg");
   const pileMaskSrc = withBasePath("/assets/rakko/pile-mask.svg");
   const pileMaskStyle = {
@@ -44,10 +63,21 @@ export function DiscardDraw({
     maskImage: `url("${pileMaskSrc}")`,
   };
 
+  const discardVariantClass =
+    discardVariant === "discard-disabled"
+      ? styles.discardDisabled
+      : styles.discardDefault;
+  const drawVariantClass =
+    drawVariant === "draw-selected" ? styles.drawSelected : styles.drawDefault;
+
   return (
     <div className={styles.tray} data-name="draw-discard-tray">
       <section className={styles.pile} data-name="discard">
-        <div className={styles.pileBody} data-name="discard-pile">
+        <div
+          className={`${styles.pileBody} ${discardVariantClass}`}
+          data-name="discard-pile"
+          data-variant={discardVariant}
+        >
           <div
             className={styles.cardSlot}
             style={pileMaskStyle}
@@ -67,41 +97,43 @@ export function DiscardDraw({
                 <Card
                   frame="face"
                   value={held}
-                  selected
                   aria-label={`Held discard ${held}. Choose a rack slot.`}
                 />
               </div>
             ) : discardTop != null ? (
-              <div
-                className={`${styles.discardFront} ${holdingDraw ? styles.discardFrontLocked : ""}`}
-              >
+              <div className={styles.discardFront}>
                 <Card
                   frame="face"
                   value={discardTop}
-                  /* Don't lift as a target — after draw, pile is tucked/locked for take. */
                   onClick={
-                    canTakeDiscard
-                      ? onTakeDiscard
-                      : canDiscardHeld
-                        ? onDiscardHeld
-                        : undefined
-                  }
-                  disabled={!canTakeDiscard && !canDiscardHeld}
-                  aria-label={
-                    canDiscardHeld
-                      ? `Discard held card ${held}`
+                    discardVariant === "discard-disabled"
+                      ? undefined
                       : canTakeDiscard
-                        ? `Take discard ${discardTop}`
-                        : `Discard ${discardTop} (unavailable)`
+                        ? onTakeDiscard
+                        : canDiscardHeld
+                          ? onDiscardHeld
+                          : undefined
+                  }
+                  disabled={
+                    discardVariant === "discard-disabled" ||
+                    (!canTakeDiscard && !canDiscardHeld)
+                  }
+                  aria-label={
+                    discardVariant === "discard-disabled"
+                      ? `Discard ${discardTop} (unavailable while holding draw)`
+                      : canDiscardHeld
+                        ? `Discard held card ${held}`
+                        : canTakeDiscard
+                          ? `Take discard ${discardTop}`
+                          : `Discard ${discardTop} (unavailable)`
                   }
                 />
               </div>
-            ) : canDiscardHeld ? (
+            ) : canDiscardHeld && !holdingDraw ? (
               <div className={styles.discardFront}>
                 <Card
                   frame="face"
                   value={held!}
-                  selected
                   onClick={onDiscardHeld}
                   aria-label={`Discard held card ${held}`}
                 />
@@ -120,7 +152,10 @@ export function DiscardDraw({
             data-name="slot"
           />
         </div>
-        <div className={`${styles.holder} ${styles.discardHolder}`} data-name="discard-holder">
+        <div
+          className={`${styles.holder} ${styles.discardHolder}`}
+          data-name="discard-holder"
+        >
           <span className={styles.label} data-name="discard-text">
             DISCARD
           </span>
@@ -128,9 +163,13 @@ export function DiscardDraw({
       </section>
 
       <section className={styles.pile} data-name="draw">
-        <div className={`${styles.pileBody} ${styles.drawPileBody}`} data-name="draw-pile">
+        <div
+          className={`${styles.pileBody} ${styles.drawPileBody} ${drawVariantClass}`}
+          data-name="draw-pile"
+          data-variant={drawVariant}
+        >
           <div
-            className={`${styles.cardSlot} ${styles.drawCardSlot}`}
+            className={styles.cardSlot}
             style={pileMaskStyle}
             data-name="card-slot"
           >
@@ -141,11 +180,15 @@ export function DiscardDraw({
                     <Card frame="face" face="back" />
                   </div>
                 ) : null}
+                {drawCount > 1 ? (
+                  <div className={styles.drawMid} aria-hidden>
+                    <Card frame="face" face="back" />
+                  </div>
+                ) : null}
                 <div className={styles.drawFront}>
                   <Card
                     frame="face"
                     value={held}
-                    selected
                     onClick={canDiscardHeld ? onDiscardHeld : undefined}
                     disabled={!canDiscardHeld}
                     aria-label={`Held card ${held}. Discard or place in rack.`}
@@ -187,7 +230,10 @@ export function DiscardDraw({
             data-name="slot"
           />
         </div>
-        <div className={`${styles.holder} ${styles.drawHolder}`} data-name="draw-holder">
+        <div
+          className={`${styles.holder} ${styles.drawHolder}`}
+          data-name="draw-holder"
+        >
           <span className={styles.label} data-name="draw-text">
             DRAW
           </span>
