@@ -179,9 +179,13 @@ export function startRound(state: RakkoState, random = Math.random): RakkoState 
   };
 }
 
-function advanceTurn(state: RakkoState): RakkoState {
+function advanceTurn(state: RakkoState, random = Math.random): RakkoState {
   const turnIndex = (state.turnIndex + 1) % state.playerIds.length;
-  return { ...state, turnIndex, held: null, heldSource: null };
+  /* Recycle discard→draw only after the held card is played, not on take. */
+  return ensureDrawPile(
+    { ...state, turnIndex, held: null, heldSource: null },
+    random,
+  );
 }
 
 function ensureDrawPile(state: RakkoState, random = Math.random): RakkoState {
@@ -214,11 +218,17 @@ export function takeDraw(state: RakkoState, playerId: string, random = Math.rand
   if (state.phase !== "playing") return null;
   if (currentPlayerId(state) !== playerId) return null;
   if (state.held !== null) return null;
+  /* Safety: if draw is already empty at turn start, recycle then take. */
   const refreshed = ensureDrawPile(state, random);
   if (refreshed.drawPile.length === 0) return null;
   const drawPile = [...refreshed.drawPile];
   const held = drawPile.pop()!;
-  return { ...refreshed, drawPile, held, heldSource: "draw" };
+  return {
+    ...refreshed,
+    drawPile,
+    held,
+    heldSource: "draw",
+  };
 }
 
 export function discardHeld(state: RakkoState, playerId: string): RakkoState | null {
@@ -227,6 +237,27 @@ export function discardHeld(state: RakkoState, playerId: string): RakkoState | n
   if (state.held === null || state.heldSource !== "draw") return null;
   const discardPile = [...state.discardPile, state.held];
   return advanceTurn({ ...state, discardPile, held: null, heldSource: null });
+}
+
+/** Put a held card back on its source pile (deselect draw / discard-undo). */
+export function returnHeld(state: RakkoState, playerId: string): RakkoState | null {
+  if (state.phase !== "playing") return null;
+  if (currentPlayerId(state) !== playerId) return null;
+  if (state.held === null || state.heldSource === null) return null;
+  if (state.heldSource === "draw") {
+    return {
+      ...state,
+      drawPile: [...state.drawPile, state.held],
+      held: null,
+      heldSource: null,
+    };
+  }
+  return {
+    ...state,
+    discardPile: [...state.discardPile, state.held],
+    held: null,
+    heldSource: null,
+  };
 }
 
 export function replaceSlot(

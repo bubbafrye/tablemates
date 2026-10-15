@@ -19,6 +19,7 @@ import {
   currentPlayerId,
   discardHeld,
   isRakkoState,
+  returnHeld,
   MATCH_TARGET,
   MAX_PLAYERS,
   MIN_PLAYERS,
@@ -206,6 +207,12 @@ export function RakkoGame({
     publish(next);
   }
 
+  function handleReturnHeld() {
+    const next = returnHeld(game, playerId);
+    if (!next) return;
+    publish(next);
+  }
+
   function handleSelectSlot(index: number) {
     const next = replaceSlot(game, playerId, index);
     if (!next) return;
@@ -231,9 +238,13 @@ export function RakkoGame({
   const holding = game.held !== null;
   const canTakeDiscard =
     canAct && !holding && game.discardPile.length > 0;
-  const canTakeDraw = canAct && !holding && game.drawPile.length > 0;
+  const canTakeDraw =
+    canAct &&
+    !holding &&
+    (game.drawPile.length > 0 || game.discardPile.length > 1);
   const canDiscardHeld =
     canAct && holding && game.heldSource === "draw";
+  const canReturnHeld = canAct && holding;
   const canSelectSlot = canAct && holding;
   const canStart =
     connected && Boolean(isHost) && game.phase === "lobby" && canStartRound(seatedGame());
@@ -287,9 +298,11 @@ export function RakkoGame({
                   canTakeDiscard={canTakeDiscard}
                   canTakeDraw={canTakeDraw}
                   canDiscardHeld={canDiscardHeld}
+                  canReturnHeld={canReturnHeld}
                   onTakeDiscard={handleTakeDiscard}
                   onTakeDraw={handleTakeDraw}
                   onDiscardHeld={handleDiscardHeld}
+                  onReturnHeld={handleReturnHeld}
                 />
               </div>
               <Rack
@@ -315,7 +328,7 @@ export function RakkoGame({
             {!isMyTurn && game.phase === "playing" && !paused ? (
               <p className={styles.hint}>
                 {holding
-                  ? "Place the card in your rack, or discard it."
+                  ? "Place the card in your rack, or use the pile icon."
                   : `Waiting for ${turnPlayer ? displayName(turnPlayer) : "opponent"}…`}
               </p>
             ) : null}
@@ -323,8 +336,8 @@ export function RakkoGame({
             {isMyTurn && holding ? (
               <p className={styles.hint}>
                 {game.heldSource === "discard"
-                  ? "Swap into a rack slot (required)."
-                  : "Swap into a rack slot, or discard the drawn card."}
+                  ? "Swap into a rack slot, or undo via the discard icon."
+                  : "Swap into a rack slot, or discard via the draw icon."}
               </p>
             ) : null}
 

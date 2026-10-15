@@ -19,6 +19,9 @@
   --color-text-primary: #241f1a;
   --color-text-secondary: #6f675e;
   --color-text-on-accent: #ffffff;
+  --color-icon-fill-default: #d8616166;
+  --color-icon-stroke-default: #45000099;
+  --color-icon-fill-active-secondary: #f27575cc;
   --font-primary-face: Mulish;
   --font-primary-weight: 700;
   --font-secondary-face: Encode Sans Condensed;

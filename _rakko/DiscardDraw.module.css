@@ -25,6 +25,11 @@
   top: 65px;
 }
 
+/* Same 18px offset from holder top as discard (93 − 75). */
+.pile[data-name="draw"] .trayText {
+  top: 83px;
+}
+
 /*
  * Figma draw-discard-pile (168:32386): 249×80
  * Variants: discard-default | discard-disabled | draw-default | draw-selected
@@ -239,8 +244,9 @@
 
 /*
  * Figma draw-pile-flip-anim (169:81712) — ~1.009s cohort.
- * Front flips in its own clip (mid/back stay in cardSlot). Clip bottom at
- * the slot lip (pileBody y=61) while allowing lift above.
+ * Front flips in its own clip (mid/back stay in cardSlot). Clip bottom must
+ * match cardSlot mask bottom (y=65), not the slot img (y=61) — otherwise a
+ * strip of mid/back shows in the gap above the holder.
  */
 .drawFlipMask {
   position: absolute;
@@ -248,8 +254,8 @@
   top: -80px;
   z-index: 1;
   width: 249px;
-  /* -80 → 61 (slot); bottoms tucked, tops free to fly */
-  height: 141px;
+  /* -80 → 65 (draw cardSlot mask bottom) */
+  height: 145px;
   overflow: hidden;
   pointer-events: none;
 }
@@ -276,16 +282,23 @@
   pointer-events: none;
 }
 
+/* Initial paint before keyframes: back visible, face hidden (avoid DOM-order flash). */
 .drawFlipBack {
+  z-index: 2;
+  opacity: 1;
   animation:
     drawFlipBackTransform 1.009s cubic-bezier(0.5, 0, 0.5, 1) forwards,
-    drawFlipBackZ 1.009s linear forwards;
+    drawFlipBackZ 1.009s linear forwards,
+    drawFlipBackOpacity 1.009s linear forwards;
 }
 
 .drawFlipFace {
+  z-index: 1;
+  opacity: 0;
   animation:
     drawFlipFaceTransform 1.009s cubic-bezier(0.5, 0, 0.5, 1) forwards,
-    drawFlipFaceZ 1.009s linear forwards;
+    drawFlipFaceZ 1.009s linear forwards,
+    drawFlipFaceOpacity 1.009s linear forwards;
 }
 
 @keyframes drawFlipBackZ {
@@ -307,6 +320,29 @@
   54%,
   100% {
     z-index: 2;
+  }
+}
+
+/* Visibility swap at ~540ms (54% of 1.009s) — hold, don't ramp across the flip. */
+@keyframes drawFlipBackOpacity {
+  0%,
+  53.9% {
+    opacity: 1;
+  }
+  54%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes drawFlipFaceOpacity {
+  0%,
+  53.9% {
+    opacity: 0;
+  }
+  54%,
+  100% {
+    opacity: 1;
   }
 }
 
@@ -333,7 +369,6 @@
   /* Land at draw-selected lift (top 28 → 12). */
   100% {
     transform: translateY(-16px) rotate(0deg) scaleX(1) scaleY(1);
-    opacity: 0;
   }
 }
 
@@ -377,10 +412,12 @@
 
   .drawFlipBack {
     visibility: hidden;
+    opacity: 0;
   }
 
   .drawFlipFace {
     z-index: 2;
+    opacity: 1;
     transform: none;
   }
 }
@@ -423,9 +460,6 @@
   left: 18px;
   top: 75px;
   z-index: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 249px;
   height: 60px;
   overflow: clip;
@@ -451,18 +485,71 @@
   background-image: linear-gradient(180deg, #aa3621 0%, #84200f 100%);
 }
 
-.label {
-  position: relative;
+/* Figma tray-text (202:148306): 249×29 overlay on holder. */
+.trayText {
+  position: absolute;
+  left: 18px;
+  top: 93px;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 249px;
+  height: 29px;
   margin: 0;
-  width: 280px;
-  font-family: var(--font-rakko-tray), var(--font-rakko-face), sans-serif;
+  pointer-events: none;
+  font-family: var(--font-rakko-tray), sans-serif;
   font-size: 24px;
   font-weight: 400;
   line-height: 1.02;
   text-align: center;
-  color: rgba(255, 143, 143, 0.4);
   text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.55);
+  color: var(--color-icon-fill-default);
+}
+
+.trayTextSelected {
+  color: var(--color-icon-fill-active-secondary);
+}
+
+/*
+ * Figma discard-undo / draw-discard (210:148339): 25×25 in holder
+ * inset ≈ 30% / 6% / 28% / 84%.
+ */
+.holderIcon {
+  position: absolute;
+  top: 18px;
+  right: 15px;
+  z-index: 2;
+  display: block;
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.holderIcon img {
+  display: block;
+  width: 25px;
+  height: 25px;
+  max-width: none;
+  pointer-events: none;
+}
+
+.holderIconInteractive {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.holderIconInteractive:focus {
+  outline: none;
+}
+
+.holderIconInteractive:focus-visible {
+  outline: 2px solid var(--color-border-focus, #4c9aff);
+  outline-offset: 2px;
 }
 
 @media (max-width: 559px) {
