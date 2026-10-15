@@ -1,0 +1,57 @@
+/* Self-hosted faces. Family names MUST match --font-*-face tokens. */
+
+@font-face {
+  font-family: Mulish;
+  src: url("../app/fonts/Mulish-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Mulish;
+  src: url("../app/fonts/Mulish-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Encode Sans Condensed";
+  src: url("../app/fonts/EncodeSansCondensed-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Arimo;
+  src: url("../app/fonts/Arimo-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Itim;
+  src: url("../app/fonts/Itim-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Anton;
+  src: url("../app/fonts/Anton-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bowlby One";
+  src: url("../app/fonts/BowlbyOne-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
