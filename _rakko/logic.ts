@@ -97,6 +97,29 @@ export function scoreRack(rack: number[]): { points: number; isRakko: boolean; s
   };
 }
 
+/** Slot point label: index 0 (top) = 50 … index 9 (bottom) = 5. */
+export function slotPoints(slotIndex: number): number {
+  return (RACK_SIZE - slotIndex) * POINTS_PER_CARD;
+}
+
+/**
+ * Figma point-value variant for a rack slot during scoring.
+ * `total` = streak × 5 (top of consecutive run from bottom);
+ * `mid-total` = all slots below that; else Default.
+ * Pass streak=null outside scoring phase.
+ */
+export function pointValueVariant(
+  slotIndex: number,
+  streak: number | null,
+): "default" | "mid-total" | "total" {
+  if (streak == null || streak < 1) return "default";
+  const points = slotPoints(slotIndex);
+  const total = streak * POINTS_PER_CARD;
+  if (points === total) return "total";
+  if (points < total) return "mid-total";
+  return "default";
+}
+
 export function syncSeats(state: RakkoState, connectedIds: string[]): RakkoState {
   if (state.phase !== "lobby") return state;
   // Keep seat bots (e.g. "bot") that are not websocket players.

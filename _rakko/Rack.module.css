@@ -1,4 +1,4 @@
-/* Figma rack-base Property 1=med (165:23993): 342×500 display, 2× PNG. */
+/* Figma rack sm (165:27001): 342×500, rack-base med + rows. */
 .rack {
   position: relative;
   overflow: clip;
@@ -17,36 +17,36 @@
   pointer-events: none;
 }
 
-.face {
+/* Figma rows (202:143098): 305×441 at (18, 29). */
+.rows {
   position: absolute;
   left: 18px;
-  top: 35px;
-  display: flex;
-  align-items: center;
-  width: 314px;
+  top: 29px;
+  width: 305px;
+  height: 441px;
+  /* selected-sm tilt/lift must not clip */
+  overflow: visible;
 }
 
-.cards {
-  position: relative;
+/*
+ * Figma rack-row (202:142391): 305×49, gap 10.
+ * Rows advance 42px (7px overlap). Absolute so Card stacked margin is unused for Y.
+ */
+.row {
+  position: absolute;
+  left: 0;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  /* visible so selected-sm tilt/lift isn’t clipped by the stack */
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 305px;
+  height: 49px;
   overflow: visible;
-  width: 306px;
-  height: 442px;
-  padding: 0 44px;
-  border-radius: 35px;
-  flex-shrink: 0;
 }
 
 .empty {
   position: relative;
+  flex-shrink: 0;
   width: 249px;
   height: 49px;
-  flex-shrink: 0;
-}
-
-.stacked {
-  margin-bottom: -8px;
 }

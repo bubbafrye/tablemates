@@ -296,6 +296,7 @@ export function RakkoGame({
                 cards={myRack}
                 canSelect={canSelectSlot}
                 onSelectSlot={handleSelectSlot}
+                scoring={game.phase === "round-end"}
               />
             </div>
 
