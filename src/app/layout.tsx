@@ -1,42 +1,54 @@
 import type { Metadata, Viewport } from "next";
-import { Anton, Arimo, Bowlby_One, Encode_Sans_Condensed, Itim, Mulish } from "next/font/google";
+import localFont from "next/font/local";
 import { site, withBasePath } from "@/platform/site";
 import "@/styles/globals.css";
 
-const mulish = Mulish({
-  subsets: ["latin"],
-  weight: ["500", "700"],
+/* Vendored Latin WOFF2s — avoid next/font/google CI flakes (extensionless /l/font URLs). */
+const mulish = localFont({
+  src: [
+    { path: "./fonts/Mulish-500.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/Mulish-700.woff2", weight: "700", style: "normal" },
+  ],
   variable: "--font-primary-face",
+  display: "swap",
 });
 
-const encodeSans = Encode_Sans_Condensed({
-  subsets: ["latin"],
-  weight: ["500"],
+const encodeSans = localFont({
+  src: [
+    {
+      path: "./fonts/EncodeSansCondensed-500.woff2",
+      weight: "500",
+      style: "normal",
+    },
+  ],
   variable: "--font-secondary-face",
+  display: "swap",
 });
 
-const arimo = Arimo({
-  subsets: ["latin"],
-  weight: ["400"],
+const arimo = localFont({
+  src: [{ path: "./fonts/Arimo-400.woff2", weight: "400", style: "normal" }],
   variable: "--font-display-face",
+  display: "swap",
 });
 
-const itim = Itim({
-  subsets: ["latin"],
-  weight: ["400"],
+const itim = localFont({
+  src: [{ path: "./fonts/Itim-400.woff2", weight: "400", style: "normal" }],
   variable: "--font-game-face",
+  display: "swap",
 });
 
-const anton = Anton({
-  subsets: ["latin"],
-  weight: ["400"],
+const anton = localFont({
+  src: [{ path: "./fonts/Anton-400.woff2", weight: "400", style: "normal" }],
   variable: "--font-rakko-face",
+  display: "swap",
 });
 
-const bowlbyOne = Bowlby_One({
-  subsets: ["latin"],
-  weight: ["400"],
+const bowlbyOne = localFont({
+  src: [
+    { path: "./fonts/BowlbyOne-400.woff2", weight: "400", style: "normal" },
+  ],
   variable: "--font-rakko-tray",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
