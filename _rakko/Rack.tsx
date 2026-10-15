@@ -9,7 +9,7 @@ type RackProps = {
   onSelectSlot?: (index: number) => void;
 };
 
-/** Figma rack (sm): PNG tray + default-sm cards. Points are baked into the PNG. */
+/** Figma rack (sm): rack-base med PNG + default-sm cards. */
 export function Rack({ cards, canSelect = false, onSelectSlot }: RackProps) {
   const slots = Array.from({ length: RACK_SIZE }, (_, i) => cards[i] ?? null);
 
