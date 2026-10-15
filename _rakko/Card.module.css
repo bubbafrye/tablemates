@@ -156,20 +156,25 @@
 }
 
 .sm .faceClip {
+  /*
+   * Figma card-front-sm (165:24011): mask 250×65 at y=-18 (bottom y=47).
+   * Previously used the 249×49 artboard as the mask, which ended at y=49 —
+   * 1–2px below the slot lip (y≈43–48) and let a cream sliver show.
+   */
   left: 0;
-  top: 0;
-  width: 249px;
-  height: 49px;
-  -webkit-mask-size: 249px 49px;
-  mask-size: 249px 49px;
+  top: -18px;
+  width: 250px;
+  height: 65px;
+  -webkit-mask-size: 250px 65px;
+  mask-size: 250px 65px;
   -webkit-mask-position: 0 0;
   mask-position: 0 0;
 }
 
 .sm .faceShadow {
-  /* Visible cream above slot: matches face x/y/w; height to slot lip */
+  /* Card at component y≈6.15 → local to clip: 6.15 - (-18) */
   left: 9px;
-  top: 6px;
+  top: 24.15px;
   width: 235px;
   height: 37px;
   border-radius: 10px 10px 0 0;
@@ -178,7 +183,7 @@
 .sm .face {
   /* Figma front-sm card: x=9 y≈6.15 w=235 h=71 */
   left: 9px;
-  top: 6px;
+  top: 24.15px;
   width: 235px;
   height: 71px;
   border-radius: 10px;
@@ -191,7 +196,7 @@
 
 /*
  * Figma card-front-selected-sm (169:66111):
- * mask 250×65 at y=-18; card at (13.76, -5) rot −4°.
+ * mask 250×65 at y=-18; card at (11.76, -5) rot −4°.
  * Figma negative rotation reads left-high — CSS uses +4deg.
  * Same treatment for hover + selected.
  */
@@ -211,7 +216,7 @@
 .sm:has(.bounds:hover:not(:disabled)) .faceShadow,
 .sm:has(.bounds:focus-visible) .face,
 .sm:has(.bounds:focus-visible) .faceShadow {
-  left: 13.76px;
+  left: 11.76px;
   top: 13px; /* artboard -5 relative to clip top -18 */
   width: 235px;
   transform: rotate(4deg);

@@ -117,6 +117,19 @@
 }
 
 /*
+ * Held discard → Figma card-front-selected-sm (169:66111).
+ * Align artboard to pile slot (slot y=73, selected slot y≈43.15).
+ */
+.discardSelected {
+  position: absolute;
+  left: 0;
+  top: 30px;
+  z-index: 1;
+  width: 249px;
+  height: 49px;
+}
+
+/*
  * Figma discard-anim-in (202:121332) — animated node "top" (202:120593).
  * opacity 0→1, rotate −5°→0, y −27→0 over 2s (once in-game; Figma loops for preview).
  */

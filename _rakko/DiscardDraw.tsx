@@ -28,6 +28,7 @@ type DiscardDrawProps = {
  *
  * Pile variants:
  * - discard-default / discard-disabled (tucked when draw is active)
+ * - held discard → card-front-selected-sm (tilted) over the pile slot
  * - draw-default / draw-selected (face-up held card lifted on draw)
  *
  * Motions:
@@ -148,15 +149,7 @@ export function DiscardDraw({
                 <Card frame="face" blank />
               </div>
             ))}
-            {holdingDiscard && held != null ? (
-              <div className={styles.discardFront}>
-                <Card
-                  frame="face"
-                  value={held}
-                  aria-label={`Held discard ${held}. Choose a rack slot.`}
-                />
-              </div>
-            ) : discardTop != null ? (
+            {holdingDiscard ? null : discardTop != null ? (
               <div
                 className={discardFrontClass}
                 data-name="anim-in"
@@ -202,6 +195,21 @@ export function DiscardDraw({
               <div className={styles.emptyFace} aria-hidden />
             )}
           </div>
+          {/* Selected-sm uses its own mask — sit outside the pile group mask. */}
+          {holdingDiscard && held != null ? (
+            <div
+              className={styles.discardSelected}
+              data-name="card-front-selected-sm"
+            >
+              <Card
+                size="sm"
+                selected
+                slot={false}
+                value={held}
+                aria-label={`Held discard ${held}. Choose a rack slot.`}
+              />
+            </div>
+          ) : null}
           <img
             className={styles.pileSlot}
             src={slotSrc}

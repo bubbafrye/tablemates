@@ -24,6 +24,7 @@ import {
   MIN_PLAYERS,
   rematch,
   replaceSlot,
+  resolveExistingRakko,
   startRound,
   syncSeats,
   takeDiscard,
@@ -125,6 +126,16 @@ export function RakkoGame({
     }
   }, [remote, isHost, session?.scores, setScore, sendGame]);
 
+  /* End round if a rack is already Rakko (missed under inverted streak logic). */
+  useEffect(() => {
+    if (!isHost || !connected || paused) return;
+    if (game.phase !== "playing") return;
+    const next = resolveExistingRakko(game);
+    if (!next) return;
+    setLocal(next);
+    sendGame(next);
+  }, [isHost, connected, paused, game, sendGame]);
+
   function publish(next: RakkoState) {
     setLocal(next);
     sendGame(next);
@@ -141,7 +152,7 @@ export function RakkoGame({
       if (!next) return;
       setLocal(next);
       sendGame(next);
-    }, 450);
+    }, 2500);
 
     return () => window.clearTimeout(timer);
   }, [vsBot, connected, isHost, paused, game, sendGame]);
@@ -408,7 +419,7 @@ function LobbyPanel({
       <p className={styles.lobbyLede}>
         {matchOver
           ? `First to ${MATCH_TARGET} points. Start a rematch when you're ready.`
-          : `2–4 players. Race to arrange your rack low→high. First to ${MATCH_TARGET} wins.`}
+          : `2–4 players. Race to arrange your rack low→high (bottom→top). First to ${MATCH_TARGET} wins.`}
       </p>
 
       <ul className={styles.playerList}>

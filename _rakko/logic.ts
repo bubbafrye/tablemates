@@ -13,7 +13,7 @@ export type RakkoState = {
   /** Seat order (2–4). Index 0 is first in turn order after coin toss offset. */
   playerIds: string[];
   readyIds: string[];
-  /** rack[0] = top slot, rack[9] = bottom. Ascending = low→high top→bottom. */
+  /** rack[0] = top slot, rack[9] = bottom. Ascending = low→high bottom→top. */
   racks: Record<string, number[]>;
   drawPile: number[];
   /** Last element is the face-up top. */
@@ -69,12 +69,15 @@ export function buildDeck(): number[] {
   return Array.from({ length: DECK_SIZE }, (_, i) => i + 1);
 }
 
-/** Longest ascending run from the bottom (index 9) toward the top. */
+/**
+ * Longest ascending run from the bottom (index 9) toward the top (index 0).
+ * Matches scoring: low→high starting at the bottom slot (rules / Rack-O).
+ */
 export function ascendingStreak(rack: number[]): number {
   if (rack.length !== RACK_SIZE) return 0;
   let streak = 1;
   for (let i = RACK_SIZE - 2; i >= 0; i -= 1) {
-    if (rack[i] < rack[i + 1]) streak += 1;
+    if (rack[i] > rack[i + 1]) streak += 1;
     else break;
   }
   return streak;
@@ -240,6 +243,17 @@ function endRound(state: RakkoState, roundWinnerId: string): RakkoState {
     roundScores,
     roundWinnerId,
   };
+}
+
+/** Heal: end the round if any rack is already Rakko (e.g. after a logic fix). */
+export function resolveExistingRakko(state: RakkoState): RakkoState | null {
+  if (state.phase !== "playing") return null;
+  for (const id of state.playerIds) {
+    if (isRakko(state.racks[id] ?? [])) {
+      return endRound(state, id);
+    }
+  }
+  return null;
 }
 
 export function applyRoundScoresToMatch(
