@@ -15,6 +15,8 @@ type DiscardDrawProps = {
   drawCount: number;
   held: number | null;
   heldSource: "draw" | "discard" | null;
+  /** When false, a held draw stays face-down (no flip) — opponents must not see it. */
+  revealHeldDraw?: boolean;
   canTakeDiscard: boolean;
   canTakeDraw: boolean;
   canDiscardHeld: boolean;
@@ -49,6 +51,7 @@ export function DiscardDraw({
   drawCount,
   held,
   heldSource,
+  revealHeldDraw = true,
   canTakeDiscard,
   canTakeDraw,
   canDiscardHeld,
@@ -60,6 +63,7 @@ export function DiscardDraw({
 }: DiscardDrawProps) {
   const holdingDraw = held !== null && heldSource === "draw";
   const holdingDiscard = held !== null && heldSource === "discard";
+  const showDrawFace = holdingDraw && revealHeldDraw;
 
   const discardVariant: DiscardPileVariant = holdingDraw
     ? "discard-disabled"
@@ -111,18 +115,18 @@ export function DiscardDraw({
     prevDiscardCount.current = discardCount;
   }, [discardCount, discardTop, discardVariant]);
 
-  /* Figma draw-pile-flip-anim: play once when draw is taken. */
+  /* Figma draw-pile-flip-anim: play once when *this* viewer may see the face. */
   const wasHoldingDraw = useRef(false);
   const [drawFlipAnim, setDrawFlipAnim] = useState(false);
   useEffect(() => {
-    if (holdingDraw && !wasHoldingDraw.current) {
+    if (showDrawFace && !wasHoldingDraw.current) {
       setDrawFlipAnim(true);
     }
-    if (!holdingDraw) {
+    if (!showDrawFace) {
       setDrawFlipAnim(false);
     }
-    wasHoldingDraw.current = holdingDraw;
-  }, [holdingDraw]);
+    wasHoldingDraw.current = showDrawFace;
+  }, [showDrawFace]);
   useEffect(() => {
     if (!drawFlipAnim) return;
     const reduce =
@@ -270,6 +274,7 @@ export function DiscardDraw({
           className={`${styles.pileBody} ${styles.drawPileBody} ${drawVariantClass}`}
           data-name="draw-pile"
           data-variant={drawVariant}
+          data-reveal-held-draw={holdingDraw ? (showDrawFace ? "true" : "false") : undefined}
         >
           <div
             className={styles.cardSlot}
@@ -289,11 +294,19 @@ export function DiscardDraw({
                 ))}
                 {!drawFlipAnim ? (
                   <div className={styles.drawFront}>
-                    <Card
-                      frame="face"
-                      value={held}
-                      aria-label={`Held card ${held}. Discard via icon or place in rack.`}
-                    />
+                    {showDrawFace ? (
+                      <Card
+                        frame="face"
+                        value={held}
+                        aria-label={`Held card ${held}. Discard via icon or place in rack.`}
+                      />
+                    ) : (
+                      <Card
+                        frame="face"
+                        face="back"
+                        aria-label="Opponent is holding a drawn card"
+                      />
+                    )}
                   </div>
                 ) : null}
               </>
@@ -326,8 +339,8 @@ export function DiscardDraw({
               <div className={styles.emptyFace} aria-hidden />
             )}
           </div>
-          {/* Flip in its own bottom clip — mid/back stay in cardSlot. */}
-          {holdingDraw && held != null && drawFlipAnim ? (
+          {/* Flip in its own bottom clip — mid/back stay in cardSlot. Drawer only. */}
+          {showDrawFace && held != null && drawFlipAnim ? (
             <div className={styles.drawFlipMask} data-name="draw-pile-flip-anim">
               <div className={styles.drawFrontFlipping}>
                 <div

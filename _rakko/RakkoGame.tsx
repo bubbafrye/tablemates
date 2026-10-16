@@ -295,6 +295,7 @@ export function RakkoGame({
                   drawCount={game.drawPile.length}
                   held={game.held}
                   heldSource={game.heldSource}
+                  revealHeldDraw={isMyTurn}
                   canTakeDiscard={canTakeDiscard}
                   canTakeDraw={canTakeDraw}
                   canDiscardHeld={canDiscardHeld}
@@ -327,9 +328,7 @@ export function RakkoGame({
 
             {!isMyTurn && game.phase === "playing" && !paused ? (
               <p className={styles.hint}>
-                {holding
-                  ? "Place the card in your rack, or use the pile icon."
-                  : `Waiting for ${turnPlayer ? displayName(turnPlayer) : "opponent"}…`}
+                {`Waiting for ${turnPlayer ? displayName(turnPlayer) : "opponent"}…`}
               </p>
             ) : null}
 
