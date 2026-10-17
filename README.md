@@ -8,6 +8,8 @@ Live site: https://bubbafrye.github.io/tablemates/
 
 Read `docs/FOUNDATIONS.md` before adding screens, tokens, or games.
 
+Backend for novices (Cloudflare Workers, Durable Objects, PartyServer, free-tier limits): [`docs/BACKEND.md`](docs/BACKEND.md) — also linked as **Readme** from the usage dashboard (footer → “Made for fun by Jason”).
+
 ## Run locally
 
 ```bash

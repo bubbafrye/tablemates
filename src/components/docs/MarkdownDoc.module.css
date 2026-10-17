@@ -1,0 +1,122 @@
+.doc {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 720px;
+  color: var(--color-text-primary);
+  font-family: var(--font-secondary-face), sans-serif;
+  font-size: var(--font-size-lede, 16px);
+  font-weight: var(--font-secondary-weight);
+  line-height: 1.5;
+}
+
+.h1 {
+  margin: 0;
+  color: var(--color-text-display);
+  font-family: var(--font-display-face), sans-serif;
+  font-size: clamp(28px, 6vw, 40px);
+  font-weight: var(--font-display-weight);
+  line-height: 1.15;
+}
+
+.h2 {
+  margin: 12px 0 0;
+  color: var(--color-text-primary);
+  font-family: var(--font-primary-face), sans-serif;
+  font-size: var(--font-size-title);
+  font-weight: var(--font-primary-weight);
+  line-height: 1.25;
+}
+
+.h3 {
+  margin: 4px 0 0;
+  color: var(--color-text-primary);
+  font-family: var(--font-primary-face), sans-serif;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-primary-weight);
+}
+
+.p {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.list {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--color-text-secondary);
+}
+
+.list li + li {
+  margin-top: 6px;
+}
+
+.code {
+  margin: 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-button);
+  background: var(--color-surface-card);
+  color: var(--color-text-primary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.inlineCode {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border-default);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9em;
+}
+
+.tableWrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-button);
+  background: var(--color-surface-card);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-button);
+}
+
+.table th,
+.table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border-default);
+  text-align: left;
+  vertical-align: top;
+}
+
+.table th {
+  color: var(--color-text-primary);
+  font-family: var(--font-primary-face), sans-serif;
+  font-weight: var(--font-primary-weight);
+  background: var(--color-bg-primary);
+}
+
+.table td {
+  color: var(--color-text-secondary);
+}
+
+.table tr:last-child td {
+  border-bottom: 0;
+}
+
+.doc a {
+  color: var(--color-brand-primary);
+}
+
+.doc strong {
+  color: var(--color-text-primary);
+  font-family: var(--font-primary-face), sans-serif;
+  font-weight: var(--font-primary-weight);
+}

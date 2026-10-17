@@ -130,9 +130,19 @@ export function UsageDashboard({ onClose }: UsageDashboardProps) {
         </div>
 
         <div className={styles.content}>
-          <h2 id={titleId} className={styles.title}>
-            Site usage
-          </h2>
+          <div className={styles.titleRow}>
+            <h2 id={titleId} className={styles.title}>
+              Site usage
+            </h2>
+            <a
+              className={styles.readme}
+              href={withBasePath("/docs/backend/")}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Readme
+            </a>
+          </div>
           <p className={styles.meta}>
             {loading && !data
               ? "Loading…"
