@@ -54,3 +54,11 @@ export function listHostedRooms(): HostedRoom[] {
     return [];
   }
 }
+
+export function forgetHostedRoom(code: string) {
+  if (typeof window === "undefined") return;
+  const next = listHostedRooms().filter(
+    (item) => item.code.toUpperCase() !== code.toUpperCase(),
+  );
+  window.localStorage.setItem(ROOMS_KEY, JSON.stringify(next));
+}

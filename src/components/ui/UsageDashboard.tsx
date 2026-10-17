@@ -7,6 +7,7 @@ import {
   msUntilDurableObjectsReset,
   nextDurableObjectsResetUtc,
 } from "@/platform/durableObjectsQuota";
+import { forgetHostedRoom } from "@/platform/identity";
 import {
   closeRoom,
   fetchUsageDashboard,
@@ -63,28 +64,40 @@ export function UsageDashboard({ onClose }: UsageDashboardProps) {
     const result = await closeRoom(code);
     setClosingCode(null);
     if (!result.ok) {
-      setCloseError(result.error ?? "Close failed");
+      setCloseError(
+        result.error ??
+          "Close failed. The game server must be reachable (free-tier quota may be exhausted).",
+      );
       return;
     }
+    forgetHostedRoom(code);
     setData((prev) => {
-      if (!prev?.remote) return prev;
-      const rooms = prev.remote.rooms.filter((room) => room.code !== code);
+      if (!prev) return prev;
+      const rooms = prev.remote?.rooms.filter((room) => room.code !== code) ?? [];
       return {
         ...prev,
-        remote: {
-          ...prev.remote,
-          rooms,
-          totals: {
-            ...prev.remote.totals,
-            roomsActive: rooms.length,
-            lobbiesOpen: rooms.filter((r) => r.status === "lobby").length,
-            gamesPlaying: rooms.filter(
-              (r) => r.status === "playing" || r.status === "paused",
-            ).length,
-            playersSeated: rooms.reduce((sum, r) => sum + r.players, 0),
-            connectionsOnline: rooms.reduce((sum, r) => sum + r.connections, 0),
-          },
+        local: {
+          ...prev.local,
+          hostedRooms: prev.local.hostedRooms.filter(
+            (room) => room.code.toUpperCase() !== code.toUpperCase(),
+          ),
         },
+        remote: prev.remote
+          ? {
+              ...prev.remote,
+              rooms,
+              totals: {
+                ...prev.remote.totals,
+                roomsActive: rooms.length,
+                lobbiesOpen: rooms.filter((r) => r.status === "lobby").length,
+                gamesPlaying: rooms.filter(
+                  (r) => r.status === "playing" || r.status === "paused",
+                ).length,
+                playersSeated: rooms.reduce((sum, r) => sum + r.players, 0),
+                connectionsOnline: rooms.reduce((sum, r) => sum + r.connections, 0),
+              },
+            }
+          : null,
         fetchedAt: new Date().toISOString(),
       };
     });
@@ -177,8 +190,7 @@ export function UsageDashboard({ onClose }: UsageDashboardProps) {
           </section>
 
           <section className={styles.section} aria-label="Open rooms">
-            <h3 className={styles.heading}>Open rooms</h3>
-            {closeError ? <p className={styles.error}>{closeError}</p> : null}
+            <h3 className={styles.heading}>Open rooms (live)</h3>
             {remote && remote.rooms.length > 0 ? (
               <ul className={styles.rooms}>
                 {remote.rooms.map((room) => (
@@ -194,7 +206,7 @@ export function UsageDashboard({ onClose }: UsageDashboardProps) {
                     <button
                       type="button"
                       className={styles.closeRoom}
-                      disabled={closingCode === room.code || Boolean(data?.error)}
+                      disabled={closingCode === room.code}
                       onClick={() => void handleCloseRoom(room.code)}
                     >
                       {closingCode === room.code ? "Closing…" : "Close"}
@@ -204,7 +216,9 @@ export function UsageDashboard({ onClose }: UsageDashboardProps) {
               </ul>
             ) : (
               <p className={styles.empty}>
-                {data?.error ? "No live room data." : "No open rooms right now."}
+                {data?.error
+                  ? "No live room list while the game server is unreachable. Use Close under Rooms you launched below to kick a room by code once the server is back."
+                  : "No open rooms right now."}
               </p>
             )}
           </section>
@@ -264,18 +278,42 @@ export function UsageDashboard({ onClose }: UsageDashboardProps) {
                 <dt>Email</dt>
                 <dd>{data?.local.email || "not registered"}</dd>
               </div>
-              <div>
-                <dt>Rooms you launched</dt>
-                <dd>
-                  {data?.local.hostedRooms.length
-                    ? data.local.hostedRooms
-                        .slice(0, 8)
-                        .map((r) => `${r.code} (${r.gameId})`)
-                        .join(", ")
-                    : "none yet"}
-                </dd>
-              </div>
             </dl>
+          </section>
+
+          <section className={styles.section} aria-label="Rooms you launched">
+            <h3 className={styles.heading}>Rooms you launched</h3>
+            <p className={styles.empty}>
+              Saved in this browser only — not proof a room is still live. Close
+              kicks sockets on the game server when it is reachable.
+            </p>
+            {closeError ? <p className={styles.error}>{closeError}</p> : null}
+            {data?.local.hostedRooms.length ? (
+              <ul className={styles.rooms}>
+                {data.local.hostedRooms.slice(0, 12).map((room) => (
+                  <li key={room.code} className={styles.room}>
+                    <span className={styles.roomCode}>{room.code}</span>
+                    <span className={styles.roomGame}>
+                      {getGame(room.gameId)?.name ?? room.gameId}
+                    </span>
+                    <span className={styles.roomStatus}>launched</span>
+                    <span className={styles.roomPlayers}>
+                      {new Date(room.createdAt).toLocaleString()}
+                    </span>
+                    <button
+                      type="button"
+                      className={styles.closeRoom}
+                      disabled={closingCode === room.code}
+                      onClick={() => void handleCloseRoom(room.code)}
+                    >
+                      {closingCode === room.code ? "Closing…" : "Close"}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className={styles.empty}>None yet.</p>
+            )}
           </section>
         </div>
       </div>
