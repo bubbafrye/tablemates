@@ -15,14 +15,31 @@
   width: 100%;
 }
 
+/* Looks like plain credit text — hidden entry to the usage dashboard. */
 .credit {
   flex: 1 1 auto;
   min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: var(--color-neutral-300);
   font-family: var(--font-primary-face), sans-serif;
   font-size: var(--font-size-button);
   font-weight: 500;
   line-height: 1.5;
+  text-align: left;
+  cursor: default;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.credit:focus {
+  outline: none;
+}
+
+.credit:focus-visible {
+  outline: 2px solid var(--color-border-focus, #4c9aff);
+  outline-offset: 2px;
 }
 
 .contact {

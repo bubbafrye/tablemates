@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
+import { ConnectionBanner } from "@/components/session/ConnectionBanner";
 import { withBasePath } from "@/platform/site";
 import type { Player, SessionState } from "@/platform/protocol";
 import { Board } from "./Board";
@@ -182,6 +183,7 @@ export function TicTacToeGame({
     <div className={styles.page} data-name="tic-tac-toe">
       <SiteHeader roomCode={code} gameId="tic-tac-toe" />
       <div className={styles.content} data-name="content">
+        <ConnectionBanner connected={connected} />
         <div className={styles.gameArea} data-name="game-area">
           <div className={styles.players} data-name="players">
             <PlayerBadge
@@ -213,7 +215,7 @@ export function TicTacToeGame({
                 </button>
               ) : null}
             </p>
-          ) : !game.oPlayerId ? (
+          ) : connected && !game.oPlayerId ? (
             <p className={styles.status}>Waiting for an opponent…</p>
           ) : session?.status === "paused" ? (
             <p className={styles.status}>Game paused</p>

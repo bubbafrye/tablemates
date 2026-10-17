@@ -24,3 +24,11 @@ export function contactMailto() {
 export function partyHost() {
   return process.env.NEXT_PUBLIC_PARTY_HOST ?? "127.0.0.1:8787";
 }
+
+/** HTTP origin for PartyServer (stats / leaderboard fetches). */
+export function partyHttpOrigin() {
+  const host = partyHost();
+  if (/^https?:\/\//i.test(host)) return host.replace(/\/$/, "");
+  const local = host.startsWith("127.") || host.startsWith("localhost");
+  return `${local ? "http" : "https"}://${host}`;
+}

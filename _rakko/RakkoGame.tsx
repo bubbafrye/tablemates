@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
+import { ConnectionBanner } from "@/components/session/ConnectionBanner";
 import { Button } from "@/components/ui/Button";
 import { ShareModal } from "@/components/ui/ShareModal";
 import { withBasePath } from "@/platform/site";
@@ -263,6 +264,7 @@ export function RakkoGame({
     <div className={styles.page} data-name="rakko">
       <SiteHeader roomCode={code} gameId="rakko" />
       <div className={styles.content} data-name="content">
+        <ConnectionBanner connected={connected} />
         {game.phase === "lobby" || game.phase === "match-end" ? (
           <LobbyPanel
             game={game}
@@ -467,7 +469,9 @@ function LobbyPanel({
         })}
       </ul>
 
-      {humanCount < MIN_PLAYERS && !players.some((p) => isBotId(p.id)) ? (
+      {connected &&
+      humanCount < MIN_PLAYERS &&
+      !players.some((p) => isBotId(p.id)) ? (
         <p className={styles.status}>
           Waiting for players… ({humanCount}/{MIN_PLAYERS} minimum) — or play bot
         </p>

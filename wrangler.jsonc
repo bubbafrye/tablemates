@@ -5,13 +5,18 @@
   "durable_objects": {
     "bindings": [
       { "name": "Session", "class_name": "Session" },
-      { "name": "Leaderboard", "class_name": "Leaderboard" }
+      { "name": "Leaderboard", "class_name": "Leaderboard" },
+      { "name": "Stats", "class_name": "Stats" }
     ]
   },
   "migrations": [
     {
       "tag": "v1",
       "new_sqlite_classes": ["Session", "Leaderboard"]
+    },
+    {
+      "tag": "v2",
+      "new_sqlite_classes": ["Stats"]
     }
   ]
 }

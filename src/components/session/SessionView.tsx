@@ -9,6 +9,7 @@ import { TextDescription } from "@/components/ui/TextDescription";
 import { TextTitle } from "@/components/ui/TextTitle";
 import { getGame } from "@/platform/catalog";
 import { useSession } from "@/platform/session";
+import { ConnectionBanner } from "./ConnectionBanner";
 import styles from "./SessionView.module.css";
 
 type SessionViewProps = {
@@ -55,6 +56,7 @@ export function SessionView({ code, gameId }: SessionViewProps) {
     <div className={styles.page}>
       <SiteHeader roomCode={code} gameId={resolvedGameId} />
       <section className={styles.section}>
+        <ConnectionBanner connected={session.connected} />
         <div className={styles.header}>
           <div className={styles.copy}>
             <h1 className={styles.title}>{game?.name ?? "Game Name"}</h1>

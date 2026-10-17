@@ -1,13 +1,16 @@
 import { routePartykitRequest } from "partyserver";
 import type { Session } from "./session";
 import type { Leaderboard } from "./leaderboard";
+import type { Stats } from "./stats";
 
 export { Session } from "./session";
 export { Leaderboard } from "./leaderboard";
+export { Stats } from "./stats";
 
 type Env = {
   Session: DurableObjectNamespace<Session>;
   Leaderboard: DurableObjectNamespace<Leaderboard>;
+  Stats: DurableObjectNamespace<Stats>;
 };
 
 export default {

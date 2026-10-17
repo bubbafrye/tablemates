@@ -1,10 +1,12 @@
 import { Server, type Connection, type ConnectionContext, getServerByName } from "partyserver";
 import type { ClientMessage, Player, ServerMessage, SessionState } from "../src/platform/protocol";
 import type { Leaderboard } from "./leaderboard";
+import type { Stats } from "./stats";
 
 type Env = {
   Session: DurableObjectNamespace;
   Leaderboard: DurableObjectNamespace<Leaderboard>;
+  Stats: DurableObjectNamespace<Stats>;
 };
 
 export class Session extends Server<Env> {
@@ -36,6 +38,11 @@ export class Session extends Server<Env> {
     const gameId = url.searchParams.get("gameId") ?? "";
     await this.upsertPlayer(playerId, gameId);
     this.push(connection);
+    await this.reportStats();
+  }
+
+  async onClose() {
+    await this.reportStats();
   }
 
   async onMessage(connection: Connection, message: string | ArrayBuffer) {
@@ -50,6 +57,7 @@ export class Session extends Server<Env> {
     if (parsed.type === "hello") {
       await this.upsertPlayer(parsed.playerId, parsed.gameId ?? "", parsed.name);
       this.push();
+      await this.reportStats();
       return;
     }
 
@@ -58,6 +66,7 @@ export class Session extends Server<Env> {
         this.state.status = "paused";
         await this.persist();
         this.push();
+        await this.reportStats();
       }
       return;
     }
@@ -66,6 +75,7 @@ export class Session extends Server<Env> {
       this.state.status = this.state.players.length ? "playing" : "lobby";
       await this.persist();
       this.push();
+      await this.reportStats();
       return;
     }
 
@@ -86,6 +96,7 @@ export class Session extends Server<Env> {
       if (this.state.status === "lobby") this.state.status = "playing";
       await this.persist();
       this.push();
+      await this.reportStats();
       return;
     }
   }
@@ -114,6 +125,31 @@ export class Session extends Server<Env> {
 
   private async persist() {
     await this.ctx.storage.put("state", this.state);
+  }
+
+  private connectionCount() {
+    let n = 0;
+    for (const _ of this.getConnections()) n += 1;
+    return n;
+  }
+
+  private async reportStats() {
+    try {
+      const stub = await getServerByName(this.env.Stats, "global");
+      await stub.fetch("https://stats/room", {
+        method: "POST",
+        body: JSON.stringify({
+          code: this.state.code || this.name,
+          gameId: this.state.gameId,
+          status: this.state.status,
+          players: this.state.players.length,
+          connections: this.connectionCount(),
+          updatedAt: new Date().toISOString(),
+        }),
+      });
+    } catch {
+      /* stats are best-effort */
+    }
   }
 
   private async recordHighScore(playerId: string, score: number) {
