@@ -1,5 +1,6 @@
 import { Server, type Connection, type ConnectionContext, getServerByName } from "partyserver";
 import type { ClientMessage, Player, ServerMessage, SessionState } from "../src/platform/protocol";
+import { corsHeaders } from "./cors";
 import type { Leaderboard } from "./leaderboard";
 import type { Stats } from "./stats";
 
@@ -10,6 +11,10 @@ type Env = {
 };
 
 export class Session extends Server<Env> {
+  static options = {
+    hibernate: true,
+  };
+
   state: SessionState = {
     code: "",
     gameId: "",
@@ -30,6 +35,20 @@ export class Session extends Server<Env> {
     };
     const stored = await this.ctx.storage.get<SessionState>("state");
     if (stored) this.state = stored;
+  }
+
+  async onRequest(request: Request) {
+    const headers = corsHeaders(request);
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers });
+    }
+
+    if (request.method === "POST" && new URL(request.url).pathname.endsWith("/close")) {
+      await this.closeRoom();
+      return Response.json({ ok: true }, { headers });
+    }
+
+    return new Response("Not found", { status: 404, headers });
   }
 
   async onConnect(connection: Connection, ctx: ConnectionContext) {
@@ -101,6 +120,23 @@ export class Session extends Server<Env> {
     }
   }
 
+  /** Kick everyone and clear the live-room registry entry. */
+  private async closeRoom() {
+    for (const connection of [...this.getConnections()]) {
+      try {
+        connection.close(1000, "Room closed");
+      } catch {
+        /* already closed */
+      }
+    }
+    this.state.players = [];
+    this.state.hostId = "";
+    this.state.status = "lobby";
+    this.state.game = undefined;
+    await this.persist();
+    await this.reportStats(0);
+  }
+
   private async upsertPlayer(playerId: string, gameId: string, name?: string) {
     if (gameId && !this.state.gameId) this.state.gameId = gameId;
     if (!this.state.hostId) this.state.hostId = playerId;
@@ -133,7 +169,7 @@ export class Session extends Server<Env> {
     return n;
   }
 
-  private async reportStats() {
+  private async reportStats(connections = this.connectionCount()) {
     try {
       const stub = await getServerByName(this.env.Stats, "global");
       await stub.fetch("https://stats/room", {
@@ -142,8 +178,8 @@ export class Session extends Server<Env> {
           code: this.state.code || this.name,
           gameId: this.state.gameId,
           status: this.state.status,
-          players: this.state.players.length,
-          connections: this.connectionCount(),
+          players: connections <= 0 ? 0 : this.state.players.length,
+          connections,
           updatedAt: new Date().toISOString(),
         }),
       });

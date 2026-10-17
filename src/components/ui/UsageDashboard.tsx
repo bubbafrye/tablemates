@@ -8,6 +8,7 @@ import {
   nextDurableObjectsResetUtc,
 } from "@/platform/durableObjectsQuota";
 import {
+  closeRoom,
   fetchUsageDashboard,
   type UsageDashboardData,
 } from "@/platform/stats";
@@ -33,12 +34,14 @@ export function UsageDashboard({ onClose }: UsageDashboardProps) {
   const [data, setData] = useState<UsageDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [untilReset, setUntilReset] = useState(resetCountdown);
+  const [closingCode, setClosingCode] = useState<string | null>(null);
+  const [closeError, setCloseError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
-    async function load() {
-      setLoading(true);
+    async function load(quiet = false) {
+      if (!quiet) setLoading(true);
       const next = await fetchUsageDashboard();
       if (!cancelled) {
         setData(next);
@@ -47,12 +50,45 @@ export function UsageDashboard({ onClose }: UsageDashboardProps) {
     }
 
     void load();
-    const id = window.setInterval(() => void load(), 8000);
+    const id = window.setInterval(() => void load(true), 8000);
     return () => {
       cancelled = true;
       window.clearInterval(id);
     };
   }, []);
+
+  async function handleCloseRoom(code: string) {
+    setCloseError(null);
+    setClosingCode(code);
+    const result = await closeRoom(code);
+    setClosingCode(null);
+    if (!result.ok) {
+      setCloseError(result.error ?? "Close failed");
+      return;
+    }
+    setData((prev) => {
+      if (!prev?.remote) return prev;
+      const rooms = prev.remote.rooms.filter((room) => room.code !== code);
+      return {
+        ...prev,
+        remote: {
+          ...prev.remote,
+          rooms,
+          totals: {
+            ...prev.remote.totals,
+            roomsActive: rooms.length,
+            lobbiesOpen: rooms.filter((r) => r.status === "lobby").length,
+            gamesPlaying: rooms.filter(
+              (r) => r.status === "playing" || r.status === "paused",
+            ).length,
+            playersSeated: rooms.reduce((sum, r) => sum + r.players, 0),
+            connectionsOnline: rooms.reduce((sum, r) => sum + r.connections, 0),
+          },
+        },
+        fetchedAt: new Date().toISOString(),
+      };
+    });
+  }
 
   useEffect(() => {
     setUntilReset(resetCountdown());
@@ -132,6 +168,7 @@ export function UsageDashboard({ onClose }: UsageDashboardProps) {
 
           <section className={styles.section} aria-label="Open rooms">
             <h3 className={styles.heading}>Open rooms</h3>
+            {closeError ? <p className={styles.error}>{closeError}</p> : null}
             {remote && remote.rooms.length > 0 ? (
               <ul className={styles.rooms}>
                 {remote.rooms.map((room) => (
@@ -144,6 +181,14 @@ export function UsageDashboard({ onClose }: UsageDashboardProps) {
                     <span className={styles.roomPlayers}>
                       {room.players}p · {room.connections}c
                     </span>
+                    <button
+                      type="button"
+                      className={styles.closeRoom}
+                      disabled={closingCode === room.code || Boolean(data?.error)}
+                      onClick={() => void handleCloseRoom(room.code)}
+                    >
+                      {closingCode === room.code ? "Closing…" : "Close"}
+                    </button>
                   </li>
                 ))}
               </ul>

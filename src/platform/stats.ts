@@ -74,6 +74,25 @@ export function readLocalUsage(): LocalUsage {
   };
 }
 
+/** Kick all sockets in a room and drop it from the live registry. */
+export async function closeRoom(code: string): Promise<{ ok: boolean; error?: string }> {
+  const origin = partyHttpOrigin();
+  try {
+    const res = await fetch(`${origin}/parties/stats/global/close`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+    });
+    if (!res.ok) {
+      const body = (await res.json().catch(() => null)) as { error?: string } | null;
+      return { ok: false, error: body?.error ?? `Close failed (${res.status})` };
+    }
+    return { ok: true };
+  } catch {
+    return { ok: false, error: "Can't reach the game server" };
+  }
+}
+
 export async function fetchUsageDashboard(): Promise<UsageDashboardData> {
   const local = readLocalUsage();
   const origin = partyHttpOrigin();

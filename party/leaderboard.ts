@@ -1,19 +1,14 @@
 import { Server } from "partyserver";
 import type { LeaderboardEntry } from "../src/platform/protocol";
+import { corsHeaders } from "./cors";
 
 const LIMIT = 20;
 
-function corsHeaders(request: Request): HeadersInit {
-  const origin = request.headers.get("Origin") ?? "*";
-  return {
-    "Access-Control-Allow-Origin": origin,
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-    Vary: "Origin",
-  };
-}
-
 export class Leaderboard extends Server {
+  static options = {
+    hibernate: true,
+  };
+
   async onRequest(req: Request) {
     const headers = corsHeaders(req);
     if (req.method === "OPTIONS") {

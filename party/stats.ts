@@ -1,4 +1,5 @@
-import { Server } from "partyserver";
+import { Server, getServerByName } from "partyserver";
+import { corsHeaders } from "./cors";
 
 export type RoomSnapshot = {
   code: string;
@@ -28,20 +29,19 @@ type Stored = {
   roomsSeen: number;
 };
 
+type Env = {
+  Session: DurableObjectNamespace;
+  Stats: DurableObjectNamespace;
+};
+
 const STALE_MS = 15 * 60 * 1000;
 
-function corsHeaders(request: Request): HeadersInit {
-  const origin = request.headers.get("Origin") ?? "*";
-  return {
-    "Access-Control-Allow-Origin": origin,
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-    Vary: "Origin",
-  };
-}
-
 /** Singleton registry of live rooms for the usage dashboard. */
-export class Stats extends Server {
+export class Stats extends Server<Env> {
+  static options = {
+    hibernate: true,
+  };
+
   async onRequest(request: Request) {
     const headers = corsHeaders(request);
     if (request.method === "OPTIONS") {
@@ -56,6 +56,30 @@ export class Stats extends Server {
         return Response.json({ ok: false }, { status: 400, headers });
       }
       await this.upsertRoom(snap);
+      return Response.json({ ok: true }, { headers });
+    }
+
+    if (request.method === "POST" && url.pathname.endsWith("/close")) {
+      const body = (await request.json()) as { code?: string };
+      const code = body?.code?.trim().toUpperCase();
+      if (!code) {
+        return Response.json({ ok: false, error: "Missing code" }, { status: 400, headers });
+      }
+
+      try {
+        const session = await getServerByName(this.env.Session, code);
+        await session.fetch("https://session/close", { method: "POST" });
+      } catch (error) {
+        return Response.json(
+          { ok: false, error: error instanceof Error ? error.message : "Close failed" },
+          { status: 502, headers },
+        );
+      }
+
+      const data = await this.load();
+      delete data.rooms[code];
+      await this.save(data);
+
       return Response.json({ ok: true }, { headers });
     }
 
