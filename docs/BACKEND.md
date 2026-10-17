@@ -1,6 +1,6 @@
-# How tablemates’ backend works
+# Tablemates backend
 
-A short guide for newcomers. You do not need prior Cloudflare experience.
+A short guide for all the moving parts
 
 ## The big picture
 
@@ -40,7 +40,7 @@ A small edge program that receives every backend request/WebSocket. Entry: `part
 Locally: `npm run party` (Wrangler) → `http://127.0.0.1:8787`  
 Production: `npm run party:deploy` → your `*.workers.dev` host
 
-### 3. Durable Objects (the important part)
+### 3. Durable Objects 
 
 A **Durable Object** is a tiny single-threaded server Cloudflare keeps for a specific name (here: a room code). All players in room `RH9RNJ` talk to the **same** object, so they share one source of truth.
 
@@ -71,7 +71,7 @@ You can think of them as “PartyKit-style rooms on Cloudflare.”
 
 Joining is the same path with someone else’s code (often from Invite / QR).
 
-## Free-tier limits (why rooms sometimes won’t start)
+## Free-tier limits
 
 Durable Objects on the Workers **free** plan include a daily **duration** budget (wall-clock time objects stay awake), currently **13,000 GB-s / day**, resetting at **00:00 UTC**.
 
@@ -85,9 +85,9 @@ Mitigations in this codebase:
 
 Upgrading the Cloudflare Workers plan removes that daily ceiling (paid quotas apply instead).
 
-## Usage dashboard (hidden)
+## Usage dashboard
 
-Click the plain text **Made for fun by Jason** in the footer (no special styling). The popup shows:
+Click the plain text **Made for fun by Jason** in the footer. The popup shows:
 
 - Live open lobbies / games / connections (from Stats)
 - Per-room **Close**
