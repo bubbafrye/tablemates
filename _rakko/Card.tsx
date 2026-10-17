@@ -1,21 +1,8 @@
 "use client";
 
-import { useState, useSyncExternalStore, type CSSProperties } from "react";
+import { useState, type CSSProperties } from "react";
 import { withBasePath } from "@/platform/site";
 import styles from "./Card.module.css";
-
-/** Matches `_rakko` xsm CSS `@media (max-width: 899px)`. */
-function useXsmViewport() {
-  return useSyncExternalStore(
-    (onChange) => {
-      const mq = window.matchMedia("(max-width: 899px)");
-      mq.addEventListener("change", onChange);
-      return () => mq.removeEventListener("change", onChange);
-    },
-    () => window.matchMedia("(max-width: 899px)").matches,
-    () => false,
-  );
-}
 
 type CardProps = {
   value?: number;
@@ -52,20 +39,19 @@ export function Card({
   "aria-label": ariaLabel,
 }: CardProps) {
   const [hovered, setHovered] = useState(false);
-  const xsm = useXsmViewport();
   const teeth =
     face === "front" && !blank ? Math.max(1, Math.min(60, value)) : 0;
   const interactive = Boolean(onClick);
   const label = ariaLabel ?? (face === "back" ? "Card back" : `Card ${value}`);
   const backSrc = withBasePath("/assets/rakko/card-back.png");
-  /* Tooth X uses --rakko-tooth-step (sm/xsm via rakkoBreakpoints.css). */
+  /* Tooth X uses --rakko-tooth-step (scaled with the board under <900). */
   const toothStyle = {
     ["--tooth-i" as string]: teeth,
     zIndex: teeth,
   } satisfies CSSProperties;
 
   if (frame === "face") {
-    /* Figma front-sm / front-xsm — pile faces under group mask. */
+    /* Figma front-sm / back-sm — pile faces under group mask. */
     return (
       <div
         className={styles.faceOnly}
@@ -121,15 +107,12 @@ export function Card({
   ]
     .filter(Boolean)
     .join(" ");
-  const slotSmSrc = withBasePath(
+  const slotSrc = withBasePath(
     size === "sm" ? "/assets/rakko/slot-sm.svg" : "/assets/rakko/slot.svg",
   );
-  const slotXsmSrc = withBasePath("/assets/rakko/slot-xsm.svg");
   const maskSrc = withBasePath(
     size === "sm"
-      ? xsm
-        ? "/assets/rakko/card-mask-xsm.svg"
-        : "/assets/rakko/card-mask-sm.svg"
+      ? "/assets/rakko/card-mask-sm.svg"
       : "/assets/rakko/card-mask.svg",
   );
   const faceMaskStyle = {
@@ -206,28 +189,15 @@ export function Card({
         </span>
       </span>
       {slot ? (
-        <>
-          <img
-            className={`${styles.slot} ${styles.slotSm}`}
-            src={slotSmSrc}
-            alt=""
-            width={size === "sm" ? 249 : 364}
-            height={size === "sm" ? 5 : 8}
-            aria-hidden
-            data-name="slot"
-          />
-          {size === "sm" ? (
-            <img
-              className={`${styles.slot} ${styles.slotXsm}`}
-              src={slotXsmSrc}
-              alt=""
-              width={162}
-              height={5}
-              aria-hidden
-              data-name="slot"
-            />
-          ) : null}
-        </>
+        <img
+          className={styles.slot}
+          src={slotSrc}
+          alt=""
+          width={size === "sm" ? 249 : 364}
+          height={size === "sm" ? 5 : 8}
+          aria-hidden
+          data-name="slot"
+        />
       ) : null}
     </div>
   );

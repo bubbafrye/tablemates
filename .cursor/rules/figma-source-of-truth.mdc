@@ -15,15 +15,16 @@ File key: `tE15PVyJVeYZ6XP0d0xfMc`. Page `site` (`0:1`).
 - Breakpoints from frames: 393 (mobile), 640, 900, 1024, 1280.
 - `cards` (`20:571`) spaces game cards with flex-grow spacers — equal gap from each page margin and between cards (`space-evenly`). Do not pin cards to the edges.
 - Join uses `Button-plain`; register uses `Button-secondary`, both inside `input`.
+- **Rakko `<900`**: not a separate Figma geometry target. The playfield is the sm (900–1024) board scaled by `--rakko-scale` (`_rakko/rakkoBreakpoints.css`, default `0.7`). Do not reintroduce per-component xsm size overrides or `*-xsm` asset branching for the game field.
 
 ## Verification gate (mandatory)
 
 Before writing or changing UI code for a visual state:
 
-1. **Name the SoT node** — cite Figma node id + state (e.g. `233:21953` selected-xsm). If that composed state is not in the file, stop and ask. Do not infer from sm, slot math, or DOM alone.
+1. **Name the SoT node** — cite Figma node id + state (e.g. `169:66111` selected-sm). For Rakko `<900`, SoT is sm geometry × `--rakko-scale` — do not match Figma xsm frames. If a composed state is not in the file (and is not covered by the scale rule), stop and ask.
 
-2. **Pull SoT evidence** — `get_screenshot` + geometry (`get_metadata` / `get_design_context`) for that node *before* editing.
+2. **Pull SoT evidence** — `get_screenshot` + geometry (`get_metadata` / `get_design_context`) for that node *before* editing. For scaled `<900`, compare against sm SoT with scale applied.
 
 3. **One change → SoT compare** — after each meaningful UI edit, compare localhost (same state) to that Figma screenshot/geometry. Report match or mismatch. Do not stack further edits on an unverified claim.
 
-4. **Exit criterion** — “Done” means Figma match (visual + geometry), or an explicit blocker. Proxies (sm parity, DOM rects, “metrics moved”) must not clear the gate or be reported as success.
+4. **Exit criterion** — “Done” means Figma match (visual + geometry), or sm×scale parity for Rakko `<900`, or an explicit blocker. Proxies (DOM rects alone, “metrics moved”) must not clear the gate or be reported as success.

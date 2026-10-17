@@ -1,4 +1,4 @@
-/* Figma point-value (202:143086): 34×30, Bowlby One 18. */
+/* Figma point-value (202:143086): 34×30, Bowlby One 18. <900 scales with board. */
 .root {
   position: relative;
   flex-shrink: 0;
@@ -42,16 +42,4 @@
 .total .label {
   color: #6fff0f;
   text-shadow: 1px 1px 5px rgba(47, 105, 0, 0.6);
-}
-
-/* Figma point-value default-xsm (221:11946): 32×~20–30, Bowlby 13. */
-@media (max-width: 899px) {
-  .root {
-    width: 32px;
-    height: 20px;
-  }
-
-  .label {
-    font-size: 13px;
-  }
 }

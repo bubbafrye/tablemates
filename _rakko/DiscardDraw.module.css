@@ -1,4 +1,4 @@
-/* Figma draw-discard-tray: vertical stack (xsm <900 / sm ≥900). */
+/* Figma draw-discard-tray sm. <900 scales with the board. */
 .tray {
   display: flex;
   flex-direction: column;
@@ -157,18 +157,17 @@
 }
 
 @keyframes discardAnimInTransform {
-  /* Y distances × --rakko-motion-scale (1 sm / 0.655 xsm). */
   0% {
-    transform: translateY(calc(-27px * var(--rakko-motion-scale, 1)))
+    transform: translateY(-27px)
       rotate(-5deg);
   }
   8.04% {
-    transform: translateY(calc(-27px * var(--rakko-motion-scale, 1)))
+    transform: translateY(-27px)
       rotate(-5deg);
   }
   /* rotate settled; y still easing toward 0 */
   27.19% {
-    transform: translateY(calc(-8px * var(--rakko-motion-scale, 1)))
+    transform: translateY(-8px)
       rotate(0deg);
   }
   40.62% {
@@ -261,7 +260,7 @@
 .drawFlipMask {
   position: absolute;
   left: 0;
-  top: calc(-80px + var(--rakko-draw-flip-y-nudge, 0px));
+  top: -80px;
   z-index: 1;
   width: 249px;
   /* -80 → 65 (draw cardSlot mask bottom) */
@@ -356,79 +355,79 @@
   }
 }
 
-/* front (169:104947) — back-sm; Y × --rakko-motion-scale for xsm */
+/* front (169:104947) — back-sm */
 @keyframes drawFlipBackTransform {
   0% {
     transform: translateY(0) rotate(0deg) scaleX(1) scaleY(1);
   }
   3.13% {
-    transform: translateY(calc(5.775px * var(--rakko-motion-scale, 1)))
+    transform: translateY(5.775px)
       rotate(0deg) scaleX(1) scaleY(1);
   }
   35.81% {
-    transform: translateY(calc(-20px * var(--rakko-motion-scale, 1)))
+    transform: translateY(-20px)
       rotate(-1.558deg) scaleX(0.99) scaleY(0.99);
   }
   54.06% {
-    transform: translateY(calc(-54.225px * var(--rakko-motion-scale, 1)))
+    transform: translateY(-54.225px)
       rotate(6.702deg) scaleX(0.02) scaleY(0.99);
   }
   63.95% {
-    transform: translateY(calc(-46.58px * var(--rakko-motion-scale, 1)))
+    transform: translateY(-46.58px)
       rotate(0deg) scaleX(1) scaleY(0.99);
   }
   69.79% {
-    transform: translateY(calc(-5.58px * var(--rakko-motion-scale, 1)))
+    transform: translateY(-5.58px)
       rotate(0deg) scaleX(1) scaleY(0.99);
   }
-  /* Land at draw-selected lift (sm 28→12 / xsm 27.13→5.24). */
+  /* Land at draw-selected lift (sm 28→12). */
   100% {
     transform: translateY(var(--rakko-draw-flip-land-y, -16px))
       rotate(0deg) scaleX(1) scaleY(1);
   }
 }
 
-/* front-face (169:81723) — front-sm; Y × --rakko-motion-scale for xsm */
+/* front-face (169:81723) — front-sm */
 @keyframes drawFlipFaceTransform {
   0% {
     transform: translate(
-        calc(1.333px * var(--rakko-motion-scale, 1)),
-        calc(-1px * var(--rakko-motion-scale, 1))
+        1.333px,
+        -1px
       )
       rotate(0deg) scaleX(1) scaleY(1);
   }
   3.13% {
     transform: translate(
-        calc(1.333px * var(--rakko-motion-scale, 1)),
-        calc(6.219px * var(--rakko-motion-scale, 1))
+        1.333px,
+        6.219px
       )
       rotate(0deg) scaleX(1) scaleY(1);
   }
   35.77% {
-    transform: translate(0, calc(-20px * var(--rakko-motion-scale, 1)))
+    transform: translate(0, -20px)
       rotate(-1.558deg) scaleX(0.99) scaleY(0.99);
   }
   54.06% {
-    transform: translate(0, calc(-53.781px * var(--rakko-motion-scale, 1)))
+    transform: translate(0, -53.781px)
       rotate(6.702deg) scaleX(0.02) scaleY(0.99);
   }
   73.48% {
-    transform: translate(0, calc(-46.136px * var(--rakko-motion-scale, 1)))
+    transform: translate(0, -46.136px)
       rotate(0deg) scaleX(1) scaleY(0.99);
   }
   79.32% {
-    transform: translate(0, calc(-5.136px * var(--rakko-motion-scale, 1)))
+    transform: translate(0, -5.136px)
       rotate(0deg) scaleX(1) scaleY(0.99);
   }
   79.52% {
-    transform: translate(0, calc(1.864px * var(--rakko-motion-scale, 1)))
+    transform: translate(0, 1.864px)
       rotate(0deg) scaleX(1) scaleY(0.99);
   }
   83.39% {
-    transform: translate(0, calc(-3.136px * var(--rakko-motion-scale, 1)))
+    transform: translate(0, -3.136px)
       rotate(0deg) scaleX(1) scaleY(0.99);
   }
-  /* Land at draw-selected lift (sm 28→12 / xsm 27.13→5.24). */
+  /* Land at draw-selected lift (sm 28→12). */
   100% {
     transform: translate(0, var(--rakko-draw-flip-land-y, -16px))
       rotate(0deg) scaleX(1) scaleY(1);
@@ -583,245 +582,3 @@
   outline-offset: 2px;
 }
 
-.slotSm {
-  display: block;
-}
-
-.slotXsm {
-  display: none;
-}
-
-/*
- * Figma <900 (165:7583): draw/discard trays at xsm (221:19555).
- * Tray 169×93; stack gap 50 → column 236; holder 162×47; tray-text 16px.
- */
-@media (max-width: 899px) {
-  .tray {
-    width: 169px;
-    max-width: 169px;
-    height: 236px;
-  }
-
-  .pile {
-    width: 169px;
-    height: 93px;
-  }
-
-  .pile[data-name="draw"] {
-    height: 93px;
-  }
-
-  .pile[data-name="discard"] {
-    /* Figma discard-tray y=143 − draw h=93 → gap 50 */
-    margin-top: 50px;
-    height: 93px;
-  }
-
-  .pileBody {
-    left: 1px;
-    width: 167px;
-    height: 47px;
-  }
-
-  /*
-   * Figma draw pile inset-[-6.45%_…] on 93px tray → top −6px.
-   * Keeps slot lip above tray-text.
-   */
-  .drawPileBody {
-    top: -6px;
-    height: 56px;
-  }
-
-  .cardSlot {
-    width: 167px;
-    height: 45px;
-    -webkit-mask-size: 165px 45px;
-    mask-size: 165px 45px;
-    -webkit-mask-position: 0 0;
-    mask-position: 0 0;
-  }
-
-  .drawDefault .cardSlot {
-    height: 54px;
-    -webkit-mask-size: 167px 54px;
-    mask-size: 167px 54px;
-    -webkit-mask-position: 0 0;
-    mask-position: 0 0;
-  }
-
-  .drawSelected .cardSlot {
-    width: 165px;
-    height: 50px;
-    -webkit-mask-size: 165px 49px;
-    mask-size: 165px 49px;
-    -webkit-mask-position: 0 0;
-    mask-position: 0 0;
-  }
-
-  .discardBack {
-    left: 6.83px;
-    top: 3.75px;
-    width: 154px;
-    height: 47px;
-  }
-
-  .discardMid {
-    left: 7.74px;
-    top: 4.94px;
-    width: 154px;
-    height: 47px;
-  }
-
-  .discardFront {
-    left: 6px;
-    top: 13px;
-    width: 154px;
-    height: 47px;
-  }
-
-  /*
-   * Held → card-front-selected-xsm (233:21953) over discard-pile (221:17398).
-   * Y: selected slot 33 → pile slot 42.33 → top 9.
-   * X: resting top face x=6; selected AABB x=10.76 → left 6−10.76 ≈ −5.
-   */
-  .discardSelected {
-    left: -5px;
-    top: 9px;
-    width: 167px;
-    height: 39px;
-  }
-
-  .discardDisabled .discardBack {
-    left: 7.83px;
-    top: 5.75px;
-    width: 154px;
-    height: 47px;
-  }
-
-  .discardDisabled .discardMid {
-    left: 8.9px;
-    top: 10.98px;
-    width: 154px;
-    height: 47px;
-  }
-
-  .discardDisabled .discardFront {
-    left: 5.83px;
-    top: 14.75px;
-    width: 154px;
-    height: 47px;
-  }
-
-  .drawBack {
-    left: 6px;
-    top: 14.13px;
-    width: 154px;
-    height: 47px;
-  }
-
-  .drawMid {
-    left: 6.75px;
-    top: 16.71px;
-    width: 154px;
-    height: 47px;
-  }
-
-  .drawFront {
-    left: 7px;
-    top: 27.13px;
-    width: 154px;
-    height: 47px;
-  }
-
-  .drawSelected .drawFront {
-    left: 7px;
-    top: 5.24px;
-    width: 154px;
-  }
-
-  .drawFlipMask {
-    left: 0;
-    /* scale clip + nudge so start Y = drawFront 27.13 */
-    top: calc(-80px * var(--rakko-motion-scale, 1) + var(--rakko-draw-flip-y-nudge, 0px));
-    width: 167px;
-    height: calc(145px * var(--rakko-motion-scale, 1));
-  }
-
-  .drawFrontFlipping {
-    left: 7px;
-    top: calc(108px * var(--rakko-motion-scale, 1));
-    width: 154px;
-    height: 47px;
-  }
-
-  .emptyFace {
-    left: 6px;
-    top: 13px;
-    width: 154px;
-    height: 28px;
-    border-radius: 5px 5px 0 0;
-  }
-
-  .pileSlot {
-    left: 2px;
-    top: 42.33px;
-    width: 163px;
-    height: 5px;
-  }
-
-  .drawPileSlot {
-    left: 2px;
-    top: 50.43px;
-    width: 164px;
-  }
-
-  /*
-   * Figma tray inset on 93px: holder top 49.46% → 46px, bottom 0 → h 47.
-   * tray-text top 65.59% → 61px; height ≈16px.
-   */
-  .holder {
-    left: 4.5px;
-    top: 46px;
-    right: auto;
-    bottom: 0;
-    width: 162px;
-    height: auto;
-  }
-
-  .pile[data-name="draw"] .holder {
-    top: 46px;
-  }
-
-  .trayText {
-    left: 4.5px;
-    top: 61px;
-    width: 162px;
-    height: 16px;
-    font-size: 16px;
-  }
-
-  .pile[data-name="draw"] .trayText {
-    top: 61px;
-  }
-
-  .holderIcon {
-    top: 50%;
-    right: 9px;
-    width: 20px;
-    height: 22px;
-    transform: translateY(-50%);
-  }
-
-  .holderIcon img {
-    width: 20px;
-    height: 22px;
-  }
-
-  .slotSm {
-    display: none;
-  }
-
-  .slotXsm {
-    display: block;
-  }
-}

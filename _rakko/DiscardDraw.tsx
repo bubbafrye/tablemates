@@ -32,8 +32,7 @@ type DiscardDrawProps = {
  *
  * Pile variants:
  * - discard-default / discard-disabled (tucked when draw is active)
- * - held discard → card-front-selected-sm / selected-xsm (tilted) over the pile slot
-
+ * - held discard → card-front-selected-sm (tilted) over the pile slot
  * - draw-default / draw-selected (face-up held card lifted on draw)
  *
  * Holder: tray-text (202:148306) + discard-undo / draw-discard (210:148339).
@@ -79,8 +78,7 @@ export function DiscardDraw({
   );
   const underDraw = Math.min(2, Math.max(0, drawCount - (holdingDraw ? 0 : 1)));
 
-  const slotSmSrc = withBasePath("/assets/rakko/slot-sm.svg");
-  const slotXsmSrc = withBasePath("/assets/rakko/slot-xsm.svg");
+  const slotSrc = withBasePath("/assets/rakko/slot-sm.svg");
   const pileMaskSrc = withBasePath("/assets/rakko/pile-mask.svg");
   const pileMaskStyle = {
     WebkitMaskImage: `url("${pileMaskSrc}")`,
@@ -215,7 +213,7 @@ export function DiscardDraw({
           {holdingDiscard && held != null ? (
             <div
               className={styles.discardSelected}
-              data-name="card-front-selected-xsm"
+              data-name="card-front-selected-sm"
             >
               <Card
                 size="sm"
@@ -224,24 +222,14 @@ export function DiscardDraw({
                 value={held}
                 aria-label={`Held discard ${held}. Choose a rack slot or undo.`}
               />
-
             </div>
           ) : null}
           <img
-            className={`${styles.pileSlot} ${styles.slotSm}`}
-            src={slotSmSrc}
+            className={styles.pileSlot}
+            src={slotSrc}
             alt=""
             width={249}
             height={6}
-            aria-hidden
-            data-name="slot"
-          />
-          <img
-            className={`${styles.pileSlot} ${styles.slotXsm}`}
-            src={slotXsmSrc}
-            alt=""
-            width={163}
-            height={5}
             aria-hidden
             data-name="slot"
           />
@@ -373,20 +361,11 @@ export function DiscardDraw({
             </div>
           ) : null}
           <img
-            className={`${styles.pileSlot} ${styles.drawPileSlot} ${styles.slotSm}`}
-            src={slotSmSrc}
+            className={`${styles.pileSlot} ${styles.drawPileSlot}`}
+            src={slotSrc}
             alt=""
             width={247}
             height={6}
-            aria-hidden
-            data-name="slot"
-          />
-          <img
-            className={`${styles.pileSlot} ${styles.drawPileSlot} ${styles.slotXsm}`}
-            src={slotXsmSrc}
-            alt=""
-            width={164}
-            height={5}
             aria-hidden
             data-name="slot"
           />

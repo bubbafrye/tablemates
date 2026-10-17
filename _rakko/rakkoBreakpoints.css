@@ -1,28 +1,22 @@
 /*
  * Shared Rakko size tokens.
- * sm (≥900): current pile/rack artboard.
- * xsm (<900): Figma frame 165:7583 — scale motions by front-xsm/front-sm.
+ * sm (≥900): native Figma sm artboard.
+ * <900: same sm layout, scaled by --rakko-scale (single knob).
  */
 :root {
-  /* front-xsm 154 / front-sm 235 */
-  --rakko-motion-scale: 1;
-  /* cascade step: sm (5×235/350); xsm scales with face width */
+  /* Adjust here to change the <900 playfield scale. */
+  --rakko-scale: 1;
+  /* Unscaled sm board layout box (left + gap + rack). */
+  --rakko-board-width: 686px;
+  --rakko-board-height: 500px;
+  /* cascade step: sm (5×235/350) — scaled with the board under <900 */
   --rakko-tooth-step: 3.357px;
-  /*
-   * Draw flip track (Figma 169:81712): sm front 28→12 (land −16).
-   * xsm: nudge so start matches drawFront 27.13; land matches drawSelected 5.24.
-   */
-  --rakko-draw-flip-y-nudge: 0px;
+  /* Draw flip land (Figma 169:81712): sm front 28→12 */
   --rakko-draw-flip-land-y: -16px;
 }
 
 @media (max-width: 899px) {
   :root {
-    --rakko-motion-scale: 0.655319;
-    --rakko-tooth-step: 2.2px;
-    /* 27.13 − 28×scale — undo uniform scale lifting the flip off the lip */
-    --rakko-draw-flip-y-nudge: calc(27.13px - 28px * var(--rakko-motion-scale));
-    /* 5.24 − 27.13 */
-    --rakko-draw-flip-land-y: -21.89px;
+    --rakko-scale: 0.7;
   }
 }

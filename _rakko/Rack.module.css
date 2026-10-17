@@ -1,4 +1,4 @@
-/* Figma rack sm (165:27001): 342×500; xsm instance (165:7584): 244×366 under <900. */
+/* Figma rack sm (165:27001): 342×500. <900 uses board-level --rakko-scale. */
 .rack {
   position: relative;
   overflow: clip;
@@ -6,7 +6,7 @@
   max-width: 100%;
   height: 500px;
   border-radius: 25px;
-  /* Row advance: sm 42 / xsm 31 — used by Rack.tsx inline top. */
+  /* Row advance: sm 42 — used by Rack.tsx inline top. */
   --rack-row-advance: 42px;
 }
 
@@ -17,14 +17,6 @@
   height: 100%;
   object-fit: cover;
   pointer-events: none;
-}
-
-.baseMed {
-  display: block;
-}
-
-.baseXsm {
-  display: none;
 }
 
 /* Figma rows (202:143098): 305×441 at (18, 29). */
@@ -59,38 +51,4 @@
   flex-shrink: 0;
   width: 249px;
   height: 49px;
-}
-
-/* Figma rack xsm (165:7584): 244×366; rows 217×336 at (14, 20), advance 31. */
-@media (max-width: 899px) {
-  .rack {
-    width: 244px;
-    height: 366px;
-    --rack-row-advance: 31px;
-  }
-
-  .baseMed {
-    display: none;
-  }
-
-  .baseXsm {
-    display: block;
-  }
-
-  .rows {
-    left: 14px;
-    top: 20px;
-    width: 217px;
-    height: 336px;
-  }
-
-  .row {
-    width: 217px;
-    height: 38px;
-  }
-
-  .empty {
-    width: 167px;
-    height: 39px;
-  }
 }
