@@ -1,8 +1,21 @@
 "use client";
 
-import { useState, type CSSProperties } from "react";
+import { useState, useSyncExternalStore, type CSSProperties } from "react";
 import { withBasePath } from "@/platform/site";
 import styles from "./Card.module.css";
+
+/** Matches `_rakko` xsm CSS `@media (max-width: 899px)`. */
+function useXsmViewport() {
+  return useSyncExternalStore(
+    (onChange) => {
+      const mq = window.matchMedia("(max-width: 899px)");
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia("(max-width: 899px)").matches,
+    () => false,
+  );
+}
 
 type CardProps = {
   value?: number;
@@ -23,10 +36,6 @@ type CardProps = {
   "aria-label"?: string;
 };
 
-/** Cascade step: 5px on lg face (~355); scale with sm face width (235). */
-const STEP_LG = 5;
-const STEP_SM = (5 * 235) / 350;
-
 /** Figma card / card-base: cream + Anton value, or PNG card-back. */
 export function Card({
   value = 1,
@@ -43,15 +52,20 @@ export function Card({
   "aria-label": ariaLabel,
 }: CardProps) {
   const [hovered, setHovered] = useState(false);
+  const xsm = useXsmViewport();
   const teeth =
     face === "front" && !blank ? Math.max(1, Math.min(60, value)) : 0;
   const interactive = Boolean(onClick);
-  const step = size === "sm" || frame === "face" ? STEP_SM : STEP_LG;
   const label = ariaLabel ?? (face === "back" ? "Card back" : `Card ${value}`);
   const backSrc = withBasePath("/assets/rakko/card-back.png");
+  /* Tooth X uses --rakko-tooth-step (sm/xsm via rakkoBreakpoints.css). */
+  const toothStyle = {
+    ["--tooth-i" as string]: teeth,
+    zIndex: teeth,
+  } satisfies CSSProperties;
 
   if (frame === "face") {
-    /* Figma front-sm / back-sm — used inside draw-discard-pile under a group mask. */
+    /* Figma front-sm / front-xsm — pile faces under group mask. */
     return (
       <div
         className={styles.faceOnly}
@@ -84,10 +98,7 @@ export function Card({
             />
           ) : teeth > 0 ? (
             <span className={styles.cascadeFace} aria-hidden>
-              <span
-                className={styles.tooth}
-                style={{ left: `${(teeth - 1) * step}px`, zIndex: teeth }}
-              >
+              <span className={styles.tooth} style={toothStyle}>
                 <span className={styles.toothStroke} aria-hidden>
                   {value}
                 </span>
@@ -110,12 +121,15 @@ export function Card({
   ]
     .filter(Boolean)
     .join(" ");
-  const slotSrc = withBasePath(
+  const slotSmSrc = withBasePath(
     size === "sm" ? "/assets/rakko/slot-sm.svg" : "/assets/rakko/slot.svg",
   );
+  const slotXsmSrc = withBasePath("/assets/rakko/slot-xsm.svg");
   const maskSrc = withBasePath(
     size === "sm"
-      ? "/assets/rakko/card-mask-sm.svg"
+      ? xsm
+        ? "/assets/rakko/card-mask-xsm.svg"
+        : "/assets/rakko/card-mask-sm.svg"
       : "/assets/rakko/card-mask.svg",
   );
   const faceMaskStyle = {
@@ -181,10 +195,7 @@ export function Card({
             />
           ) : teeth > 0 ? (
             <span className={styles.cascade} aria-hidden>
-              <span
-                className={styles.tooth}
-                style={{ left: `${(teeth - 1) * step}px`, zIndex: teeth }}
-              >
+              <span className={styles.tooth} style={toothStyle}>
                 <span className={styles.toothStroke} aria-hidden>
                   {value}
                 </span>
@@ -195,15 +206,28 @@ export function Card({
         </span>
       </span>
       {slot ? (
-        <img
-          className={styles.slot}
-          src={slotSrc}
-          alt=""
-          width={size === "sm" ? 249 : 364}
-          height={size === "sm" ? 5 : 8}
-          aria-hidden
-          data-name="slot"
-        />
+        <>
+          <img
+            className={`${styles.slot} ${styles.slotSm}`}
+            src={slotSmSrc}
+            alt=""
+            width={size === "sm" ? 249 : 364}
+            height={size === "sm" ? 5 : 8}
+            aria-hidden
+            data-name="slot"
+          />
+          {size === "sm" ? (
+            <img
+              className={`${styles.slot} ${styles.slotXsm}`}
+              src={slotXsmSrc}
+              alt=""
+              width={162}
+              height={5}
+              aria-hidden
+              data-name="slot"
+            />
+          ) : null}
+        </>
       ) : null}
     </div>
   );

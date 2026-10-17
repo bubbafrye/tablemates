@@ -33,6 +33,7 @@ import {
   toggleReady,
   type RakkoState,
 } from "./logic";
+import "./rakkoBreakpoints.css";
 import styles from "./RakkoGame.module.css";
 
 type RakkoGameProps = {

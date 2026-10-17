@@ -37,14 +37,19 @@
   max-width: 1000px;
 }
 
-/* Figma <900: turn + horizontal tray stacked above rack. */
+/*
+ * Figma <900 (165:7583): turn + vertical trays beside rack (xsm).
+ * ≥900 keeps sm sizes (media below).
+ */
 .board {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
+  flex-direction: row;
+  /* Figma game-board (165:14868): Frame 8 + rack top-aligned */
+  align-items: flex-start;
+  justify-content: center;
+  gap: 40px;
   width: 100%;
-  max-width: 420px;
+  max-width: 751px;
   overflow: visible;
 }
 
@@ -52,17 +57,19 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
-  width: 100%;
-  max-width: 420px;
+  /* Figma Frame 8: turn 50 + gap → trays at y=100 */
+  gap: 50px;
+  width: 221px;
+  max-width: 221px;
+  flex-shrink: 0;
 }
 
 .turn {
   margin: 0;
   width: 100%;
-  height: 80px;
+  height: 50px;
   font-family: var(--font-rakko-face), sans-serif;
-  font-size: clamp(32px, 8vw, 58px);
+  font-size: 26px;
   font-weight: 400;
   line-height: 1.02;
   text-align: center;
@@ -314,22 +321,31 @@
   }
 }
 
-/* Figma 900-1024: left column (turn + vertical tray) beside rack. */
+/* Narrow phones: scale the 751 Figma board to fit. */
+@media (max-width: 750px) {
+  .board {
+    transform: scale(calc(100vw / 751));
+    transform-origin: top center;
+    margin-bottom: calc(397px * (100vw / 751 - 1));
+  }
+}
+
+/* Figma ≥900: sm piles/rack, larger turn. */
 @media (min-width: 900px) {
   .gameArea {
     max-width: 900px;
   }
 
   .board {
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
     gap: 64px;
     max-width: 826px;
+    transform: none;
+    margin-bottom: 0;
   }
 
   .left {
-    width: 420px;
+    width: 280px;
+    max-width: 280px;
     gap: 20px;
     padding-top: 0;
   }

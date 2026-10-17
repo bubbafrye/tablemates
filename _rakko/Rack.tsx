@@ -113,21 +113,39 @@ export function Rack({
     };
   }, [scoring, streak]);
 
+  const baseMedSrc = withBasePath("/assets/rakko/rack-base-med.png");
+  const baseXsmSrc = withBasePath("/assets/rakko/rack-base-xsm.png");
+
   return (
     <div className={styles.rack} data-name="rack">
       <img
-        className={styles.base}
-        src={withBasePath("/assets/rakko/rack-base-med.png")}
+        className={`${styles.base} ${styles.baseMed}`}
+        src={baseMedSrc}
         alt=""
         width={342}
         height={500}
         aria-hidden
         data-name="rack-base"
+        data-size="med"
+      />
+      <img
+        className={`${styles.base} ${styles.baseXsm}`}
+        src={baseXsmSrc}
+        alt=""
+        width={244}
+        height={357}
+        aria-hidden
+        data-name="rack-base"
+        data-size="xsm"
       />
       <div className={styles.rows} data-name="rows">
         {slots.map((value, index) => {
           /* Lower rows sit above higher rows (top card = bottom of z-order). */
-          const order = { zIndex: index + 1, top: index * 42 };
+          const order = {
+            zIndex: index + 1,
+            /* --rack-row-advance: 42px sm / 31px xsm (Rack.module.css). */
+            top: `calc(${index} * var(--rack-row-advance, 42px))`,
+          };
           const points = slotPoints(index);
           const variant = revealedVariant(
             index,

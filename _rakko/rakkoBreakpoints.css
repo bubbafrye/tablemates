@@ -1,0 +1,18 @@
+/*
+ * Shared Rakko size tokens.
+ * sm (≥900): current pile/rack artboard.
+ * xsm (<900): Figma frame 165:7583 — scale motions by front-xsm/front-sm.
+ */
+:root {
+  /* front-xsm 154 / front-sm 235 */
+  --rakko-motion-scale: 1;
+  /* cascade step: sm (5×235/350); xsm scales with face width */
+  --rakko-tooth-step: 3.357px;
+}
+
+@media (max-width: 899px) {
+  :root {
+    --rakko-motion-scale: 0.655319;
+    --rakko-tooth-step: 2.2px;
+  }
+}
