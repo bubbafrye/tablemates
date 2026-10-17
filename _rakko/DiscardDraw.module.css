@@ -261,7 +261,7 @@
 .drawFlipMask {
   position: absolute;
   left: 0;
-  top: -80px;
+  top: calc(-80px + var(--rakko-draw-flip-y-nudge, 0px));
   z-index: 1;
   width: 249px;
   /* -80 → 65 (draw cardSlot mask bottom) */
@@ -381,9 +381,9 @@
     transform: translateY(calc(-5.58px * var(--rakko-motion-scale, 1)))
       rotate(0deg) scaleX(1) scaleY(0.99);
   }
-  /* Land at draw-selected lift (top 28 → 12). */
+  /* Land at draw-selected lift (sm 28→12 / xsm 27.13→5.24). */
   100% {
-    transform: translateY(calc(-16px * var(--rakko-motion-scale, 1)))
+    transform: translateY(var(--rakko-draw-flip-land-y, -16px))
       rotate(0deg) scaleX(1) scaleY(1);
   }
 }
@@ -428,9 +428,9 @@
     transform: translate(0, calc(-3.136px * var(--rakko-motion-scale, 1)))
       rotate(0deg) scaleX(1) scaleY(0.99);
   }
-  /* Land at draw-selected lift (top 28 → 12). */
+  /* Land at draw-selected lift (sm 28→12 / xsm 27.13→5.24). */
   100% {
-    transform: translate(0, calc(-16px * var(--rakko-motion-scale, 1)))
+    transform: translate(0, var(--rakko-draw-flip-land-y, -16px))
       rotate(0deg) scaleX(1) scaleY(1);
   }
 }
@@ -741,7 +741,8 @@
 
   .drawFlipMask {
     left: 0;
-    top: calc(-80px * var(--rakko-motion-scale, 1));
+    /* scale clip + nudge so start Y = drawFront 27.13 */
+    top: calc(-80px * var(--rakko-motion-scale, 1) + var(--rakko-draw-flip-y-nudge, 0px));
     width: 167px;
     height: calc(145px * var(--rakko-motion-scale, 1));
   }

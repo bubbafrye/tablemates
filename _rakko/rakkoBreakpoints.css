@@ -8,11 +8,21 @@
   --rakko-motion-scale: 1;
   /* cascade step: sm (5×235/350); xsm scales with face width */
   --rakko-tooth-step: 3.357px;
+  /*
+   * Draw flip track (Figma 169:81712): sm front 28→12 (land −16).
+   * xsm: nudge so start matches drawFront 27.13; land matches drawSelected 5.24.
+   */
+  --rakko-draw-flip-y-nudge: 0px;
+  --rakko-draw-flip-land-y: -16px;
 }
 
 @media (max-width: 899px) {
   :root {
     --rakko-motion-scale: 0.655319;
     --rakko-tooth-step: 2.2px;
+    /* 27.13 − 28×scale — undo uniform scale lifting the flip off the lip */
+    --rakko-draw-flip-y-nudge: calc(27.13px - 28px * var(--rakko-motion-scale));
+    /* 5.24 − 27.13 */
+    --rakko-draw-flip-land-y: -21.89px;
   }
 }
