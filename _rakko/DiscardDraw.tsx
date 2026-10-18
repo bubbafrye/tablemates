@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { withBasePath } from "@/platform/site";
 import { Card } from "./Card";
 import styles from "./DiscardDraw.module.css";
@@ -115,10 +115,12 @@ export function DiscardDraw({
     prevDiscardCount.current = discardCount;
   }, [discardCount, discardTop, discardVariant]);
 
-  /* Figma draw-pile-flip-anim: play once when *this* viewer may see the face. */
+  /* Figma draw-pile-flip-anim: play once when *this* viewer may see the face.
+   * useLayoutEffect so we never paint one frame of the face before the flip
+   * (useEffect ran after paint → brief flash of the held value). */
   const wasHoldingDraw = useRef(false);
   const [drawFlipAnim, setDrawFlipAnim] = useState(false);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (showDrawFace && !wasHoldingDraw.current) {
       setDrawFlipAnim(true);
     }
