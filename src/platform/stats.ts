@@ -9,12 +9,24 @@ import {
   type HostedRoom,
 } from "./identity";
 
+export type ConnectionMeta = {
+  playerId: string;
+  name?: string;
+  ip: string;
+  ua: string;
+  country: string;
+  colo: string;
+  city: string;
+  connectedAt: string;
+};
+
 export type RoomSnapshot = {
   code: string;
   gameId: string;
   status: string;
   players: number;
   connections: number;
+  clients?: ConnectionMeta[];
   updatedAt: string;
 };
 

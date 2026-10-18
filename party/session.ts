@@ -1,5 +1,9 @@
 import { Server, type Connection, type ConnectionContext, getServerByName } from "partyserver";
 import type { ClientMessage, Player, ServerMessage, SessionState } from "../src/platform/protocol";
+import {
+  connectionMetaFromRequest,
+  type ConnectionMeta,
+} from "./connectionMeta";
 import { corsHeaders } from "./cors";
 import type { Leaderboard } from "./leaderboard";
 import type { Stats } from "./stats";
@@ -51,10 +55,20 @@ export class Session extends Server<Env> {
     return new Response("Not found", { status: 404, headers });
   }
 
-  async onConnect(connection: Connection, ctx: ConnectionContext) {
+  async onConnect(connection: Connection<ConnectionMeta>, ctx: ConnectionContext) {
+    if (await this.ctx.storage.get<boolean>("sealed")) {
+      try {
+        connection.close(4000, "Room closed");
+      } catch {
+        /* ignore */
+      }
+      return;
+    }
+
     const url = new URL(ctx.request.url);
     const playerId = url.searchParams.get("playerId") ?? connection.id;
     const gameId = url.searchParams.get("gameId") ?? "";
+    connection.setState(connectionMetaFromRequest(ctx.request, playerId));
     await this.upsertPlayer(playerId, gameId);
     this.push(connection);
     await this.reportStats();
@@ -75,6 +89,14 @@ export class Session extends Server<Env> {
 
     if (parsed.type === "hello") {
       await this.upsertPlayer(parsed.playerId, parsed.gameId ?? "", parsed.name);
+      const prev = connection.state as ConnectionMeta | null;
+      if (prev) {
+        connection.setState({
+          ...prev,
+          playerId: parsed.playerId,
+          name: parsed.name?.trim().slice(0, 20) || prev.name,
+        });
+      }
       this.push();
       await this.reportStats();
       return;
@@ -120,11 +142,15 @@ export class Session extends Server<Env> {
     }
   }
 
-  /** Kick everyone and clear the live-room registry entry. */
+  /**
+   * Kick everyone, seal the room so PartySocket reconnects are rejected,
+   * and clear the live-room registry entry.
+   */
   private async closeRoom() {
+    await this.ctx.storage.put("sealed", true);
     for (const connection of [...this.getConnections()]) {
       try {
-        connection.close(1000, "Room closed");
+        connection.close(4000, "Room closed");
       } catch {
         /* already closed */
       }
@@ -169,6 +195,20 @@ export class Session extends Server<Env> {
     return n;
   }
 
+  private clientSnapshots(): ConnectionMeta[] {
+    const out: ConnectionMeta[] = [];
+    for (const connection of this.getConnections<ConnectionMeta>()) {
+      const meta = connection.state;
+      if (!meta) continue;
+      const player = this.state.players.find((p) => p.id === meta.playerId);
+      out.push({
+        ...meta,
+        name: player?.name || meta.name,
+      });
+    }
+    return out;
+  }
+
   private async reportStats(connections = this.connectionCount()) {
     try {
       const stub = await getServerByName(this.env.Stats, "global");
@@ -180,6 +220,7 @@ export class Session extends Server<Env> {
           status: this.state.status,
           players: connections <= 0 ? 0 : this.state.players.length,
           connections,
+          clients: connections <= 0 ? [] : this.clientSnapshots(),
           updatedAt: new Date().toISOString(),
         }),
       });

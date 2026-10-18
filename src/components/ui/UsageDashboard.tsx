@@ -194,23 +194,50 @@ export function UsageDashboard({ onClose }: UsageDashboardProps) {
             {remote && remote.rooms.length > 0 ? (
               <ul className={styles.rooms}>
                 {remote.rooms.map((room) => (
-                  <li key={room.code} className={styles.room}>
-                    <span className={styles.roomCode}>{room.code}</span>
-                    <span className={styles.roomGame}>
-                      {getGame(room.gameId)?.name ?? (room.gameId || "—")}
-                    </span>
-                    <span className={styles.roomStatus}>{room.status}</span>
-                    <span className={styles.roomPlayers}>
-                      {room.players}p · {room.connections}c
-                    </span>
-                    <button
-                      type="button"
-                      className={styles.closeRoom}
-                      disabled={closingCode === room.code}
-                      onClick={() => void handleCloseRoom(room.code)}
-                    >
-                      {closingCode === room.code ? "Closing…" : "Close"}
-                    </button>
+                  <li key={room.code} className={styles.roomBlock}>
+                    <div className={styles.room}>
+                      <span className={styles.roomCode}>{room.code}</span>
+                      <span className={styles.roomGame}>
+                        {getGame(room.gameId)?.name ?? (room.gameId || "—")}
+                      </span>
+                      <span className={styles.roomStatus}>{room.status}</span>
+                      <span className={styles.roomPlayers}>
+                        {room.players}p · {room.connections}c
+                      </span>
+                      <button
+                        type="button"
+                        className={styles.closeRoom}
+                        disabled={closingCode === room.code}
+                        onClick={() => void handleCloseRoom(room.code)}
+                      >
+                        {closingCode === room.code ? "Closing…" : "Close"}
+                      </button>
+                    </div>
+                    {room.clients && room.clients.length > 0 ? (
+                      <ul className={styles.clients}>
+                        {room.clients.map((client) => (
+                          <li key={`${client.playerId}-${client.connectedAt}`}>
+                            <span className={styles.clientName}>
+                              {client.name || shortId(client.playerId)}
+                            </span>
+                            <span className={styles.clientMeta}>
+                              {[
+                                client.ip,
+                                [client.city, client.country].filter(Boolean).join(", "),
+                                client.colo ? `colo ${client.colo}` : "",
+                                summarizeUserAgent(client.ua),
+                              ]
+                                .filter(Boolean)
+                                .join(" · ")}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className={styles.clientMeta}>
+                        No client fingerprints yet (reconnect after deploy to populate).
+                      </p>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -333,6 +360,17 @@ function Stat({ label, value }: { label: string; value?: number }) {
 function shortId(id?: string) {
   if (!id) return "—";
   return id.length <= 12 ? id : `${id.slice(0, 8)}…`;
+}
+
+function summarizeUserAgent(ua: string): string {
+  if (!ua) return "unknown client";
+  if (/iPhone|iPad/i.test(ua)) return "iOS";
+  if (/Android/i.test(ua)) return "Android";
+  if (/Edg\//i.test(ua)) return "Edge";
+  if (/Chrome\//i.test(ua) && !/Edg\//i.test(ua)) return "Chrome";
+  if (/Firefox\//i.test(ua)) return "Firefox";
+  if (/Safari\//i.test(ua) && !/Chrome\//i.test(ua)) return "Safari";
+  return ua.slice(0, 40);
 }
 
 function formatTime(iso?: string) {

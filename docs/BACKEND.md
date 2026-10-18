@@ -80,7 +80,8 @@ If that quota is exhausted, the Worker returns errors (often Cloudflare `1101`).
 Mitigations in this codebase:
 
 - WebSocket **hibernation** on Session / Stats / Leaderboard
-- Usage dashboard **Close** on a room (kicks sockets so the object can sleep)
+- Usage dashboard **Close** on a room (kicks sockets, **seals** the room so reconnects are rejected, and drops it from Stats)
+- Live room rows show client **IP / country / colo / browser** from the Cloudflare edge request (helps find abandoned tabs on other devices)
 - Connection banner shows time until the daily reset
 
 Upgrading the Cloudflare Workers plan removes that daily ceiling (paid quotas apply instead).

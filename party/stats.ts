@@ -1,4 +1,5 @@
 import { Server, getServerByName } from "partyserver";
+import type { ConnectionMeta } from "./connectionMeta";
 import { corsHeaders } from "./cors";
 
 export type RoomSnapshot = {
@@ -7,6 +8,7 @@ export type RoomSnapshot = {
   status: string;
   players: number;
   connections: number;
+  clients?: ConnectionMeta[];
   updatedAt: string;
 };
 
