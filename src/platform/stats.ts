@@ -30,6 +30,13 @@ export type RoomSnapshot = {
   updatedAt: string;
 };
 
+export type DoDurationQuota = {
+  usedGbS: number;
+  limitGbS: number;
+  asOf: string;
+  error?: string;
+};
+
 export type SiteStatsPayload = {
   at: string;
   rooms: RoomSnapshot[];
@@ -42,6 +49,7 @@ export type SiteStatsPayload = {
     roomsSeen: number;
   };
   byGame: Record<string, { rooms: number; players: number; connections: number }>;
+  doQuota: DoDurationQuota | null;
 };
 
 export type LocalUsage = {
@@ -73,6 +81,7 @@ function emptyRemote(): SiteStatsPayload {
       roomsSeen: 0,
     },
     byGame: {},
+    doQuota: null,
   };
 }
 
@@ -124,7 +133,12 @@ export async function fetchUsageDashboard(): Promise<UsageDashboardData> {
       };
     }
 
-    const remote = (await statsRes.json()) as SiteStatsPayload;
+    const remoteRaw = (await statsRes.json()) as SiteStatsPayload;
+    const remote: SiteStatsPayload = {
+      ...emptyRemote(),
+      ...remoteRaw,
+      doQuota: remoteRaw.doQuota ?? null,
+    };
     const readyGames = catalog.filter((g) => g.ready).map((g) => g.id);
     const leaderboards: Record<string, LeaderboardEntry[]> = {};
 

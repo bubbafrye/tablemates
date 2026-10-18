@@ -83,28 +83,48 @@ Mitigations in this codebase:
 - Usage dashboard **Close** on a room (kicks sockets, **seals** the room so reconnects are rejected, and drops it from Stats)
 - Live room rows show client **IP / country / colo / browser** from the Cloudflare edge request (helps find abandoned tabs on other devices)
 - Connection banner shows time until the daily reset
+- Usage dashboard progress bar fed by a **GraphQL Analytics snapshot** (see below)
 
 Upgrading the Cloudflare Workers plan removes that daily ceiling (paid quotas apply instead).
+
+## DO duration progress bar
+
+GitHub Pages never sees Cloudflare credentials. The Party Worker holds:
+
+- `CF_API_TOKEN` — Account Analytics: Read (Wrangler secret)
+- `CF_ACCOUNT_ID` — account tag (Wrangler secret)
+
+Every ~10 minutes (cron) and on Stats `GET` when the snapshot is older than 10 minutes, the Worker queries Cloudflare GraphQL for today’s `durableObjectsPeriodicGroups.sum.duration` (treated as GB-s), stores `{ usedGbS, limitGbS, asOf }` on the Stats Durable Object, and returns it as `doQuota` on `/parties/stats/global`. The Pages site only reads that public JSON.
+
+GraphQL is usage telemetry, not Cloudflare’s official remaining free-tier meter — good enough for the bar; it can lag slightly.
+
+```bash
+npx wrangler secret put CF_API_TOKEN
+npx wrangler secret put CF_ACCOUNT_ID
+```
+
+Locally, put the same keys in `.dev.vars` (gitignored).
 
 ## Usage dashboard
 
 Click the plain text **Made for fun by Jason** in the footer. The popup shows:
 
+- Free-tier DO duration progress (from `doQuota`) + reset countdown
 - Live open lobbies / games / connections (from Stats)
 - Per-room **Close**
 - High scores (from Leaderboard), when reachable
 - This browser’s localStorage identity (player id, email, rooms you launched)
-- Free-tier reset countdown
 
 ## Key files
 
 | Path | Purpose |
 | --- | --- |
-| `party/index.ts` | Worker fetch router |
+| `party/index.ts` | Worker fetch router + cron quota refresh |
+| `party/doUsage.ts` | Cloudflare GraphQL DO-duration fetch |
 | `party/session.ts` | Room Durable Object |
-| `party/stats.ts` | Live-room registry + close API |
+| `party/stats.ts` | Live-room registry + close API + quota snapshot |
 | `party/leaderboard.ts` | High scores |
-| `wrangler.jsonc` | Worker name, DO bindings, migrations |
+| `wrangler.jsonc` | Worker name, DO bindings, migrations, cron |
 | `src/platform/session.ts` | Browser WebSocket / session hooks |
 | `src/platform/stats.ts` | Dashboard fetch + closeRoom |
 | `src/platform/site.ts` | `partyHost()` / `partyHttpOrigin()` |

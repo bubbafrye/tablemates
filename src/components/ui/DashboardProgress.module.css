@@ -1,0 +1,23 @@
+/* Figma dashboard-progress (243:24352): column, gap 4 */
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--spacing-1);
+  width: 100%;
+}
+
+.reset {
+  margin: 0;
+  width: 100%;
+  color: var(--color-text-primary);
+  font-family: var(--font-secondary-face), sans-serif;
+  font-size: var(--font-size-body);
+  font-weight: 400;
+  line-height: normal;
+  overflow-wrap: anywhere;
+}
+
+.resetDuration {
+  font-weight: 700;
+}

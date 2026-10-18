@@ -2,6 +2,10 @@
   "name": "tablemates",
   "main": "party/index.ts",
   "compatibility_date": "2024-09-01",
+  "triggers": {
+    // Refresh GraphQL DO-duration snapshot into Stats (needs CF_API_TOKEN + CF_ACCOUNT_ID secrets).
+    "crons": ["*/10 * * * *"]
+  },
   "durable_objects": {
     "bindings": [
       { "name": "Session", "class_name": "Session" },

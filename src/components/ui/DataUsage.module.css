@@ -1,0 +1,65 @@
+/* Figma data-usage (243:24350): gap 4, py 5; label 12 Encode SemiBold / value Regular. */
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--spacing-1);
+  width: 100%;
+  padding: 5px 0;
+  overflow: clip;
+}
+
+.text {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  color: var(--color-text-primary);
+  font-family: var(--font-secondary-face), sans-serif;
+  font-size: var(--font-size-body);
+  line-height: normal;
+}
+
+.label {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
+  /* Figma Encode Sans Condensed SemiBold — only 500 is self-hosted */
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.value {
+  flex-shrink: 0;
+  margin: 0;
+  font-weight: 400;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Track: surface-card + border-default, radius/sm 4px (not in tokens), pad 2 */
+.progress {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 2px;
+  overflow: clip;
+  border: var(--stroke-default) solid var(--color-border-default);
+  border-radius: 4px;
+  background: var(--color-surface-card);
+}
+
+.bar {
+  height: 12px;
+  min-width: 0;
+  max-width: 100%;
+  border-radius: 2px;
+  background: var(--color-brand-primary);
+  transition: width 200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    transition: none;
+  }
+}

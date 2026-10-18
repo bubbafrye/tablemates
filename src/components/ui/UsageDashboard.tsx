@@ -3,9 +3,10 @@
 import { useEffect, useId, useState } from "react";
 import { getGame } from "@/platform/catalog";
 import {
+  DO_FREE_DURATION_GB_S,
+  durableObjectsResetDetail,
   formatDurationUntil,
   msUntilDurableObjectsReset,
-  nextDurableObjectsResetUtc,
 } from "@/platform/durableObjectsQuota";
 import { forgetHostedRoom } from "@/platform/identity";
 import {
@@ -14,27 +15,25 @@ import {
   type UsageDashboardData,
 } from "@/platform/stats";
 import { withBasePath } from "@/platform/site";
+import { DashboardProgress } from "./DashboardProgress";
 import styles from "./UsageDashboard.module.css";
 
 type UsageDashboardProps = {
   onClose: () => void;
 };
 
-function resetCountdown(): string {
-  const ms = msUntilDurableObjectsReset();
-  const local = nextDurableObjectsResetUtc().toLocaleString(undefined, {
-    hour: "numeric",
-    minute: "2-digit",
-    timeZoneName: "short",
-  });
-  return `${formatDurationUntil(ms)} (00:00 UTC · ${local} local)`;
+function resetParts(): { duration: string; detail: string } {
+  return {
+    duration: formatDurationUntil(msUntilDurableObjectsReset()),
+    detail: durableObjectsResetDetail(),
+  };
 }
 
 export function UsageDashboard({ onClose }: UsageDashboardProps) {
   const titleId = useId();
   const [data, setData] = useState<UsageDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [untilReset, setUntilReset] = useState(resetCountdown);
+  const [reset, setReset] = useState(resetParts);
   const [closingCode, setClosingCode] = useState<string | null>(null);
   const [closeError, setCloseError] = useState<string | null>(null);
 
@@ -104,8 +103,8 @@ export function UsageDashboard({ onClose }: UsageDashboardProps) {
   }
 
   useEffect(() => {
-    setUntilReset(resetCountdown());
-    const id = window.setInterval(() => setUntilReset(resetCountdown()), 1000);
+    setReset(resetParts());
+    const id = window.setInterval(() => setReset(resetParts()), 1000);
     return () => window.clearInterval(id);
   }, []);
 
@@ -120,6 +119,20 @@ export function UsageDashboard({ onClose }: UsageDashboardProps) {
   const remote = data?.remote;
   const totals = remote?.totals;
   const serverDown = Boolean(data?.error);
+  const doQuota = remote?.doQuota ?? null;
+  const limitGbS = doQuota?.limitGbS ?? DO_FREE_DURATION_GB_S;
+  const usedGbS = doQuota?.usedGbS;
+  const hasQuota = typeof usedGbS === "number";
+  const quotaProgress = serverDown
+    ? 1
+    : hasQuota
+      ? Math.min(1, Math.max(0, usedGbS / Math.max(1, limitGbS)))
+      : 0;
+  const quotaValueLabel = serverDown
+    ? `${limitGbS.toLocaleString()} of ${limitGbS.toLocaleString()} GB-s`
+    : hasQuota
+      ? `${Math.round(usedGbS).toLocaleString()} of ${limitGbS.toLocaleString()} GB-s`
+      : `— of ${limitGbS.toLocaleString()} GB-s`;
 
   return (
     <div className={styles.backdrop} role="presentation" onClick={onClose}>
@@ -162,19 +175,18 @@ export function UsageDashboard({ onClose }: UsageDashboardProps) {
               : `Updated ${formatTime(data?.fetchedAt)} · Party ${data?.local.partyHost || "—"}`}
           </p>
 
-          {data?.error ? (
-            <p className={styles.error}>
-              {data.error} Free-tier Durable Object duration resets in {untilReset}.
-            </p>
-          ) : null}
+          {data?.error ? <p className={styles.error}>{data.error}</p> : null}
 
           <section className={styles.section} aria-label="Cloudflare quota">
-            <h3 className={styles.heading}>Durable Objects free tier</h3>
-            <p className={styles.empty}>
-              Duration quota: 13,000 GB-s / day · resets daily at 00:00 UTC
-              {serverDown ? " · currently unreachable (quota may be exhausted)" : ""}.
-              Next reset in <strong>{untilReset}</strong>.
-            </p>
+            <DashboardProgress
+              valueLabel={quotaValueLabel}
+              progress={quotaProgress}
+              resetDuration={reset.duration}
+              resetDetail={reset.detail}
+            />
+            {doQuota?.error && !serverDown ? (
+              <p className={styles.error}>Quota refresh: {doQuota.error}</p>
+            ) : null}
           </section>
 
           <section className={styles.section} aria-label="Live rooms">

@@ -1,6 +1,11 @@
 import { Server, getServerByName } from "partyserver";
 import type { ConnectionMeta } from "./connectionMeta";
 import { corsHeaders } from "./cors";
+import {
+  DO_FREE_DURATION_GB_S,
+  fetchDoDurationQuota,
+  type DoDurationQuota,
+} from "./doUsage";
 
 export type RoomSnapshot = {
   code: string;
@@ -24,19 +29,26 @@ export type SiteStatsPayload = {
     roomsSeen: number;
   };
   byGame: Record<string, { rooms: number; players: number; connections: number }>;
+  /** Cloudflare GraphQL snapshot of free-tier DO duration (may be null if never refreshed). */
+  doQuota: DoDurationQuota | null;
 };
 
 type Stored = {
   rooms: Record<string, RoomSnapshot>;
   roomsSeen: number;
+  doQuota?: DoDurationQuota;
 };
 
 type Env = {
   Session: DurableObjectNamespace;
   Stats: DurableObjectNamespace;
+  CF_API_TOKEN?: string;
+  CF_ACCOUNT_ID?: string;
 };
 
 const STALE_MS = 15 * 60 * 1000;
+/** How often to re-query Cloudflare Analytics for DO duration. */
+const QUOTA_STALE_MS = 10 * 60 * 1000;
 
 /** Singleton registry of live rooms for the usage dashboard. */
 export class Stats extends Server<Env> {
@@ -86,7 +98,7 @@ export class Stats extends Server<Env> {
     }
 
     if (request.method === "GET") {
-      return Response.json(await this.payload(), { headers });
+      return Response.json(await this.payload({ refreshQuota: true }), { headers });
     }
 
     return new Response("Not found", { status: 404, headers });
@@ -99,6 +111,40 @@ export class Stats extends Server<Env> {
         roomsSeen: 0,
       }
     );
+  }
+
+  private quotaIsStale(quota: DoDurationQuota | undefined, now: number): boolean {
+    if (!quota?.asOf) return true;
+    const age = now - Date.parse(quota.asOf);
+    if (!Number.isFinite(age) || age < 0) return true;
+    return age > QUOTA_STALE_MS;
+  }
+
+  /** Pull today's DO duration from GraphQL when secrets exist and the snapshot is stale. */
+  private async maybeRefreshQuota(data: Stored): Promise<Stored> {
+    const token = this.env.CF_API_TOKEN;
+    const accountId = this.env.CF_ACCOUNT_ID;
+    if (!token || !accountId) return data;
+
+    const now = Date.now();
+    if (!this.quotaIsStale(data.doQuota, now)) return data;
+
+    try {
+      const next = await fetchDoDurationQuota(token, accountId, new Date(now));
+      data.doQuota = next;
+      await this.save(data);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Quota refresh failed";
+      data.doQuota = {
+        usedGbS: data.doQuota?.usedGbS ?? 0,
+        limitGbS: data.doQuota?.limitGbS ?? DO_FREE_DURATION_GB_S,
+        asOf: data.doQuota?.asOf ?? new Date(now).toISOString(),
+        error: message,
+      };
+      await this.save(data);
+    }
+
+    return data;
   }
 
   private async save(data: Stored) {
@@ -120,8 +166,12 @@ export class Stats extends Server<Env> {
     await this.save(data);
   }
 
-  private async payload(): Promise<SiteStatsPayload> {
-    const data = await this.load();
+  private async payload(opts?: { refreshQuota?: boolean }): Promise<SiteStatsPayload> {
+    let data = await this.load();
+    if (opts?.refreshQuota) {
+      data = await this.maybeRefreshQuota(data);
+    }
+
     const now = Date.now();
     let changed = false;
 
@@ -163,6 +213,7 @@ export class Stats extends Server<Env> {
         roomsSeen: data.roomsSeen,
       },
       byGame,
+      doQuota: data.doQuota ?? null,
     };
   }
 }

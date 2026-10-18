@@ -3,6 +3,9 @@
  * @see https://developers.cloudflare.com/durable-objects/platform/pricing/
  */
 
+/** Free-plan duration budget (GB-seconds / day). */
+export const DO_FREE_DURATION_GB_S = 13_000;
+
 export function nextDurableObjectsResetUtc(now = new Date()): Date {
   const next = new Date(
     Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 0, 0, 0),
@@ -25,13 +28,17 @@ export function formatDurationUntil(ms: number): string {
   return `${s}s`;
 }
 
-export function durableObjectsResetLabel(now = new Date()): string {
-  const ms = msUntilDurableObjectsReset(now);
+export function durableObjectsResetDetail(now = new Date()): string {
   const reset = nextDurableObjectsResetUtc(now);
   const local = reset.toLocaleString(undefined, {
     hour: "numeric",
     minute: "2-digit",
     timeZoneName: "short",
   });
-  return `Free-tier DO duration resets in ${formatDurationUntil(ms)} (00:00 UTC · ${local} local)`;
+  return `00:00 UTC · ${local} local`;
+}
+
+export function durableObjectsResetLabel(now = new Date()): string {
+  const ms = msUntilDurableObjectsReset(now);
+  return `Free-tier DO duration resets in ${formatDurationUntil(ms)} (${durableObjectsResetDetail(now)})`;
 }
