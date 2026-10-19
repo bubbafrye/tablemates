@@ -1,0 +1,103 @@
+/* Figma game-tray (268:25969) — 434×457. */
+.root {
+  position: relative;
+  width: 434px;
+  height: 457px;
+  /* box-shadow — not filter — so tile mix-blend-overlay still works */
+  box-shadow: 0 4px 5px rgba(0, 0, 0, 0.25);
+  border-radius: 15px;
+}
+
+.base {
+  position: absolute;
+  left: 0;
+  top: 6px;
+  z-index: 0;
+  width: 434px;
+  height: 434px;
+}
+
+/*
+ * Same edge asset twice, half-masked (268:25969):
+ *   upperframe (243:24354) — clip top 217px, behind tiles
+ *   lowerframe (243:24355) — clip from y=193 h=264, in front of tiles
+ * SoT paint order: base → upperframe → tiles → lowerframe.
+ */
+.upperframe {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  width: 434px;
+  height: 217px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/*
+ * Edge instance 434×435 at (0,0) in upperframe (242:23583).
+ * SVG 452×458 with shadow pad — Figma inset [0_-2.07%_-5.29%_-2.07%] → left -9, top 0.
+ */
+.upperEdge {
+  position: absolute;
+  left: -9px;
+  top: 0;
+  width: 452px;
+  height: 458px;
+}
+
+.lowerframe {
+  position: absolute;
+  left: 0;
+  top: 193px;
+  z-index: 3;
+  width: 434px;
+  height: 264px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.lowerEdge {
+  position: absolute;
+  left: -9px;
+  /*
+   * Lower top-edge abs y = game-tray + 11 (243:24357).
+   * Within lowerframe (top 193): 11 - 193.
+   */
+  top: calc(11px - 193px);
+  width: 452px;
+  height: 458px;
+}
+
+.tiles {
+  position: absolute;
+  left: 16px;
+  top: 11px;
+  z-index: 2;
+  width: 403px;
+  height: 424px;
+}
+
+.tileAbs {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100px;
+  height: 109px;
+  will-change: transform;
+}
+
+.tileSliding {
+  z-index: 2;
+  transition: none;
+}
+
+.tileSlidingGo {
+  transition: transform 140ms cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tileSlidingGo {
+    transition: none;
+  }
+}

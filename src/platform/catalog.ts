@@ -9,6 +9,8 @@ export type GameDefinition = {
   name: string;
   description: string;
   ready: boolean;
+  /** When false, footer Invite is hidden (solo games). */
+  multiplayer: boolean;
   hero?: GameHero;
 };
 
@@ -28,6 +30,7 @@ export const catalog: GameDefinition[] = [
     description:
       "Classic three-in-a-row. Invite a friend, take turns, and claim the board.",
     ready: true,
+    multiplayer: true,
     hero: {
       lg: "/assets/tic-tac-toe/hero-lg.png",
       sm: "/assets/tic-tac-toe/hero-sm.png",
@@ -40,6 +43,7 @@ export const catalog: GameDefinition[] = [
     description:
       "Arrange your rack low to high. Draw, discard, and race to a rakko — first to 500 wins.",
     ready: true,
+    multiplayer: true,
     hero: {
       lg: "/assets/rakko/hero-lg.png",
       sm: "/assets/rakko/hero-sm.png",
@@ -47,17 +51,24 @@ export const catalog: GameDefinition[] = [
     },
   },
   {
-    id: "placeholder-3",
-    name: "Game Name",
-    description: PLACEHOLDER_DESCRIPTION,
-    ready: false,
-    hero: PLACEHOLDER_HERO,
+    id: "2048",
+    name: "2048",
+    description:
+      "Slide matching tiles together. Reach 2048 — then keep going for a higher score.",
+    ready: true,
+    multiplayer: false,
+    hero: {
+      lg: "/assets/2048/hero-lg.png",
+      sm: "/assets/2048/hero-sm.png",
+      xs: "/assets/2048/hero-xs.png",
+    },
   },
   {
     id: "placeholder-4",
     name: "Game Name",
     description: PLACEHOLDER_DESCRIPTION,
     ready: false,
+    multiplayer: true,
     hero: PLACEHOLDER_HERO,
   },
   {
@@ -65,6 +76,7 @@ export const catalog: GameDefinition[] = [
     name: "Game Name",
     description: PLACEHOLDER_DESCRIPTION,
     ready: false,
+    multiplayer: true,
     hero: PLACEHOLDER_HERO,
   },
   {
@@ -72,6 +84,7 @@ export const catalog: GameDefinition[] = [
     name: "Game Name",
     description: PLACEHOLDER_DESCRIPTION,
     ready: false,
+    multiplayer: true,
     hero: PLACEHOLDER_HERO,
   },
 ];

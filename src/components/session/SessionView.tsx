@@ -1,5 +1,6 @@
 "use client";
 
+import { Game2048 } from "@_2048/Game2048";
 import { RakkoGame } from "@_rakko/RakkoGame";
 import { TicTacToeGame } from "@_tic-tac-toe/TicTacToeGame";
 import { SiteFooter } from "@/components/layout/SiteFooter";
@@ -48,6 +49,19 @@ export function SessionView({ code, gameId }: SessionViewProps) {
         sendGame={session.sendGame}
         setScore={session.setScore}
         setName={session.setName}
+      />
+    );
+  }
+
+  if (resolvedGameId === "2048") {
+    return (
+      <Game2048
+        code={code}
+        playerId={session.playerId}
+        session={session.state}
+        connected={session.connected}
+        sendGame={session.sendGame}
+        setScore={session.setScore}
       />
     );
   }

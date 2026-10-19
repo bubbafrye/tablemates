@@ -1,0 +1,127 @@
+/* Figma tray (213:154933) — floor 434×434 + edge chrome. */
+.floor {
+  position: relative;
+  width: 434px;
+  height: 434px;
+  overflow: hidden;
+  border-radius: 15px;
+}
+
+.recess {
+  position: absolute;
+  left: 0;
+  top: 0;
+  box-sizing: border-box;
+  width: 434px;
+  height: 434px;
+  overflow: hidden;
+  border: 0.5px solid #fffaed;
+  border-radius: 3px;
+  /* Figma: gradient-to-b from #668d8e → #c4dbd9 (top darker → bottom lighter) */
+  background: linear-gradient(180deg, #668d8e 0%, #c4dbd9 100%);
+  /* Recessed interior: cool inset + warm top vignette (game-tray SoT) */
+  box-shadow:
+    inset 2px 6px 10px rgba(34, 38, 38, 0.25),
+    inset 0 10px 50px #603121;
+}
+
+.grid {
+  position: absolute;
+  left: 14.5px;
+  top: 14.5px;
+  width: 404px;
+  height: 404px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.dividerH,
+.dividerV {
+  position: absolute;
+  background: rgba(99, 51, 19, 0.6);
+}
+
+.highlightH,
+.highlightV {
+  position: absolute;
+  background: #fff;
+  opacity: 0.32;
+}
+
+.dividerH {
+  left: 0;
+  width: 404px;
+  height: 0.5px;
+}
+
+.highlightH {
+  left: 0;
+  width: 404px;
+  height: 0.5px;
+}
+
+.dividerV {
+  top: 0;
+  width: 0.5px;
+  height: 404px;
+}
+
+.highlightV {
+  top: 0;
+  width: 0.5px;
+  height: 404px;
+}
+
+/* Intersections at 101 / 202 / 303 */
+.d1 {
+  top: 100.5px;
+}
+.h1 {
+  top: 101px;
+}
+.d2 {
+  top: 201.5px;
+}
+.h2 {
+  top: 202px;
+}
+.d3 {
+  top: 302.5px;
+}
+.h3 {
+  top: 303px;
+}
+
+.vd1 {
+  left: 100.5px;
+}
+.vh1 {
+  left: 101px;
+}
+.vd2 {
+  left: 201.5px;
+}
+.vh2 {
+  left: 202px;
+}
+.vd3 {
+  left: 302.5px;
+}
+.vh3 {
+  left: 303px;
+}
+
+.edgeWrap {
+  position: relative;
+  /* Native SVG viewBox 452×458 (includes drop shadow padding). */
+  width: 452px;
+  height: 458px;
+  pointer-events: none;
+}
+
+.edgeImg {
+  display: block;
+  width: 452px;
+  height: 458px;
+  max-width: none;
+}

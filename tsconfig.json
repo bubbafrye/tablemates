@@ -21,7 +21,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@_tic-tac-toe/*": ["./_tic-tac-toe/*"],
-      "@_rakko/*": ["./_rakko/*"]
+      "@_rakko/*": ["./_rakko/*"],
+      "@_2048/*": ["./_2048/*"]
     }
   },
   "include": [

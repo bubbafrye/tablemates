@@ -1,0 +1,118 @@
+/* Figma lighting speculars (242:23026) — 94×95 at left 3 / top 3. */
+.root {
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  z-index: 3;
+  width: 94px;
+  height: 95px;
+  overflow: hidden;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.img {
+  display: block;
+  max-width: none;
+  object-fit: fill;
+}
+
+/* inset 6.2% 7.22% 54.74% 6.27% */
+.unionTl {
+  position: absolute;
+  left: 6.27%;
+  top: 6.2%;
+  right: 7.22%;
+  bottom: 54.74%;
+  width: auto;
+  height: auto;
+}
+
+/* inset 8.34% 61.93% 78.95% 8.51% */
+.unionTl2 {
+  position: absolute;
+  left: 8.51%;
+  top: 8.34%;
+  right: 61.93%;
+  bottom: 78.95%;
+  width: auto;
+  height: auto;
+}
+
+/* inset 85.38% 7.45% 6.2% 6.38% — rotated 180° */
+.unionBrWrap {
+  position: absolute;
+  left: 6.38%;
+  top: 85.38%;
+  right: 7.45%;
+  bottom: 6.2%;
+}
+
+.unionBr {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: fill;
+  transform: rotate(180deg);
+}
+
+/* inset 13.71% 78.59% 82.08% 11.84% */
+.rectTl,
+.rectTlDup {
+  position: absolute;
+  left: 11.84%;
+  top: 13.71%;
+  right: 78.59%;
+  bottom: 82.08%;
+  width: auto;
+  height: auto;
+}
+
+.rectTlDup {
+  z-index: 1;
+}
+
+/* inset 89.15% 9.27% 8.4% 87.37% — rotated 180° */
+.rectBrWrap {
+  position: absolute;
+  left: 87.37%;
+  top: 89.15%;
+  right: 9.27%;
+  bottom: 8.4%;
+}
+
+.rectBr {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: fill;
+  transform: rotate(180deg);
+}
+
+/*
+ * Figma 242:22912: mix-blend-color-burn.
+ * Positioned as a *sibling* of tint under the tile (not inside .root) so the
+ * blend composites against the grey+overlay stack. Radial matches Figma’s
+ * userSpace transform → ~56px circle at (47,47) on a 94×94 face, offset +3/+3.
+ */
+.burn {
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  z-index: 3;
+  width: 94px;
+  height: 94px;
+  border-radius: 2px;
+  mix-blend-mode: color-burn;
+  pointer-events: none;
+  background: radial-gradient(
+    circle 55.952px at 47px 47px,
+    rgba(255, 255, 255, 1) 26.923%,
+    rgba(216, 225, 226, 1) 45.192%,
+    rgba(176, 196, 197, 1) 63.462%,
+    rgba(137, 166, 169, 1) 81.731%,
+    rgba(97, 136, 140, 1) 100%
+  );
+}
