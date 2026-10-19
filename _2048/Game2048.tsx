@@ -58,6 +58,7 @@ export function Game2048({
     plan: SlidePlan;
   } | null>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const boardSlotRef = useRef<HTMLDivElement | null>(null);
   const lastPublishedScore = useRef(-1);
   const seededRef = useRef(false);
   const slideSnapshot = useRef<{ base: Game2048State; plan: SlidePlan } | null>(
@@ -182,6 +183,18 @@ export function Game2048({
     else move(dy > 0 ? "down" : "up");
   }
 
+  /* iOS Safari still scrolls unless touchmove is canceled with a non-passive listener. */
+  useEffect(() => {
+    const el = boardSlotRef.current;
+    if (!el) return;
+    function onTouchMove(event: globalThis.TouchEvent) {
+      if (!touchStart.current) return;
+      event.preventDefault();
+    }
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    return () => el.removeEventListener("touchmove", onTouchMove);
+  }, []);
+
   return (
     <div className={styles.page} data-name="2048">
       <SiteHeader roomCode={code} gameId="2048" />
@@ -199,6 +212,7 @@ export function Game2048({
           </div>
 
           <div
+            ref={boardSlotRef}
             className={styles.boardSlot}
             data-name="game-board"
             onTouchStart={onTouchStart}

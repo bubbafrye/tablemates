@@ -84,6 +84,9 @@
   justify-content: center;
   /* Scale Figma 434 tray to fit narrow viewports */
   --board-fit: min(1, calc((100vw - 40px) / 434px));
+  /* Swipes move tiles — don't scroll/zoom the page from the board. */
+  touch-action: none;
+  overscroll-behavior: none;
 }
 
 .boardScale {
