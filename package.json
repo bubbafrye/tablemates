@@ -7,6 +7,8 @@
     "party": "wrangler dev",
     "party:deploy": "wrangler deploy",
     "tokens": "node scripts/tokens-to-css.mjs",
+    "export:2048-tiles": "node scripts/export-2048-tiles.mjs",
+    "prebuild": "node scripts/export-2048-tiles.mjs",
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",

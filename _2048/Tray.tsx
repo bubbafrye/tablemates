@@ -8,7 +8,7 @@ type TrayProps = {
   style?: CSSProperties;
 };
 
-/** Figma `tray` (`213:154933`) — recessed floor grid or edge chrome. */
+/** Figma `tray` floor (`217:12169`) / edge (`213:154934`). */
 export function Tray({ variant = "floor", className, style }: TrayProps) {
   if (variant === "edge") {
     return (
@@ -38,21 +38,22 @@ export function Tray({ variant = "floor", className, style }: TrayProps) {
       data-variant="floor"
       data-node-id="217:12169"
     >
-      <div className={styles.recess} data-name="Recessed interior">
-        <div className={styles.grid} data-name="Tile grid" aria-hidden>
-          <span className={`${styles.dividerH} ${styles.d1}`} />
-          <span className={`${styles.highlightH} ${styles.h1}`} />
-          <span className={`${styles.dividerV} ${styles.vd1}`} />
-          <span className={`${styles.highlightV} ${styles.vh1}`} />
-          <span className={`${styles.dividerH} ${styles.d2}`} />
-          <span className={`${styles.highlightH} ${styles.h2}`} />
-          <span className={`${styles.dividerV} ${styles.vd2}`} />
-          <span className={`${styles.highlightV} ${styles.vh2}`} />
-          <span className={`${styles.dividerH} ${styles.d3}`} />
-          <span className={`${styles.highlightH} ${styles.h3}`} />
-          <span className={`${styles.dividerV} ${styles.vd3}`} />
-          <span className={`${styles.highlightV} ${styles.vh3}`} />
-        </div>
+      <div className={styles.recess} data-name="Recessed interior" data-node-id="217:12148">
+        {/*
+          Figma `Tile grid` (`217:12150`) — vector `307:49625` at (15,9) 406×421
+          inside a full 434×434 frame. Lines baked in tray-grid.svg.
+        */}
+        <img
+          className={styles.grid}
+          src={withBasePath("/assets/2048/tray-grid.svg?v=y4")}
+          alt=""
+          width={434}
+          height={434}
+          data-name="Tile grid"
+          data-node-id="217:12150"
+          aria-hidden
+          draggable={false}
+        />
       </div>
     </div>
   );

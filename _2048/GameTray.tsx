@@ -4,7 +4,6 @@ import { useEffect, useRef, useState, type TransitionEvent } from "react";
 import type { Board, TileMotion } from "./logic";
 import { SIZE, cellOffset } from "./logic";
 import { Tile } from "./Tile";
-import { TileTextFilterDefs } from "./TileTextFilter";
 import { Tray } from "./Tray";
 import styles from "./GameTray.module.css";
 
@@ -115,7 +114,6 @@ export function GameTray({
 
   return (
     <div className={styles.root} data-name="game-tray" data-node-id="268:25969">
-      <TileTextFilterDefs />
       <div className={styles.base} data-name="base">
         <Tray variant="floor" />
       </div>
@@ -135,7 +133,7 @@ export function GameTray({
               className={styles.tileAbs}
               style={{ transform: `translate3d(${x}px, ${y}px, 0)` }}
             >
-              <Tile value={t.value} pop={t.pop} lite={sliding} />
+              <Tile value={t.value} pop={t.pop} />
             </div>
           );
         })}
@@ -155,7 +153,7 @@ export function GameTray({
               style={{ transform: `translate3d(${pos.x}px, ${pos.y}px, 0)` }}
               onTransitionEnd={i === 0 ? handleSlideTransitionEnd : undefined}
             >
-              <Tile value={m.value} lite />
+              <Tile value={m.value} />
             </div>
           );
         })}

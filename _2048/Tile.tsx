@@ -1,51 +1,48 @@
-import { Lighting, LightingBurn } from "./Lighting";
-import { tileGlow, tileTint } from "./tileColors";
+import type { CSSProperties } from "react";
+import { withBasePath } from "@/platform/site";
+import { TILE_ART } from "./tileArt.generated";
+import { tileGlow } from "./tileColors";
 import styles from "./Tile.module.css";
 
 type TileProps = {
   value: number;
   /** Play spawn pop when this tile just appeared. */
   pop?: boolean;
-  /**
-   * Skip SVG text filter (re-rasterizes every transform frame → jank).
-   * Used while the board is sliding.
-   */
-  lite?: boolean;
 };
 
+function tileSrc(value: number): string {
+  return withBasePath(`/assets/2048/tiles/${value}.png`);
+}
+
 /**
- * Figma `tile` (`213:154683` / tile-2 `213:154651`):
- * tile-base → tint (overlay) → tile-text → lighting speculars → color-burn.
- * Color-burn is a sibling of tint (not nested under lighting) so mix-blend works.
+ * Figma `tile` (`213:154683`) — baked PNG per value (see scripts/export-2048-tiles.mjs).
+ * Number + lighting + blends are in the asset for mobile-safe compositing.
  */
-export function Tile({ value, pop = false, lite = false }: TileProps) {
+export function Tile({ value, pop = false }: TileProps) {
   const glow = tileGlow(value);
+  const artStyle = {
+    ...(glow ? { boxShadow: glow } : {}),
+    "--tile-art-x": `${TILE_ART.offsetX}px`,
+    "--tile-art-y": `${TILE_ART.offsetY}px`,
+    "--tile-art-w": `${TILE_ART.imgWidth}px`,
+    "--tile-art-h": `${TILE_ART.imgHeight}px`,
+  } as CSSProperties;
+
   return (
     <div
       className={[styles.root, pop ? styles.pop : ""].filter(Boolean).join(" ")}
       data-name={`tile-${value}`}
       data-node-id="213:154683"
-      style={glow ? { boxShadow: glow } : undefined}
+      style={artStyle}
     >
-      <div className={styles.base} data-name="tile-base" data-node-id="243:24471">
-        <div className={styles.edge} data-name="edge" />
-        <div className={styles.face} data-name="face" />
-      </div>
-      <div
-        className={styles.tint}
-        data-name="tint"
-        style={{ background: tileTint(value) }}
+      <img
+        className={styles.art}
+        src={tileSrc(value)}
+        alt=""
+        width={TILE_ART.imgWidth}
+        height={TILE_ART.imgHeight}
+        draggable={false}
       />
-      {/* Speculars + color-burn under tile-text. */}
-      <Lighting />
-      <LightingBurn />
-      <p
-        className={[styles.label, lite ? styles.labelLite : ""].filter(Boolean).join(" ")}
-        data-name="tile-text"
-        data-node-id="243:24508"
-      >
-        {value}
-      </p>
     </div>
   );
 }

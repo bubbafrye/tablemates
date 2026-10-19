@@ -1,0 +1,103 @@
+{
+  "fileKey": "tE15PVyJVeYZ6XP0d0xfMc",
+  "componentSetId": "213:154683",
+  "scale": 2,
+  "sourceHash": "mcp-seed-pending-rest-hash",
+  "exportedAt": "2026-10-19T20:15:00.000000+00:00",
+  "frame": {
+    "cellWidth": 100,
+    "cellHeight": 109,
+    "imgWidth": 115.0,
+    "imgHeight": 124.0,
+    "offsetX": -7.5,
+    "offsetY": -7.5
+  },
+  "tiles": {
+    "2": {
+      "nodeId": "213:154651",
+      "file": "2.png",
+      "pixelWidth": 230,
+      "pixelHeight": 248
+    },
+    "4": {
+      "nodeId": "213:154866",
+      "file": "4.png",
+      "pixelWidth": 230,
+      "pixelHeight": 248
+    },
+    "8": {
+      "nodeId": "213:154854",
+      "file": "8.png",
+      "pixelWidth": 230,
+      "pixelHeight": 248
+    },
+    "16": {
+      "nodeId": "213:154872",
+      "file": "16.png",
+      "pixelWidth": 230,
+      "pixelHeight": 248
+    },
+    "32": {
+      "nodeId": "213:154860",
+      "file": "32.png",
+      "pixelWidth": 230,
+      "pixelHeight": 248
+    },
+    "64": {
+      "nodeId": "213:154878",
+      "file": "64.png",
+      "pixelWidth": 230,
+      "pixelHeight": 248
+    },
+    "128": {
+      "nodeId": "216:2",
+      "file": "128.png",
+      "pixelWidth": 230,
+      "pixelHeight": 248
+    },
+    "256": {
+      "nodeId": "216:8",
+      "file": "256.png",
+      "pixelWidth": 230,
+      "pixelHeight": 248
+    },
+    "512": {
+      "nodeId": "216:14",
+      "file": "512.png",
+      "pixelWidth": 230,
+      "pixelHeight": 248
+    },
+    "1024": {
+      "nodeId": "216:20",
+      "file": "1024.png",
+      "pixelWidth": 230,
+      "pixelHeight": 248
+    },
+    "2048": {
+      "nodeId": "216:38",
+      "file": "2048.png",
+      "pixelWidth": 230,
+      "pixelHeight": 248
+    },
+    "4096": {
+      "nodeId": "216:32",
+      "file": "4096.png",
+      "pixelWidth": 230,
+      "pixelHeight": 248
+    },
+    "8192": {
+      "nodeId": "216:26",
+      "file": "8192.png",
+      "pixelWidth": 230,
+      "pixelHeight": 248
+    },
+    "16384": {
+      "nodeId": "216:44",
+      "file": "16384.png",
+      "pixelWidth": 230,
+      "pixelHeight": 248
+    }
+  },
+  "alpha": "transparent",
+  "verifiedAt": "2026-10-19"
+}

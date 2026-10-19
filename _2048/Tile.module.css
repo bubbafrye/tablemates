@@ -1,103 +1,24 @@
-/* Figma tile (213:154683) / tile-base (243:24471) — 100×109. */
+/* Figma tile bake — logical cell 100×109; PNG includes drop-shadow pad. */
 .root {
   position: relative;
   box-sizing: border-box;
   width: 100px;
   height: 109px;
-  overflow: hidden;
-  border: 0.5px solid rgba(0, 0, 0, 0.9);
-  border-radius: 7px;
-  box-shadow: 0 4px 7px rgba(0, 0, 0, 0.25);
+  overflow: visible;
   flex-shrink: 0;
-  /*
-   * Isolate so mix-blend-overlay / color-burn composite against the grey base
-   * (+ siblings), not the teal tray behind the tile.
-   */
-  isolation: isolate;
-}
-
-.base {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
   border-radius: 7px;
-  border: 0.5px solid rgba(0, 0, 0, 0.9);
 }
 
-.edge {
+.art {
   position: absolute;
-  /* inset 3.81% 0 -3.81% 0 */
-  left: 0;
-  right: 0;
-  top: 3.81%;
-  bottom: -3.81%;
-  border-radius: 5px;
-  border: 0.5px solid #a0a0a0;
-  background: #595959;
-}
-
-.face {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  aspect-ratio: 1;
-  border-radius: 5px;
-  border: 5.5px solid #969696;
-  /*
-   * SoT fill #909090. Overlay’s lighten branch (Cb>0.5) blows chrome toward
-   * white in browsers; Figma’s render stays saturated. Nudge luminance just
-   * under mid-grey so Overlay uses the multiply branch and matches the SoT
-   * screenshot while keeping mix-blend-mode: overlay.
-   */
-  /* Figma face fill (243:24473) */
-  background: #909090;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
-}
-
-/* Figma tint: solid fill + mix-blend-overlay (213:154618). */
-.tint {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  border-radius: 5px;
-  border: 0.5px solid #3a3a3a;
-  mix-blend-mode: overlay;
+  left: var(--tile-art-x, -7.5px);
+  top: var(--tile-art-y, -7.5px);
+  width: var(--tile-art-w, 115px);
+  height: var(--tile-art-h, 124px);
+  max-width: none;
+  display: block;
   pointer-events: none;
-}
-
-.label {
-  position: absolute;
-  left: 0;
-  top: 0;
-  /* Above lighting speculars + color-burn (z-index 3). */
-  z-index: 4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100px;
-  height: 103.81px;
-  margin: 0;
-  /*
-   * Opaque black so SourceAlpha is the full glyph. Fill @ 40% +
-   * DROP_SHADOW / INNER_SHADOW are rebuilt in #tm-2048-tile-text (SoT 243:24502).
-   */
-  color: #000;
-  font-family: var(--font-2048-face), sans-serif;
-  font-size: 41px;
-  font-weight: 400;
-  line-height: normal;
-  text-align: center;
-  filter: url(#tm-2048-tile-text);
-  pointer-events: none;
-}
-
-/* Cheap stand-in while sliding — avoids SVG filter per animation frame. */
-.labelLite {
-  filter: none;
-  color: rgba(0, 0, 0, 0.4);
-  text-shadow: 0.5px 0.5px 0 rgba(255, 255, 255, 0.6);
+  user-select: none;
 }
 
 @keyframes tilePop {
