@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/layout/SiteHeader";
 import { ConnectionBanner } from "@/components/session/ConnectionBanner";
 import type { SessionState } from "@/platform/protocol";
 import { GameTray } from "./GameTray";
+import { readHighScore, writeHighScoreIfBetter } from "./highScore";
 import {
   commitSlide,
   continueAfterWin,
@@ -52,6 +53,8 @@ export function Game2048({
   const router = useRouter();
   /* Empty board until client mount — avoids Math.random hydration mismatch. */
   const [local, setLocal] = useState<Game2048State | null>(null);
+  const [highScore, setHighScore] = useState(0);
+  const [isNewBest, setIsNewBest] = useState(false);
   const [popIndices, setPopIndices] = useState<ReadonlySet<number>>(new Set());
   const [slide, setSlide] = useState<{
     fromBoard: Board;
@@ -61,6 +64,8 @@ export function Game2048({
   const boardSlotRef = useRef<HTMLDivElement | null>(null);
   const lastPublishedScore = useRef(-1);
   const seededRef = useRef(false);
+  /** Best at the start of the current round — beat this → NEW BEST until next round. */
+  const roundBestBaseline = useRef(0);
   const slideSnapshot = useRef<{ base: Game2048State; plan: SlidePlan } | null>(
     null,
   );
@@ -78,6 +83,12 @@ export function Game2048({
     (game!.status === "playing" || (game!.status === "won" && game!.continued));
 
   useEffect(() => {
+    const best = readHighScore();
+    setHighScore(best);
+    roundBestBaseline.current = best;
+  }, []);
+
+  useEffect(() => {
     if (remote || seededRef.current) return;
     const seeded = createInitialState();
     seededRef.current = true;
@@ -91,6 +102,12 @@ export function Game2048({
     lastPublishedScore.current = game.score;
     setScore(playerId, game.score);
   }, [game, connected, isHost, playerId, setScore]);
+
+  useEffect(() => {
+    if (!game) return;
+    if (game.score > roundBestBaseline.current) setIsNewBest(true);
+    setHighScore(writeHighScoreIfBetter(game.score));
+  }, [game?.score]);
 
   function publish(next: Game2048State, pops?: ReadonlySet<number>) {
     setLocal(next);
@@ -154,6 +171,9 @@ export function Game2048({
     if (session && connected && !isHost) return;
     lastPublishedScore.current = -1;
     seededRef.current = true;
+    setIsNewBest(false);
+    roundBestBaseline.current = readHighScore();
+    setHighScore(roundBestBaseline.current);
     publish(resetGame());
   }
 
@@ -203,11 +223,37 @@ export function Game2048({
         <div className={styles.gameArea} data-name="game-area">
           <div className={styles.scoreRow}>
             <h1 className={styles.title}>2048</h1>
-            <div className={styles.scoreboard} aria-live="polite">
-              <p className={styles.scoreLabel}>Score</p>
-              <p className={styles.scoreValue}>
-                {(game?.score ?? 0).toLocaleString()}
-              </p>
+            <div className={styles.scoreBoards}>
+              <div
+                className={[
+                  styles.scoreboard,
+                  isNewBest ? "" : styles.scoreboardBest,
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                aria-label={isNewBest ? "New best score" : "Best score"}
+                aria-live="polite"
+              >
+                <p className={styles.scoreLabel}>
+                  {isNewBest ? "New best" : "Best"}
+                </p>
+                <p
+                  className={[
+                    styles.scoreValue,
+                    isNewBest ? "" : styles.scoreValueBest,
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
+                  {highScore.toLocaleString()}
+                </p>
+              </div>
+              <div className={styles.scoreboard} aria-live="polite">
+                <p className={styles.scoreLabel}>Score</p>
+                <p className={styles.scoreValue}>
+                  {(game?.score ?? 0).toLocaleString()}
+                </p>
+              </div>
             </div>
           </div>
 
