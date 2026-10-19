@@ -93,6 +93,13 @@
   pointer-events: none;
 }
 
+/* Cheap stand-in while sliding — avoids SVG filter per animation frame. */
+.labelLite {
+  filter: none;
+  color: rgba(0, 0, 0, 0.4);
+  text-shadow: 0.5px 0.5px 0 rgba(255, 255, 255, 0.6);
+}
+
 @keyframes tilePop {
   0% {
     transform: scale(0.6);

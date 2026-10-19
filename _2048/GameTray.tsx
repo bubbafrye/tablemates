@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type TransitionEvent } from "react";
 import type { Board, TileMotion } from "./logic";
 import { SIZE, cellOffset } from "./logic";
 import { Tile } from "./Tile";
@@ -19,6 +19,8 @@ type GameTrayProps = {
    * When set, board cells that are motion sources are hidden (drawn as movers).
    */
   motions?: TileMotion[] | null;
+  /** Fires once when the CSS slide transition finishes (or immediately if reduced). */
+  onSlideComplete?: () => void;
 };
 
 type AnimTile = {
@@ -32,11 +34,20 @@ type AnimTile = {
  * Figma `game-tray` (`268:25969`) — floor + duplicated edge (upper/lower masks) + tiles.
  * Paint: base → upperframe (behind) → tiles → lowerframe (in front).
  */
-export function GameTray({ board, popIndices, motions = null }: GameTrayProps) {
+export function GameTray({
+  board,
+  popIndices,
+  motions = null,
+  onSlideComplete,
+}: GameTrayProps) {
   const sliding = Boolean(motions && motions.length > 0);
   const [slideProgressed, setSlideProgressed] = useState(false);
+  const completedRef = useRef(false);
+  const onCompleteRef = useRef(onSlideComplete);
+  onCompleteRef.current = onSlideComplete;
 
   useEffect(() => {
+    completedRef.current = false;
     if (!sliding) {
       setSlideProgressed(false);
       return;
@@ -47,13 +58,31 @@ export function GameTray({ board, popIndices, motions = null }: GameTrayProps) {
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
       setSlideProgressed(true);
+      onCompleteRef.current?.();
       return;
     }
     const id = window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => setSlideProgressed(true));
     });
-    return () => window.cancelAnimationFrame(id);
+    /* Fallback if transitionend is skipped (tab background, etc.). */
+    const fallback = window.setTimeout(() => {
+      if (completedRef.current) return;
+      completedRef.current = true;
+      onCompleteRef.current?.();
+    }, SLIDE_MS + 50);
+    return () => {
+      window.cancelAnimationFrame(id);
+      window.clearTimeout(fallback);
+    };
   }, [sliding, motions]);
+
+  function handleSlideTransitionEnd(event: TransitionEvent<HTMLDivElement>) {
+    if (event.propertyName !== "transform") return;
+    if (event.target !== event.currentTarget) return;
+    if (completedRef.current) return;
+    completedRef.current = true;
+    onCompleteRef.current?.();
+  }
 
   const leaving = new Set(motions?.map((m) => m.from) ?? []);
 
@@ -104,14 +133,14 @@ export function GameTray({ board, popIndices, motions = null }: GameTrayProps) {
             <div
               key={t.key}
               className={styles.tileAbs}
-              style={{ transform: `translate(${x}px, ${y}px)` }}
+              style={{ transform: `translate3d(${x}px, ${y}px, 0)` }}
             >
-              <Tile value={t.value} pop={t.pop} />
+              <Tile value={t.value} pop={t.pop} lite={sliding} />
             </div>
           );
         })}
 
-        {motions?.map((m) => {
+        {motions?.map((m, i) => {
           const pos = cellOffset(slideProgressed ? m.to : m.from);
           return (
             <div
@@ -123,9 +152,10 @@ export function GameTray({ board, popIndices, motions = null }: GameTrayProps) {
               ]
                 .filter(Boolean)
                 .join(" ")}
-              style={{ transform: `translate(${pos.x}px, ${pos.y}px)` }}
+              style={{ transform: `translate3d(${pos.x}px, ${pos.y}px, 0)` }}
+              onTransitionEnd={i === 0 ? handleSlideTransitionEnd : undefined}
             >
-              <Tile value={m.value} />
+              <Tile value={m.value} lite />
             </div>
           );
         })}

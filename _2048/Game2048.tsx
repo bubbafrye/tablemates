@@ -6,7 +6,7 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { ConnectionBanner } from "@/components/session/ConnectionBanner";
 import type { SessionState } from "@/platform/protocol";
-import { GameTray, SLIDE_MS } from "./GameTray";
+import { GameTray } from "./GameTray";
 import {
   commitSlide,
   continueAfterWin,
@@ -60,7 +60,9 @@ export function Game2048({
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const lastPublishedScore = useRef(-1);
   const seededRef = useRef(false);
-  const slideTimer = useRef<number | null>(null);
+  const slideSnapshot = useRef<{ base: Game2048State; plan: SlidePlan } | null>(
+    null,
+  );
 
   const remote = isGame2048State(session?.game) ? session.game : null;
   const game = remote ?? local;
@@ -73,12 +75,6 @@ export function Game2048({
     !animating &&
     !paused &&
     (game!.status === "playing" || (game!.status === "won" && game!.continued));
-
-  useEffect(() => {
-    return () => {
-      if (slideTimer.current != null) window.clearTimeout(slideTimer.current);
-    };
-  }, []);
 
   useEffect(() => {
     if (remote || seededRef.current) return;
@@ -106,8 +102,15 @@ export function Game2048({
     const { state, spawnIndex } = commitSlide(base, plan);
     const pops = new Set(plan.mergeTargets);
     if (spawnIndex >= 0) pops.add(spawnIndex);
+    slideSnapshot.current = null;
     setSlide(null);
     publish(state, pops);
+  }
+
+  function handleSlideComplete() {
+    const snap = slideSnapshot.current;
+    if (!snap) return;
+    finishSlide(snap.base, snap.plan);
   }
 
   function move(direction: Direction) {
@@ -124,13 +127,8 @@ export function Game2048({
       return;
     }
 
+    slideSnapshot.current = { base: game, plan };
     setSlide({ fromBoard: game.board, plan });
-    if (slideTimer.current != null) window.clearTimeout(slideTimer.current);
-    const snapshot = game;
-    slideTimer.current = window.setTimeout(() => {
-      slideTimer.current = null;
-      finishSlide(snapshot, plan);
-    }, SLIDE_MS);
   }
 
   useEffect(() => {
@@ -215,6 +213,7 @@ export function Game2048({
                 }
                 motions={slide?.plan.motions ?? null}
                 popIndices={popIndices}
+                onSlideComplete={handleSlideComplete}
               />
             </div>
           </div>

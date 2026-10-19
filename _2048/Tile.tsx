@@ -6,6 +6,11 @@ type TileProps = {
   value: number;
   /** Play spawn pop when this tile just appeared. */
   pop?: boolean;
+  /**
+   * Skip SVG text filter (re-rasterizes every transform frame → jank).
+   * Used while the board is sliding.
+   */
+  lite?: boolean;
 };
 
 /**
@@ -13,7 +18,7 @@ type TileProps = {
  * tile-base → tint (overlay) → tile-text → lighting speculars → color-burn.
  * Color-burn is a sibling of tint (not nested under lighting) so mix-blend works.
  */
-export function Tile({ value, pop = false }: TileProps) {
+export function Tile({ value, pop = false, lite = false }: TileProps) {
   const glow = tileGlow(value);
   return (
     <div
@@ -35,7 +40,7 @@ export function Tile({ value, pop = false }: TileProps) {
       <Lighting />
       <LightingBurn />
       <p
-        className={styles.label}
+        className={[styles.label, lite ? styles.labelLite : ""].filter(Boolean).join(" ")}
         data-name="tile-text"
         data-node-id="243:24508"
       >

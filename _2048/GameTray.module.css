@@ -84,12 +84,13 @@
   top: 0;
   width: 100px;
   height: 109px;
-  will-change: transform;
 }
 
 .tileSliding {
   z-index: 2;
   transition: none;
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 .tileSlidingGo {
