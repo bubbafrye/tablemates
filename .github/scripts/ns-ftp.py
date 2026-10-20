@@ -53,10 +53,11 @@ def main() -> None:
     user, password, server, path = creds()
     if cmd == "smoke":
         lftp(
+            "set cmd:fail-exit no\n"
             "pwd\n"
             "cls -1\n"
             "cls -1 public_html\n"
-            "cls -1 Public_html\n"
+            "set cmd:fail-exit yes\n"
             "quit\n",
             user,
             password,
