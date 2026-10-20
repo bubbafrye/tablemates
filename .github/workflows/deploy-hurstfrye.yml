@@ -55,10 +55,17 @@ jobs:
           python3 -u .github/scripts/ns-ftp.py smoke
           python3 -u .github/scripts/ns-ftp.py fix-spa-rewrite
           printf 'ftp-ok\n' > tm-ftp-ok.txt
-          python3 -c 'open(".htaccess","w").write("Options +Indexes\nDirectoryIndex index.html\nRewriteEngine Off\n")'
-          python3 -u .github/scripts/ns-ftp.py put .htaccess tm-ftp-ok.txt
-          echo "GET https://hurstfrye.com/tablemates/"
-          curl -sS --max-time 30 "https://hurstfrye.com/tablemates/" | head -n 60
+          printf 'css-ok' > tm-ok.css
+          printf 'js-ok' > tm-ok.js
+          printf '<p>htm-ok</p>' > tm-ok.htm
+          printf '<p>html-ok</p>' > tm-ok.html
+          python3 -c 'open(".htaccess","w").write("DirectoryIndex index.html\nRewriteEngine Off\n")'
+          python3 -u .github/scripts/ns-ftp.py put .htaccess tm-ftp-ok.txt tm-ok.css tm-ok.js tm-ok.htm tm-ok.html
+          for f in tm-ftp-ok.txt tm-ok.css tm-ok.js tm-ok.htm tm-ok.html; do
+            echo "==== $f"
+            curl -sS -o /tmp/b -w "HTTP:%{http_code} type:%{content_type} size:%{size_download}\n" --max-time 20 "https://hurstfrye.com/tablemates/$f"
+            head -c 80 /tmp/b; echo
+          done
           echo "GET https://hurstfrye.com/tablemates/tm-ftp-ok.txt"
           body=$(curl -sS --max-time 30 "https://hurstfrye.com/tablemates/tm-ftp-ok.txt")
           echo "$body" | head -n 20
