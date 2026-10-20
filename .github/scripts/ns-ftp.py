@@ -52,14 +52,33 @@ def main() -> None:
     cmd = sys.argv[1]
     user, password, server, path = creds()
     if cmd == "smoke":
-        lftp("pwd\ncls -1\nquit\n", user, password, server, timeout=20)
+        lftp(
+            "pwd\n"
+            "cls -1\n"
+            "cls -1 public_html\n"
+            "cls -1 Public_html\n"
+            "quit\n",
+            user,
+            password,
+            server,
+            timeout=20,
+        )
         return
     if cmd == "put":
         files = sys.argv[2:]
         if not files:
             raise SystemExit("put requires files")
-        puts = "\n".join(f"put {name}" for name in files)
-        script = f"mkdir -p {path}\ncd {path}\n{puts}\nquit\n"
+        puts = "\n".join(
+            f"put -o {os.path.basename(name)} {name}" for name in files
+        )
+        script = (
+            f"mkdir -p {path}\n"
+            f"cd {path}\n"
+            f"pwd\n"
+            f"{puts}\n"
+            "cls -1\n"
+            "quit\n"
+        )
         lftp(script, user, password, server, timeout=180)
         return
     raise SystemExit(f"unknown command {cmd}")

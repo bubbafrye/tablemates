@@ -51,7 +51,12 @@ jobs:
           FTP_USER: ${{ secrets.HURSTFRYE_FTP_USER }}
           LFTP_PASSWORD: ${{ secrets.HURSTFRYE_FTP_PASSWORD }}
           FTP_PATH: ${{ secrets.HURSTFRYE_FTP_PATH }}
-        run: python3 -u .github/scripts/ns-ftp.py smoke
+        run: |
+          python3 -u .github/scripts/ns-ftp.py smoke
+          printf 'ftp-ok\n' > tm-ftp-ok.txt
+          python3 -u .github/scripts/ns-ftp.py put public/.htaccess tm-ftp-ok.txt
+          echo "GET https://hurstfrye.com/tablemates/tm-ftp-ok.txt"
+          curl -sS -D - --max-time 30 "https://hurstfrye.com/tablemates/tm-ftp-ok.txt" | head -n 40
 
       - name: Setup Node
         uses: actions/setup-node@v4
