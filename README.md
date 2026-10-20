@@ -40,7 +40,7 @@ Without `NEXT_PUBLIC_PARTY_HOST`, the catalog still loads; live rooms only work 
 
 ## hurstfrye.com (optional mirror)
 
-Pushing to `main` also runs `.github/workflows/deploy-hurstfrye.yml`, which uploads the same static `out/` build over FTP to Network Solutions at `/tablemates/`. Pages stays enabled.
+Pushing to `main` also runs `.github/workflows/deploy-hurstfrye.yml`, which uploads the same static `out/` build over FTP into the `tablemates` FTP home (`/Public_html/Tablemates`). Pages stays enabled.
 
 Finish the one-time FTP secrets in [`docs/DEPLOY-HURSTFRYE.md`](docs/DEPLOY-HURSTFRYE.md) (Network Solutions hosting uses FTP, not SSH).
 
