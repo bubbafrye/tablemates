@@ -37,7 +37,9 @@ gh secret set HURSTFRYE_FTP_PATH --body '.'
 
 Optional (shared with Pages): variable `NEXT_PUBLIC_PARTY_HOST`, variable `NEXT_PUBLIC_CONTACT_EMAIL`, secret `FIGMA_ACCESS_TOKEN`.
 
-Network Solutions typically does **not** support FTPS (`AUTH TLS` → `504`). The workflow uses plain **FTP on port 21**.
+Network Solutions typically does **not** support FTPS (`AUTH TLS` → `504`). The workflow uses plain **FTP on port 21**. Multi-file FTP hangs on this host, so the Action uploads one zip and a one-shot `unzip-tablemates.php`.
+
+`HURSTFRYE_FTP_PASSWORD` must be the password for the **`tablemates`** FTP user (not the main hosting login).
 
 ## White page at /tablemates/index.html
 

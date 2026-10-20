@@ -39,6 +39,32 @@ jobs:
             exit 1
           fi
 
+      - name: Install lftp
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq lftp zip
+
+      # Fail fast if the `tablemates` FTP user/password/host is wrong.
+      - name: FTP login smoke test
+        env:
+          FTP_SERVER: ${{ secrets.HURSTFRYE_FTP_SERVER }}
+          FTP_USER: ${{ secrets.HURSTFRYE_FTP_USER }}
+          LFTP_PASSWORD: ${{ secrets.HURSTFRYE_FTP_PASSWORD }}
+        run: |
+          echo "FTP user=$FTP_USER server=$FTP_SERVER"
+          lftp -u "$FTP_USER" "ftp://$FTP_SERVER" <<'EOF'
+          set ftp:ssl-allow no
+          set ftp:passive-mode true
+          set ftp:prefer-epsv no
+          set net:max-retries 2
+          set net:timeout 20
+          set cmd:fail-exit yes
+          debug 1
+          pwd
+          cls -1
+          quit
+          EOF
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -59,25 +85,62 @@ jobs:
           NEXT_PUBLIC_CONTACT_EMAIL: ${{ vars.NEXT_PUBLIC_CONTACT_EMAIL }}
           FIGMA_ACCESS_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
 
-      - name: Deploy out/ via FTP
+      # One zip + unzip.php: Network Solutions PASV often dies mid multi-file mirror.
+      - name: Deploy out/ via FTP (zip)
         env:
           FTP_SERVER: ${{ secrets.HURSTFRYE_FTP_SERVER }}
           FTP_USER: ${{ secrets.HURSTFRYE_FTP_USER }}
           LFTP_PASSWORD: ${{ secrets.HURSTFRYE_FTP_PASSWORD }}
           FTP_PATH: ${{ secrets.HURSTFRYE_FTP_PATH }}
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq lftp
-          # User `tablemates` is jailed to /Public_html/Tablemates — upload into `.`
-          # Network Solutions: no FTPS; PASV data sockets often reset — retry, 1 stream.
+          TOKEN=$(openssl rand -hex 16)
+          echo "$TOKEN" > /tmp/deploy-token
+          ( cd out && zip -r -q ../tablemates-out.zip . )
+          cat > unzip-tablemates.php <<PHP
+          <?php
+          if (!hash_equals('${TOKEN}', \$_GET['t'] ?? '')) { http_response_code(403); exit('forbidden'); }
+          \$zip = new ZipArchive();
+          if (\$zip->open(__DIR__ . '/tablemates-out.zip') !== true) { http_response_code(500); exit('zip open failed'); }
+          \$zip->extractTo(__DIR__);
+          \$zip->close();
+          @unlink(__DIR__ . '/tablemates-out.zip');
+          @unlink(__FILE__);
+          echo 'ok';
+          PHP
+          ls -lh tablemates-out.zip unzip-tablemates.php
           lftp -u "$FTP_USER" "ftp://$FTP_SERVER" <<EOF
           set ftp:ssl-allow no
           set ftp:passive-mode true
-          set net:max-retries 30
+          set ftp:prefer-epsv no
+          set net:max-retries 5
           set net:reconnect-interval-base 5
-          set net:timeout 60
+          set net:timeout 180
           set cmd:fail-exit yes
-          lcd ./out
-          mirror -R --verbose --parallel=1 --no-perms . ${FTP_PATH}
+          debug 1
+          cd ${FTP_PATH}
+          put tablemates-out.zip
+          put unzip-tablemates.php
           quit
           EOF
+          echo "UNZIP_TOKEN=$TOKEN" >> "$GITHUB_ENV"
+
+      - name: Unzip on host
+        env:
+          TOKEN: ${{ env.UNZIP_TOKEN }}
+        run: |
+          ok=
+          for url in \
+            "https://hurstfrye.com/tablemates/unzip-tablemates.php?t=${TOKEN}" \
+            "https://hurstfrye.com/Tablemates/unzip-tablemates.php?t=${TOKEN}"
+          do
+            echo "GET $url"
+            body=$(curl -sS -w "\nHTTP:%{http_code}" --max-time 120 "$url" || true)
+            echo "$body"
+            echo "$body" | grep -q '^ok' && { ok=1; break; }
+          done
+          if [ -z "$ok" ]; then
+            echo "::error::Uploaded zip, but unzip.php did not run. Unzip tablemates-out.zip in Network Solutions File Manager."
+            exit 1
+          fi
+          curl -sS "https://hurstfrye.com/tablemates/index.html" | head -c 400
+
