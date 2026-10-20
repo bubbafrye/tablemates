@@ -68,7 +68,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq lftp
           # Network Solutions: no FTPS; PASV data sockets often reset — retry, 1 stream.
-          lftp -u "$FTP_USER," "ftp://$FTP_SERVER" <<EOF
+          lftp -u "$FTP_USER" "ftp://$FTP_SERVER" <<EOF
           set ftp:ssl-allow no
           set ftp:passive-mode true
           set net:max-retries 30
