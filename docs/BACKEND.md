@@ -11,7 +11,7 @@ tablemates is split into two pieces:
 | **Frontend (the site)** | Static web app (Next.js export) | GitHub Pages — [bubbafrye.github.io/tablemates](https://bubbafrye.github.io/tablemates/) — and optionally [hurstfrye.com/tablemates](https://hurstfrye.com/tablemates/) ([deploy doc](./DEPLOY-HURSTFRYE.md)) |
 | **Backend (live rooms)** | Realtime game servers | Cloudflare Workers + Durable Objects — e.g. `tablemates.*.workers.dev` |
 
-The website alone can show the catalog and UI. **Starting or joining a live multiplayer game** needs the Cloudflare backend, because every room is a long-lived server that keeps players in sync over WebSockets. Solo games (`catalog.multiplayer === false`, currently 2048) play entirely in the browser and only POST a personal best to the Leaderboard HTTP API — they do not open a Session room.
+The website alone can show the catalog and UI. **Starting or joining a live multiplayer game** needs the Cloudflare backend, because every room is a long-lived server that keeps players in sync over WebSockets. Solo games (`catalog.multiplayer === false`, currently 2048 and Space Rocks) play entirely in the browser. 2048 POSTs a personal best to the Leaderboard HTTP API. Space Rocks keeps scores in the browser. They do not open a Session room.
 
 ```
 Browser  ──HTTP──►  GitHub Pages (HTML/CSS/JS)

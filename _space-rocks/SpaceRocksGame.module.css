@@ -1,0 +1,16 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  min-height: 100%;
+  /* Game canvas is dark; no matching color token */
+  background: #050314;
+}
+
+.frame {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  border: 0;
+  background: #050314;
+}

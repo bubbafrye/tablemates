@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>Space Rocks - A Journey Into Another Dimension of Space and Time</title>
+  <link rel="icon" type="image/svg+xml" href="_src/icon.svg" />
+  <link id="styles-link" rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+
+    <div id="vignette" class="final-countdown-vignette" aria-hidden="true"></div>
+    <div id="ui-overlay">
+        <header id="hud">
+        <div class="hud-left">
+          <div class="hud-score-group" id="hud-score-single">
+            <span id="score">0</span>
+            <span class="hud-label">SCORE</span>
+          </div>
+          <div class="hud-score-multi" id="hud-score-multi" hidden>
+            <div class="hud-mp-line"><span class="hud-mp-tag">P1</span> <span id="score-p1">0</span></div>
+            <div class="hud-mp-line"><span class="hud-mp-tag">P2</span> <span id="score-p2">0</span></div>
+            <div class="hud-mp-line hud-mp-combined"><span class="hud-mp-tag">Σ</span> <span id="score-combined">0</span></div>
+          </div>
+        </div>
+        <div class="hud-center">
+          <span id="timer">1:00</span>
+          <span class="hud-label">TIME</span>
+        </div>
+        <div class="hud-right">
+          <span id="collected">0</span>
+          <span class="hud-label">CRYSTALS</span>
+        </div>
+      </header>
+
+      <div id="bottom-hud">
+        <div class="bottom-hud-left">
+          <div class="bottom-hud-lives-row" id="bottom-hud-lives-single">
+            <div id="lives"></div>
+            <span class="hud-label">LIVES</span>
+          </div>
+          <div class="bottom-hud-lives-row bottom-hud-lives-multi" id="bottom-hud-lives-multi" hidden>
+            <div class="hud-lives-block"><span class="hud-mp-tag">P1</span><div id="lives-p1"></div></div>
+            <div class="hud-lives-block"><span class="hud-mp-tag">P2</span><div id="lives-p2"></div></div>
+          </div>
+        </div>
+        <div id="bottom-hud-shields" class="bottom-hud-right">
+          <div class="bottom-hud-shields-inner" id="bottom-hud-shields-single">
+            <div id="shields"></div>
+            <span class="hud-label">SHIELDS</span>
+          </div>
+          <div class="bottom-hud-shields-multi" id="bottom-hud-shields-multi" hidden>
+            <div class="hud-shield-block"><span class="hud-mp-tag">P1</span><div id="shields-p1"></div></div>
+            <div class="hud-shield-block"><span class="hud-mp-tag">P2</span><div id="shields-p2"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="screens">
+      <div id="start-screen">
+        <h1>Space Rocks</h1>
+        <p>Collect crystals. Destroy asteroids. Survive.</p>
+        <div class="start-buttons">
+          <button type="button" id="start-btn" class="menu-btn">Single Player</button>
+          <button type="button" id="multiplayer-btn" class="menu-btn">Multiplayer</button>
+        </div>
+        <p class="hint">[Arrow keys] to fly · [Space] to fire · [Shift] for shield
+          <br>Gamepad supported. Beat the clock!</p>
+      </div>
+
+      <div id="multiplayer-screen" hidden>
+        <h2>Multiplayer</h2>
+        <p class="mp-intro">How do you want to play?</p>
+        <div class="mp-mode-row">
+          <div class="mp-mode-switch" role="radiogroup" aria-label="Multiplayer mode">
+            <label class="mp-mode-segment">
+              <input type="radio" name="mp-mode" value="versus" class="mp-mode-input" checked />
+              <span class="mp-mode-segment-inner">Fight</span>
+            </label>
+            <label class="mp-mode-segment">
+              <input type="radio" name="mp-mode" value="coop" class="mp-mode-input" />
+              <span class="mp-mode-segment-inner">Co-op</span>
+            </label>
+          </div>
+        </div>
+        <div class="mp-panels">
+          <div class="mp-panel" data-mp-player="0">
+            <h3 class="mp-panel-title">Player 1</h3>
+            <div class="mp-ship-carousel" data-mp-carousel="0">
+              <button type="button" class="ship-nav-btn mp-ship-prev" data-mp-prev="0" aria-label="Player 1 previous ship"><span class="ship-nav-icon" aria-hidden="true">◀</span></button>
+              <div class="ship-preview">
+                <div class="ship-image-wrap" id="mp-ship-wrap-0">
+                  <div class="ship-engine-flame"></div>
+                  <img id="mp-ship-preview-img-0" alt="Player 1 ship preview">
+                </div>
+              </div>
+              <button type="button" class="ship-nav-btn mp-ship-next" data-mp-next="0" aria-label="Player 1 next ship"><span class="ship-nav-icon" aria-hidden="true">▶</span></button>
+            </div>
+            <p id="mp-ship-description-0" class="ship-description mp-ship-desc"></p>
+            <div id="mp-ship-pagination-0" class="ship-pagination" role="group" aria-label="Player 1 ships"></div>
+            <label class="mp-control-label" for="mp-control-0">Controls</label>
+            <select id="mp-control-0" class="mp-control-select" aria-label="Player 1 controls"></select>
+          </div>
+          <div class="mp-panel" data-mp-player="1">
+            <h3 class="mp-panel-title">Player 2</h3>
+            <div class="mp-ship-carousel" data-mp-carousel="1">
+              <button type="button" class="ship-nav-btn mp-ship-prev" data-mp-prev="1" aria-label="Player 2 previous ship"><span class="ship-nav-icon" aria-hidden="true">◀</span></button>
+              <div class="ship-preview">
+                <div class="ship-image-wrap" id="mp-ship-wrap-1">
+                  <div class="ship-engine-flame"></div>
+                  <img id="mp-ship-preview-img-1" alt="Player 2 ship preview">
+                </div>
+              </div>
+              <button type="button" class="ship-nav-btn mp-ship-next" data-mp-next="1" aria-label="Player 2 next ship"><span class="ship-nav-icon" aria-hidden="true">▶</span></button>
+            </div>
+            <p id="mp-ship-description-1" class="ship-description mp-ship-desc"></p>
+            <div id="mp-ship-pagination-1" class="ship-pagination" role="group" aria-label="Player 2 ships"></div>
+            <label class="mp-control-label" for="mp-control-1">Controls</label>
+            <select id="mp-control-1" class="mp-control-select" aria-label="Player 2 controls"></select>
+          </div>
+        </div>
+        <div class="mp-actions">
+          <button type="button" id="mp-back-btn" class="menu-btn mp-back">Back</button>
+          <button
+            type="button"
+            id="mp-lb-btn"
+            class="menu-btn menu-btn--level-select-action menu-btn--level-select-icon-only"
+            data-hs-mode="coop"
+            data-hs-browse-sectors="true"
+            aria-label="Sector leaderboards"
+          >
+            <span class="menu-btn-inner">
+              <img src="_src/leaderboard.svg" width="28" height="28" alt="" class="level-select-lb-icon" />
+            </span>
+          </button>
+          <button type="button" id="mp-sector-btn" class="menu-btn">Select Sector</button>
+        </div>
+        <p class="hint mp-hint">Co-op: work together, clear the sector. Fight: last ship flying wins.</p>
+      </div>
+
+      <div id="ship-select-screen" hidden>
+        <h2>Select Ship</h2>
+        <div id="ship-carousel">
+          <button type="button" id="ship-prev-btn" class="ship-nav-btn" aria-label="Previous ship">
+            <span class="ship-nav-icon" aria-hidden="true">◀</span>
+          </button>
+          <div class="ship-preview">
+            <div class="ship-image-wrap">
+              <div class="ship-engine-flame"></div>
+              <img id="ship-preview-img" alt="Ship preview">
+            </div>
+          </div>
+          <button type="button" id="ship-next-btn" class="ship-nav-btn" aria-label="Next ship">
+            <span class="ship-nav-icon" aria-hidden="true">▶</span>
+          </button>
+        </div>
+        <p id="ship-description" class="ship-description"></p>
+        <div id="ship-pagination" class="ship-pagination" role="group" aria-label="Ships"></div>
+        <div class="ship-select-actions">
+          <button type="button" id="ship-select-confirm-btn" class="menu-btn ship-select-confirm">Confirm Ship</button>
+          <button type="button" id="ship-select-back-btn" class="menu-btn ship-select-back">Back</button>
+        </div>
+      </div>
+
+      <div id="level-select-screen" hidden>
+        <h2>Select Sector</h2>
+        <div id="level-list" class="level-list"></div>
+        <div class="level-select-actions">
+          <button type="button" id="level-back-btn" class="menu-btn">Back</button>
+          <button
+            type="button"
+            id="level-select-lb-btn"
+            class="menu-btn menu-btn--level-select-action menu-btn--level-select-icon-only"
+            data-hs-mode="single"
+            data-hs-browse-sectors="true"
+            aria-label="Sector leaderboards"
+          >
+            <span class="menu-btn-inner">
+              <img src="_src/leaderboard.svg" width="28" height="28" alt="" class="level-select-lb-icon" />
+            </span>
+          </button>
+          <button type="button" id="ship-select-btn" class="menu-btn menu-btn--level-select-action menu-btn--with-ship-icon">
+            <span class="menu-btn-inner">
+              <span class="menu-btn-text">Swap Ship</span>
+              <img id="ship-select-btn-icon" class="ship-select-btn-icon" src="" alt="" width="28" height="28" decoding="async" />
+            </span>
+          </button>
+        </div>
+      </div>
+      <div id="game-over-screen" hidden>
+        <h2 id="game-over-title">Mission Over</h2>
+        <p id="final-score">Score: 0</p>
+        <p id="final-score-p2" class="final-score-multi" hidden></p>
+        <p id="versus-result" class="versus-result" hidden></p>
+        <button type="button" id="restart-btn" class="menu-btn">Try Again</button>
+      </div>
+      <div id="score-summary-screen" hidden>
+        <div class="score-summary-heading">
+          <h2 id="score-summary-title">Round Complete</h2>
+          <span id="high-score-new-badge" class="high-score-new-badge" hidden>New high score</span>
+        </div>
+        <div class="score-summary" id="score-summary-single">
+          <div class="score-item" id="summary-crystals">
+            <span class="score-label">Crystals x</span>
+            <span class="score-value">0</span>
+          </div>
+          <div class="score-item" id="summary-asteroids">
+            <span class="score-label">Asteroids Destroyed</span>
+            <span class="score-value">0</span>
+          </div>
+          <div class="score-item" id="summary-time">
+            <span class="score-label">Time Bonus</span>
+            <span class="score-value">0</span>
+          </div>
+          <div class="score-item" id="summary-multiplier">
+            <span class="score-label">Ships Remaining Multiplyer </span>
+            <span class="score-value">1x</span>
+          </div>
+          <div class="score-total-with-lb" id="summary-total-wrap">
+            <button type="button" class="high-score-lb-btn" id="high-score-open-single" data-hs-mode="single" aria-label="Sector high scores" hidden>
+              <img src="_src/leaderboard.svg" width="28" height="28" alt="" />
+            </button>
+            <div class="score-item score-total" id="summary-total">
+              <span class="score-label">Total Score</span>
+              <span class="score-value">0</span>
+            </div>
+          </div>
+        </div>
+        <div class="score-summary-multi-wrap" id="score-summary-multi" hidden>
+          <div class="score-summary-column">
+            <h3 class="score-summary-player-title">Player 1</h3>
+            <div class="score-summary" data-mp-summary="0">
+              <div class="score-item" id="summary-crystals-p1">
+                <span class="score-label">Crystals x</span>
+                <span class="score-value">0</span>
+              </div>
+              <div class="score-item" id="summary-asteroids-p1">
+                <span class="score-label">Asteroids Destroyed</span>
+                <span class="score-value">0</span>
+              </div>
+              <div class="score-item" id="summary-time-p1">
+                <span class="score-label">Time Bonus</span>
+                <span class="score-value">0</span>
+              </div>
+              <div class="score-item" id="summary-multiplier-p1">
+                <span class="score-label">Ships Remaining Multiplyer </span>
+                <span class="score-value">1x</span>
+              </div>
+              <div class="score-item" id="summary-survivor-p1" hidden>
+                <span class="score-label">Survivor Bonus</span>
+                <span class="score-value">0</span>
+              </div>
+              <div class="score-item score-total" id="summary-total-p1">
+                <span class="score-label">Total Score</span>
+                <span class="score-value">0</span>
+              </div>
+            </div>
+          </div>
+          <div class="score-summary-column">
+            <h3 class="score-summary-player-title">Player 2</h3>
+            <div class="score-summary" data-mp-summary="1">
+              <div class="score-item" id="summary-crystals-p2">
+                <span class="score-label">Crystals x</span>
+                <span class="score-value">0</span>
+              </div>
+              <div class="score-item" id="summary-asteroids-p2">
+                <span class="score-label">Asteroids Destroyed</span>
+                <span class="score-value">0</span>
+              </div>
+              <div class="score-item" id="summary-time-p2">
+                <span class="score-label">Time Bonus</span>
+                <span class="score-value">0</span>
+              </div>
+              <div class="score-item" id="summary-multiplier-p2">
+                <span class="score-label">Ships Remaining Multiplyer </span>
+                <span class="score-value">1x</span>
+              </div>
+              <div class="score-item" id="summary-survivor-p2" hidden>
+                <span class="score-label">Survivor Bonus</span>
+                <span class="score-value">0</span>
+              </div>
+              <div class="score-item score-total" id="summary-total-p2">
+                <span class="score-label">Total Score</span>
+                <span class="score-value">0</span>
+              </div>
+            </div>
+          </div>
+          <div class="score-summary-combined" id="summary-combined-row">
+            <div class="score-total-with-lb" id="summary-combined-lb-wrap">
+              <button type="button" class="high-score-lb-btn" id="high-score-open-coop" data-hs-mode="coop" aria-label="Sector high scores" hidden>
+                <img src="_src/leaderboard.svg" width="28" height="28" alt="" />
+              </button>
+              <div class="score-item score-total">
+                <span class="score-label">Combined Score</span>
+                <span class="score-value" id="summary-combined-value">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="score-total-with-lb score-versus-hs-wrap" id="summary-versus-hs-wrap" hidden>
+          <button type="button" class="high-score-lb-btn" id="high-score-open-versus" data-hs-mode="versus" aria-label="Sector high scores" hidden>
+            <img src="_src/leaderboard.svg" width="28" height="28" alt="" />
+          </button>
+          <div class="score-item score-total" id="summary-total-versus">
+            <span class="score-label">Winner</span>
+            <span class="score-value" id="summary-versus-winner-score">0</span>
+          </div>
+        </div>
+        <div class="score-summary-actions" id="score-summary-actions">
+          <button type="button" id="summary-main-menu-btn" class="menu-btn">Main Menu</button>
+          <button type="button" id="summary-play-again-btn" class="menu-btn">Play Again</button>
+          <button type="button" id="next-btn" class="menu-btn">Next Sector</button>
+        </div>
+      </div>
+      <div id="win-screen" hidden>
+        <h2>Stage Clear</h2>
+        <p id="win-score">Crystals: 0</p>
+        <button type="button" id="next-btn-old" class="menu-btn">Next Sector</button>
+      </div>
+    </div>
+
+    <!-- data-game-modal: required for gamepad + Tab focus; add to any new overlay modal in #game-container -->
+    <div id="level-modal" class="level-modal" data-game-modal role="dialog" aria-modal="true" aria-labelledby="level-modal-text" hidden>
+      <div class="level-modal-backdrop"></div>
+      <div class="level-modal-box">
+        <p id="level-modal-text" class="level-modal-text"></p>
+        <button type="button" id="level-modal-ok" class="menu-btn">OK</button>
+      </div>
+    </div>
+
+    <div id="settings-modal" class="settings-modal" data-game-modal role="dialog" aria-modal="true" aria-labelledby="settings-modal-title" hidden>
+      <div class="settings-modal-backdrop"></div>
+      <div class="settings-modal-box">
+        <h3 class="settings-modal-title">Settings</h3>
+        <div class="settings-modal-buttons">
+          <button type="button" id="settings-main-menu-btn" class="menu-btn">Main Menu</button>
+          <button type="button" id="settings-level-select-btn" class="menu-btn">Select Sector</button>
+          <button type="button" id="settings-resume-btn" class="menu-btn">Continue</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="high-score-modal" class="high-score-modal" data-game-modal role="dialog" aria-modal="true" aria-labelledby="high-score-modal-heading" hidden>
+      <div class="high-score-modal-backdrop"></div>
+      <div class="high-score-modal-box">
+        <h3 id="high-score-modal-heading" class="high-score-modal-heading">High scores</h3>
+        <ol id="high-score-modal-list" class="high-score-modal-list"></ol>
+        <div id="high-score-sector-nav" class="high-score-sector-nav" hidden>
+          <button type="button" id="high-score-sector-prev" class="ship-nav-btn high-score-sector-arrow" aria-label="Previous sector leaderboard">
+            <span class="ship-nav-icon" aria-hidden="true">◀</span>
+          </button>
+          <div id="high-score-sector-dots" class="ship-pagination high-score-sector-dots" role="tablist" aria-label="Sector"></div>
+          <button type="button" id="high-score-sector-next" class="ship-nav-btn high-score-sector-arrow" aria-label="Next sector leaderboard">
+            <span class="ship-nav-icon" aria-hidden="true">▶</span>
+          </button>
+        </div>
+        <div id="high-score-inline-wrap" class="high-score-inline-wrap" hidden>
+          <label class="high-score-name-label"><span class="sr-only">Name</span><input type="text" id="high-score-in-1" class="high-score-input" maxlength="14" autocomplete="off" /></label>
+          <button type="button" id="high-score-confirm-btn-1" class="hs-confirm-btn" aria-label="Save score">✓</button>
+          <span id="high-score-connector" class="high-score-connector">and</span>
+          <label class="high-score-name-label" id="high-score-label-2"><span class="sr-only">Name 2</span><input type="text" id="high-score-in-2" class="high-score-input" maxlength="14" autocomplete="off" /></label>
+          <button type="button" id="high-score-confirm-btn-2" class="hs-confirm-btn" aria-label="Save score">✓</button>
+          <span id="high-score-loser-score" class="hs-loser-score-display" hidden aria-hidden="true"></span>
+        </div>
+        <button type="button" id="high-score-modal-close" class="menu-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="tuning-wrap" class="tuning-wrap">
+    <button type="button" id="tuning-panel-toggle" class="tuning-panel-toggle" aria-label="Toggle tuning panel">⚙</button>
+    <div id="tuning-panel" class="tuning-panel collapsed">
+    <div class="tuning-panel-content">
+      <section class="tuning-section" data-section="perf">
+        <h3 class="tuning-section-head">Performance</h3>
+        <div class="tuning-section-body">
+          <div class="tuning-row">
+            <span class="tune-label">FPS</span>
+            <output id="fps-value" class="tune-value">—</output>
+          </div>
+          <div class="tuning-row">
+            <span class="tune-label">Frame (ms)</span>
+            <output id="frame-ms-value" class="tune-value">—</output>
+          </div>
+          <div class="tuning-row">
+            <span class="tune-label">Gamepads</span>
+            <output id="gamepad-count-value" class="tune-value" title="Connected controllers (Gamepad API)">—</output>
+          </div>
+        </div>
+      </section>
+      <section class="tuning-section" data-section="player">
+        <h3 class="tuning-section-head">Player</h3>
+        <div class="tuning-section-body">
+          <div class="tuning-row">
+            <label for="tune-maxSpeed">maxSpeed</label>
+            <input type="range" id="tune-maxSpeed" min="1" max="30" step="0.5">
+            <output id="tune-maxSpeed-value" class="tune-value">20</output>
+          </div>
+          <div class="tuning-row">
+            <label for="tune-thrustPower">thrustPower</label>
+            <input type="range" id="tune-thrustPower" min="0.05" max="0.6" step="0.01">
+            <output id="tune-thrustPower-value" class="tune-value">0.2</output>
+          </div>
+          <div class="tuning-row">
+            <label for="tune-friction">friction</label>
+            <input type="range" id="tune-friction" min="0.9" max="0.999" step="0.001">
+            <output id="tune-friction-value" class="tune-value">0.98</output>
+          </div>
+        </div>
+      </section>
+      <section class="tuning-section" data-section="bullet">
+        <h3 class="tuning-section-head">Bullet</h3>
+        <div class="tuning-section-body">
+          <div class="tuning-row">
+            <label for="tune-bulletSpeed">BULLET_SPEED</label>
+            <input type="range" id="tune-bulletSpeed" min="100" max="800" step="10">
+            <output id="tune-bulletSpeed-value" class="tune-value">400</output>
+          </div>
+          <div class="tuning-row">
+            <label for="tune-bulletMaxCount">BULLET_MAX_COUNT</label>
+            <input type="range" id="tune-bulletMaxCount" min="1" max="15" step="1">
+            <output id="tune-bulletMaxCount-value" class="tune-value">5</output>
+          </div>
+          <div class="tuning-row">
+            <label for="tune-bulletLifespanMin">BULLET_LIFESPAN_MIN (ms)</label>
+            <input type="range" id="tune-bulletLifespanMin" min="100" max="2000" step="50">
+            <output id="tune-bulletLifespanMin-value" class="tune-value">1200</output>
+          </div>
+          <div class="tuning-row">
+            <label for="tune-bulletLifespanMax">BULLET_LIFESPAN_MAX (ms)</label>
+            <input type="range" id="tune-bulletLifespanMax" min="100" max="2000" step="50">
+            <output id="tune-bulletLifespanMax-value" class="tune-value">1600</output>
+          </div>
+          <div class="tuning-row">
+            <label for="tune-bulletAccuracyIncrement">BULLET_ACCURACY_INCREMENT</label>
+            <input type="range" id="tune-bulletAccuracyIncrement" min="0" max="0.5" step="0.01">
+            <output id="tune-bulletAccuracyIncrement-value" class="tune-value">0.1</output>
+          </div>
+          <div class="tuning-row">
+            <label for="tune-bulletDelay">BULLET_DELAY</label>
+            <input type="range" id="tune-bulletDelay" min="0.02" max="0.3" step="0.01">
+            <output id="tune-bulletDelay-value" class="tune-value">0.08</output>
+          </div>
+          <div class="tuning-row">
+            <label for="tune-bulletAccuracyResetThreshold">BULLET_ACCURACY_RESET_THRESHOLD</label>
+            <input type="range" id="tune-bulletAccuracyResetThreshold" min="0.1" max="0.6" step="0.01">
+            <output id="tune-bulletAccuracyResetThreshold-value" class="tune-value">0.25</output>
+          </div>
+          <div class="tuning-row">
+            <label for="tune-bulletReloadTime">BULLET_RELOAD_TIME</label>
+            <input type="range" id="tune-bulletReloadTime" min="0.5" max="4" step="0.1">
+            <output id="tune-bulletReloadTime-value" class="tune-value">1.5</output>
+          </div>
+        </div>
+      </section>
+    </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * Optional shared leaderboards (see _server/scores.php).
+     * Leave URL empty to use browser localStorage only.
+     * Secret must match SHARED_SECRET in scores.php.
+     */
+    window.SPACE_ROCKS_LEADERBOARD_URL = '';
+    window.SPACE_ROCKS_LEADERBOARD_SECRET = '';
+  </script>
+  <script>
+    // Prevent mixed-version caching/freezes by forcing an explicit fresh fetch of game.js.
+    // Some hosts cache by path and ignore query params for assets like game.js/styles.css.
+    // This fetch avoids using the HTTP cache for the script body.
+    (async () => {
+      const v = Date.now();
+
+      function assetUrl(rel) {
+        const path = window.location.pathname;
+        let baseDir;
+        if (path.endsWith('/')) {
+          baseDir = path;
+        } else {
+          const lastSeg = path.slice(path.lastIndexOf('/') + 1);
+          baseDir = lastSeg.includes('.') ? path.slice(0, path.lastIndexOf('/') + 1) : path + '/';
+        }
+        return window.location.origin + baseDir + String(rel).replace(/^\//, '');
+      }
+
+      const stylesLink = document.getElementById('styles-link');
+      if (stylesLink) stylesLink.href = assetUrl('styles.css') + '?v=' + v;
+
+      try {
+        const res = await fetch(assetUrl('game.js') + '?v=' + v, { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const code = await res.text();
+
+        const s = document.createElement('script');
+        s.type = 'text/javascript';
+        s.text = code;
+        document.body.appendChild(s);
+      } catch (err) {
+        console.error('Failed to load game.js:', err);
+        const overlay = document.createElement('div');
+        overlay.textContent = 'Failed to load game code. Please refresh.';
+        overlay.style.position = 'absolute';
+        overlay.style.inset = '0';
+        overlay.style.display = 'flex';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+        overlay.style.background = 'rgba(0,0,0,0.85)';
+        overlay.style.color = '#ffffff';
+        overlay.style.zIndex = '9999';
+        overlay.style.padding = '1rem';
+        overlay.style.fontFamily = 'monospace';
+        document.body.appendChild(overlay);
+      }
+    })();
+  </script>
+</body>
+</html>

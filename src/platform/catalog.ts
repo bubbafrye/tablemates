@@ -64,12 +64,16 @@ export const catalog: GameDefinition[] = [
     },
   },
   {
-    id: "placeholder-4",
-    name: "Game Name",
-    description: PLACEHOLDER_DESCRIPTION,
-    ready: false,
-    multiplayer: true,
-    hero: PLACEHOLDER_HERO,
+    id: "space-rocks",
+    name: "Space Rocks",
+    description: "Collect crystals. Destroy asteroids. Survive.",
+    ready: true,
+    multiplayer: false,
+    hero: {
+      lg: "/assets/space-rocks/hero-lg.png",
+      sm: "/assets/space-rocks/hero-sm.png",
+      xs: "/assets/space-rocks/hero-xs.png",
+    },
   },
   {
     id: "placeholder-5",

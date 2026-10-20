@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Game2048 } from "@_2048/Game2048";
+import { SpaceRocksGame } from "@_space-rocks/SpaceRocksGame";
 import { getGame } from "@/platform/catalog";
 import { withBasePath } from "@/platform/site";
 
@@ -20,6 +21,10 @@ function PlayPageInner() {
 
   if (gameId === "2048") {
     return <Game2048 />;
+  }
+
+  if (gameId === "space-rocks") {
+    return <SpaceRocksGame />;
   }
 
   if (!game || game.multiplayer) {

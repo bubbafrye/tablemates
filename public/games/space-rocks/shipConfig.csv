@@ -1,0 +1,5 @@
+shipId,shipStyle,description,maxSpeed,thrustPower,friction,bulletSpeed,bulletMaxCount,bulletLifespanMin,bulletLifespanMax,bulletAccuracyIncrement,bulletDelay,bulletAccuracyResetThreshold,bulletReloadTime,shieldCount,shieldDuration,shieldRechargeTime,shieldCountdown,gameScale,playerBaseRadius,pivotOffsetY
+1,ship1,Dependable and balanced - good ship.,5,0.15,0.965,400,5,1200,1600,0.1,0.08,0.25,1.5,3,4,10,2,0.55,18,21
+2,ship2,Slow and steady but twice the punch!,3,0.1,0.965,300,3,1100,1300,0.025,0.08,0.25,1.5,3,4,10,2,0.55,18,24
+3,ship3,Fast and loose! Fun but wily..,6,0.18,0.975,400,5,1200,1600,0.1,0.08,0.25,1.5,3,4,10,2,0.55,18,21
+4,ship4,Ludicrous speed - gone to plaid  ,20,0.8,0.95,450,4,1000,1100,0.05,0.08,0.25,1.5,3,4,10,2,0.55,18,21
