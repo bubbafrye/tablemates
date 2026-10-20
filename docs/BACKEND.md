@@ -11,7 +11,7 @@ tablemates is split into two pieces:
 | **Frontend (the site)** | Static web app (Next.js export) | GitHub Pages — [bubbafrye.github.io/tablemates](https://bubbafrye.github.io/tablemates/) — and optionally [hurstfrye.com/tablemates](https://hurstfrye.com/tablemates/) ([deploy doc](./DEPLOY-HURSTFRYE.md)) |
 | **Backend (live rooms)** | Realtime game servers | Cloudflare Workers + Durable Objects — e.g. `tablemates.*.workers.dev` |
 
-The website alone can show the catalog and UI. **Starting or joining a live game** needs the Cloudflare backend, because every room is a long-lived server that keeps players in sync over WebSockets.
+The website alone can show the catalog and UI. **Starting or joining a live multiplayer game** needs the Cloudflare backend, because every room is a long-lived server that keeps players in sync over WebSockets. Solo games (`catalog.multiplayer === false`, currently 2048) play entirely in the browser and only POST a personal best to the Leaderboard HTTP API — they do not open a Session room.
 
 ```
 Browser  ──HTTP──►  GitHub Pages (HTML/CSS/JS)
@@ -66,7 +66,7 @@ You can think of them as “PartyKit-style rooms on Cloudflare.”
 
 ## What happens when you Launch a game
 
-1. The site creates a 6-character **room code** and navigates to `/s/?code=XXXXXX&game=rakko` (or tic-tac-toe).
+1. Multiplayer: the site creates a 6-character **room code** and navigates to `/s/?code=XXXXXX&game=rakko` (or tic-tac-toe). Solo: `/play/?game=2048` with no room.
 2. The browser opens a WebSocket to `wss://<PARTY_HOST>/parties/session/XXXXXX`.
 3. The Worker wakes (or creates) the Session Durable Object for that code.
 4. First connected player becomes **host** (`hostId`). Hosts can start rounds / play bot; guests primarily Ready + wait.

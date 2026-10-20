@@ -4,15 +4,13 @@ import { useEffect, useRef, useState, type TouchEvent } from "react";
 import { useRouter } from "next/navigation";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
-import { ConnectionBanner } from "@/components/session/ConnectionBanner";
-import type { SessionState } from "@/platform/protocol";
+import { flushHighScoreSubmit, submitHighScore } from "@/platform/leaderboard";
 import { GameTray } from "./GameTray";
 import { readHighScore, writeHighScoreIfBetter } from "./highScore";
 import {
   commitSlide,
   continueAfterWin,
   createInitialState,
-  isGame2048State,
   planSlide,
   resetGame,
   type Board,
@@ -22,14 +20,7 @@ import {
 } from "./logic";
 import styles from "./Game2048.module.css";
 
-type Game2048Props = {
-  code: string;
-  playerId: string;
-  session: SessionState | null;
-  connected: boolean;
-  sendGame: (payload: unknown) => void;
-  setScore: (playerId: string, absolute: number) => void;
-};
+const GAME_ID = "2048";
 
 const KEY_DIR: Record<string, Direction> = {
   ArrowUp: "up",
@@ -42,17 +33,10 @@ const KEY_DIR: Record<string, Direction> = {
   d: "right",
 };
 
-export function Game2048({
-  code,
-  playerId,
-  session,
-  connected,
-  sendGame,
-  setScore,
-}: Game2048Props) {
+export function Game2048() {
   const router = useRouter();
   /* Empty board until client mount — avoids Math.random hydration mismatch. */
-  const [local, setLocal] = useState<Game2048State | null>(null);
+  const [game, setGame] = useState<Game2048State | null>(null);
   const [highScore, setHighScore] = useState(0);
   const [isNewBest, setIsNewBest] = useState(false);
   const [popIndices, setPopIndices] = useState<ReadonlySet<number>>(new Set());
@@ -62,7 +46,6 @@ export function Game2048({
   } | null>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const boardSlotRef = useRef<HTMLDivElement | null>(null);
-  const lastPublishedScore = useRef(-1);
   const seededRef = useRef(false);
   /** Best at the start of the current round — beat this → NEW BEST until next round. */
   const roundBestBaseline = useRef(0);
@@ -70,16 +53,10 @@ export function Game2048({
     null,
   );
 
-  const remote = isGame2048State(session?.game) ? session.game : null;
-  const game = remote ?? local;
-  const isHost = session?.hostId === playerId;
-  const paused = session?.status === "paused";
   const animating = Boolean(slide);
-  /* Solo puzzle: playable locally even if Party is down; sync when connected. */
   const canPlay =
     Boolean(game) &&
     !animating &&
-    !paused &&
     (game!.status === "playing" || (game!.status === "won" && game!.continued));
 
   useEffect(() => {
@@ -89,40 +66,35 @@ export function Game2048({
   }, []);
 
   useEffect(() => {
-    if (remote || seededRef.current) return;
-    const seeded = createInitialState();
+    if (seededRef.current) return;
     seededRef.current = true;
-    setLocal(seeded);
-    if (session && connected && isHost) sendGame(seeded);
-  }, [session, connected, remote, isHost, sendGame]);
-
-  useEffect(() => {
-    if (!game || !connected || !isHost) return;
-    if (game.score === lastPublishedScore.current) return;
-    lastPublishedScore.current = game.score;
-    setScore(playerId, game.score);
-  }, [game, connected, isHost, playerId, setScore]);
+    setGame(createInitialState());
+  }, []);
 
   useEffect(() => {
     if (!game) return;
     if (game.score > roundBestBaseline.current) setIsNewBest(true);
-    setHighScore(writeHighScoreIfBetter(game.score));
-  }, [game?.score]);
+    const prev = readHighScore();
+    const next = writeHighScoreIfBetter(game.score);
+    setHighScore(next);
+    if (next > prev) submitHighScore(GAME_ID, next);
+    if (game.status === "lost" || game.status === "won") flushHighScoreSubmit();
+  }, [game?.score, game?.status]);
 
   function publish(next: Game2048State, pops?: ReadonlySet<number>) {
-    setLocal(next);
+    setGame(next);
     setPopIndices(pops ?? new Set());
-    sendGame(next);
   }
 
   /** Commit after slide (or immediately when motion is reduced / empty). */
   function finishSlide(base: Game2048State, plan: SlidePlan) {
     const { state, spawnIndex } = commitSlide(base, plan);
-    const pops = new Set(plan.mergeTargets);
+    /* Spawn only — merge pop scales the tile that just landed (looks like a flash). */
+    const pops = new Set<number>();
     if (spawnIndex >= 0) pops.add(spawnIndex);
     slideSnapshot.current = null;
-    setSlide(null);
     publish(state, pops);
+    setSlide(null);
   }
 
   function handleSlideComplete() {
@@ -168,8 +140,7 @@ export function Game2048({
   }, [popIndices]);
 
   function handleNewGame() {
-    if (session && connected && !isHost) return;
-    lastPublishedScore.current = -1;
+    flushHighScoreSubmit();
     seededRef.current = true;
     setIsNewBest(false);
     roundBestBaseline.current = readHighScore();
@@ -179,7 +150,6 @@ export function Game2048({
 
   function handleContinue() {
     if (!game) return;
-    if (session && connected && !isHost) return;
     publish(continueAfterWin(game));
   }
 
@@ -217,9 +187,8 @@ export function Game2048({
 
   return (
     <div className={styles.page} data-name="2048">
-      <SiteHeader roomCode={code} gameId="2048" />
+      <SiteHeader />
       <div className={styles.content} data-name="content">
-        <ConnectionBanner connected={connected} />
         <div className={styles.gameArea} data-name="game-area">
           <div className={styles.scoreRow}>
             <h1 className={styles.title}>2048</h1>
@@ -294,8 +263,6 @@ export function Game2048({
             </p>
           ) : game.status === "lost" ? (
             <p className={styles.status}>No more moves.</p>
-          ) : paused ? (
-            <p className={styles.status}>Game paused</p>
           ) : (
             <p className={styles.hint}>Arrow keys or swipe to slide tiles</p>
           )}
@@ -305,14 +272,16 @@ export function Game2048({
               className={styles.exit}
               type="button"
               data-name="exit"
-              onClick={() => router.push("/")}
+              onClick={() => {
+                flushHighScoreSubmit();
+                router.push("/");
+              }}
             >
               exit game
             </button>
             <button
               className={styles.newGame}
               type="button"
-              disabled={Boolean(session && connected && !isHost)}
               onClick={handleNewGame}
             >
               new game

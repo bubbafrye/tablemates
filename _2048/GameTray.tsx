@@ -148,6 +148,10 @@ export function GameTray({
              does not remount the <img> when the slide commits. */
           const key =
             seen === 0 ? `cell-${m.to}` : m.key;
+          const value =
+            seen === 0 && slideProgressed && m.mergedResult
+              ? m.mergedResult
+              : m.value;
           return (
             <div
               key={key}
@@ -161,7 +165,7 @@ export function GameTray({
               style={{ transform: `translate3d(${pos.x}px, ${pos.y}px, 0)` }}
               onTransitionEnd={i === 0 ? handleSlideTransitionEnd : undefined}
             >
-              <Tile value={m.value} />
+              <Tile value={value} />
             </div>
           );
         })}

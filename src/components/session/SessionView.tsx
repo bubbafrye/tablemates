@@ -1,6 +1,7 @@
 "use client";
 
-import { Game2048 } from "@_2048/Game2048";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { RakkoGame } from "@_rakko/RakkoGame";
 import { TicTacToeGame } from "@_tic-tac-toe/TicTacToeGame";
 import { SiteFooter } from "@/components/layout/SiteFooter";
@@ -9,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { TextDescription } from "@/components/ui/TextDescription";
 import { TextTitle } from "@/components/ui/TextTitle";
 import { getGame } from "@/platform/catalog";
+import { playPath } from "@/platform/codes";
 import { useSession } from "@/platform/session";
 import { ConnectionBanner } from "./ConnectionBanner";
 import styles from "./SessionView.module.css";
@@ -19,11 +21,17 @@ type SessionViewProps = {
 };
 
 export function SessionView({ code, gameId }: SessionViewProps) {
+  const router = useRouter();
   const session = useSession({ code, gameId });
   const resolvedGameId = session.state?.gameId || gameId;
   const game = getGame(resolvedGameId);
   const isHost = session.state?.hostId === session.playerId;
   const paused = session.state?.status === "paused";
+
+  useEffect(() => {
+    if (game && !game.multiplayer) router.replace(playPath(game.id));
+  }, [game, router]);
+  if (game && !game.multiplayer) return null;
 
   if (resolvedGameId === "tic-tac-toe") {
     return (
@@ -49,19 +57,6 @@ export function SessionView({ code, gameId }: SessionViewProps) {
         sendGame={session.sendGame}
         setScore={session.setScore}
         setName={session.setName}
-      />
-    );
-  }
-
-  if (resolvedGameId === "2048") {
-    return (
-      <Game2048
-        code={code}
-        playerId={session.playerId}
-        session={session.state}
-        connected={session.connected}
-        sendGame={session.sendGame}
-        setScore={session.setScore}
       />
     );
   }

@@ -27,3 +27,8 @@ export function sessionPath(code: string, gameId?: string) {
   if (gameId) params.set("game", gameId);
   return `/s/?${params.toString()}`;
 }
+
+/** Solo games — no room code, no Party Session. */
+export function playPath(gameId: string) {
+  return `/play/?game=${encodeURIComponent(gameId)}`;
+}

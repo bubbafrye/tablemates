@@ -93,6 +93,8 @@
   /* Tile PNG includes drop-shadow padding outside the 100×109 cell. */
   overflow: visible;
   backface-visibility: hidden;
+  /* Keep the compositor layer after the slide class drops, or GPUs flash. */
+  will-change: transform;
 }
 
 .tileSliding {

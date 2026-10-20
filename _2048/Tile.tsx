@@ -14,7 +14,9 @@ function tileSrc(value: number): string {
   return withBasePath(`/assets/2048/tiles/${value}.png`);
 }
 
-const PRELOAD_VALUES = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096];
+const PRELOAD_VALUES = [
+  2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384,
+];
 let preloaded = false;
 function preloadTileArt() {
   if (preloaded || typeof window === "undefined") return;
@@ -55,6 +57,7 @@ export function Tile({ value, pop = false }: TileProps) {
         height={TILE_ART.imgHeight}
         draggable={false}
         decoding="sync"
+        loading="eager"
       />
     </div>
   );
