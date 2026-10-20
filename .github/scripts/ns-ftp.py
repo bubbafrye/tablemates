@@ -70,7 +70,7 @@ def main() -> None:
         if not files:
             raise SystemExit("put requires files")
         puts = "\n".join(
-            f"put -o {os.path.basename(name)} {name}" for name in files
+            f"put {name} -o {os.path.basename(name)}" for name in files
         )
         script = (
             f"mkdir -p {path}\n"
