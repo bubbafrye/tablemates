@@ -21,7 +21,7 @@ export function Tray({ variant = "floor", className, style }: TrayProps) {
       >
         <img
           className={styles.edgeImg}
-          src={withBasePath("/assets/2048/tray-edge.svg")}
+          src={withBasePath("/assets/2048/tray-edge.svg?v=ds1")}
           alt=""
           width={452}
           height={458}

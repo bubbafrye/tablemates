@@ -33,13 +33,15 @@
   z-index: 1;
   width: 434px;
   height: 217px;
-  overflow: hidden;
+  /* Visible so the full chrome silhouette can drop-shadow, including the top. */
+  overflow: visible;
   pointer-events: none;
 }
 
 /*
  * Edge instance 434×435 at (0,0) in upperframe (242:23583).
  * SVG 452×458 with shadow pad — Figma inset [0_-2.07%_-5.29%_-2.07%] → left -9, top 0.
+ * Drop-shadow on this copy only (268:25969) — the lower copy is a clip, not a second shadow.
  */
 .upperEdge {
   position: absolute;
@@ -47,6 +49,7 @@
   top: 0;
   width: 452px;
   height: 458px;
+  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.25));
 }
 
 .lowerframe {
