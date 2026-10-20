@@ -22,6 +22,11 @@ import styles from "./Game2048.module.css";
 
 const GAME_ID = "2048";
 
+const HINT_KEYBOARD =
+  "Use arrows to slide tiles. Merge similar tiles to build larger ones.";
+const HINT_TOUCH =
+  "Swipe to slide tiles. Merge similar tiles to build larger ones.";
+
 const KEY_DIR: Record<string, Direction> = {
   ArrowUp: "up",
   ArrowDown: "down",
@@ -44,6 +49,7 @@ export function Game2048() {
     fromBoard: Board;
     plan: SlidePlan;
   } | null>(null);
+  const [touchHint, setTouchHint] = useState(false);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const boardSlotRef = useRef<HTMLDivElement | null>(null);
   const seededRef = useRef(false);
@@ -69,6 +75,12 @@ export function Game2048() {
     if (seededRef.current) return;
     seededRef.current = true;
     setGame(createInitialState());
+  }, []);
+
+  useEffect(() => {
+    const touch =
+      navigator.maxTouchPoints > 0 || "ontouchstart" in window;
+    setTouchHint(touch);
   }, []);
 
   useEffect(() => {
@@ -264,7 +276,9 @@ export function Game2048() {
           ) : game.status === "lost" ? (
             <p className={styles.status}>No more moves.</p>
           ) : (
-            <p className={styles.hint}>Arrow keys or swipe to slide tiles</p>
+            <p className={styles.hint}>
+              {touchHint ? HINT_TOUCH : HINT_KEYBOARD}
+            </p>
           )}
 
           <div className={styles.actions} data-name="game-management">
