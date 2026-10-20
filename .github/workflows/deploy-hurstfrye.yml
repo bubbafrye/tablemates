@@ -55,7 +55,10 @@ jobs:
           python3 -u .github/scripts/ns-ftp.py smoke
           python3 -u .github/scripts/ns-ftp.py fix-spa-rewrite
           printf 'ftp-ok\n' > tm-ftp-ok.txt
-          python3 -u .github/scripts/ns-ftp.py put public/.htaccess tm-ftp-ok.txt
+          python3 -c 'open(".htaccess","w").write("Options +Indexes\nDirectoryIndex index.html\nRewriteEngine Off\n")'
+          python3 -u .github/scripts/ns-ftp.py put .htaccess tm-ftp-ok.txt
+          echo "GET https://hurstfrye.com/tablemates/"
+          curl -sS --max-time 30 "https://hurstfrye.com/tablemates/" | head -n 60
           echo "GET https://hurstfrye.com/tablemates/tm-ftp-ok.txt"
           body=$(curl -sS --max-time 30 "https://hurstfrye.com/tablemates/tm-ftp-ok.txt")
           echo "$body" | head -n 20
