@@ -1,7 +1,7 @@
 name: Deploy to hurstfrye.com
 
 # Keeps GitHub Pages (deploy-pages.yml). Mirrors the same static export to
-# https://hurstfrye.com/tablemates/ via FTPS (Network Solutions / shared hosting).
+# https://hurstfrye.com/tablemates/ via FTP (Network Solutions / shared hosting).
 
 on:
   push:
@@ -34,7 +34,7 @@ jobs:
           [ -n "$DEPLOY_PATH" ] || missing="$missing HURSTFRYE_FTP_PATH"
           if [ -n "$missing" ]; then
             echo "::error::Missing GitHub Actions secrets:$missing"
-            echo "See docs/DEPLOY-HURSTFRYE.md (Network Solutions / FTPS)"
+            echo "See docs/DEPLOY-HURSTFRYE.md (Network Solutions / FTP)"
             exit 1
           fi
 
@@ -58,13 +58,16 @@ jobs:
           NEXT_PUBLIC_CONTACT_EMAIL: ${{ vars.NEXT_PUBLIC_CONTACT_EMAIL }}
           FIGMA_ACCESS_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
 
-      - name: Deploy out/ via SFTP
+      - name: Deploy out/ via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.HURSTFRYE_FTP_SERVER }}
           username: ${{ secrets.HURSTFRYE_FTP_USER }}
           password: ${{ secrets.HURSTFRYE_FTP_PASSWORD }}
-          protocol: ftps
+          # Network Solutions rejects AUTH TLS (504); use plain FTP on 21.
+          protocol: ftp
+          port: 21
+          security: loose
           local-dir: ./out/
           # e.g. /tablemates/ or /htdocs/tablemates/ — see docs/DEPLOY-HURSTFRYE.md
           server-dir: ${{ secrets.HURSTFRYE_FTP_PATH }}

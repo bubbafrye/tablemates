@@ -3,7 +3,7 @@
 GitHub stays the source of truth. On every push to `main`:
 
 1. **GitHub Pages** — `.github/workflows/deploy-pages.yml` (unchanged)
-2. **hurstfrye.com** — `.github/workflows/deploy-hurstfrye.yml` → upload `out/` over **FTPS**
+2. **hurstfrye.com** — `.github/workflows/deploy-hurstfrye.yml` → upload `out/` over **FTP**
 
 Live site target: `https://hurstfrye.com/tablemates/`
 
@@ -56,7 +56,7 @@ Common Network Solutions / iPower layouts:
 
 Trailing slash recommended. The workflow uploads the **contents** of `out/` into that folder (`basePath` is already `/tablemates` in the build).
 
-If FTPS fails in Actions, try changing `protocol` in `.github/workflows/deploy-hurstfrye.yml` from `ftps` to `ftp` (some shared hosts only allow plain FTP on port 21).
+Network Solutions typically does **not** support FTPS (`AUTH TLS` → `504`). The workflow uses plain **FTP on port 21**.
 
 ## Older SSH secrets
 
