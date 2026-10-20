@@ -255,6 +255,7 @@ export function Game2048() {
                 motions={slide?.plan.motions ?? null}
                 popIndices={popIndices}
                 onSlideComplete={handleSlideComplete}
+                lost={game?.status === "lost"}
               />
             </div>
           </div>

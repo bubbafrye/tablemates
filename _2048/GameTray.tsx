@@ -20,6 +20,8 @@ type GameTrayProps = {
   motions?: TileMotion[] | null;
   /** Fires once when the CSS slide transition finishes (or immediately if reduced). */
   onSlideComplete?: () => void;
+  /** Figma `endgame-dim` (`320:49683`) — fade in when there are no legal moves. */
+  lost?: boolean;
 };
 
 type AnimTile = {
@@ -31,13 +33,14 @@ type AnimTile = {
 
 /**
  * Figma `game-tray` (`268:25969`) — floor + duplicated edge (upper/lower masks) + tiles.
- * Paint: base → upperframe (behind) → tiles → lowerframe (in front).
+ * Paint: base → upperframe (behind) → tiles → lowerframe → endgame-dim.
  */
 export function GameTray({
   board,
   popIndices,
   motions = null,
   onSlideComplete,
+  lost = false,
 }: GameTrayProps) {
   const sliding = Boolean(motions && motions.length > 0);
   const [slideProgressed, setSlideProgressed] = useState(false);
@@ -176,6 +179,15 @@ export function GameTray({
           <Tray variant="edge" />
         </div>
       </div>
+
+      <div
+        className={[styles.endgameDim, lost ? styles.endgameDimOn : ""]
+          .filter(Boolean)
+          .join(" ")}
+        data-name="endgame-dim"
+        data-node-id="320:49683"
+        aria-hidden
+      />
     </div>
   );
 }

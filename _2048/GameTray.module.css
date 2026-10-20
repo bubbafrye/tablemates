@@ -1,14 +1,18 @@
-/* Figma game-tray (268:25969) — 444×467 node; 5px pad is drop-shadow, not a box. */
+/*
+ * Figma game-tray (268:25969) — 444×467; 5px x-pad is the layer drop-shadow.
+ * Code origin is Figma x − 5 (434-wide playfield). Do not box-shadow this
+ * rect — that paints a second, lower rounded plate.
+ *
+ * Layer effect on this node: drop-shadow(0 4px 5px rgba(0,0,0,0.25)).
+ * Applied here so it follows the composited silhouette (floor fills the
+ * well) after base → upperframe → tiles → lowerframe → endgame-dim.
+ */
 .root {
   position: relative;
   width: 434px;
   height: 467px;
   overflow: visible;
-  /*
-   * Shadow is the edge SVG filter (follows chrome alpha). Do not box-shadow
-   * this 434×467 rect — that paints a second, lower rounded plate.
-   * filter:drop-shadow on .root would also flatten tile mix-blend-overlay.
-   */
+  filter: drop-shadow(0px 4px 5px rgba(0, 0, 0, 0.25));
 }
 
 .base {
@@ -21,58 +25,55 @@
 }
 
 /*
- * Same edge asset twice, half-masked (268:25969):
- *   upperframe (243:24354) — clip top 217px, behind tiles
- *   lowerframe (243:24355) — clip from y=193 h=276, in front of tiles
- * SoT paint order: base → upperframe → tiles → lowerframe.
+ * Same edge asset twice, half-masked (268:25969). Clip windows ARE the
+ * Figma masks — overflow must stay hidden or the upper copy's inner
+ * bottom bevel shows as a gap above the front lip.
+ *   upperframe (243:24354) — (0,0) 446×220, mask 446×220 @ (-5, 0)
+ *   lowerframe (243:24355) — (0,220) 446×247, mask 446×247 @ (-5, 209)
+ * Paint: base → upperframe → tiles → lowerframe → endgame-dim.
  */
 .upperframe {
   position: absolute;
-  left: 0;
+  left: -5px;
   top: 0;
   z-index: 1;
-  width: 434px;
-  height: 217px;
-  /* Visible so the full chrome silhouette can drop-shadow, including the top. */
-  overflow: visible;
-  pointer-events: none;
-}
-
-/*
- * Edge instance 434×435 at (0,0) in upperframe (242:23583).
- * SVG 452×458 with shadow pad — Figma inset [0_-2.07%_-5.29%_-2.07%] → left -9, top 0.
- * Drop-shadow on this copy only (268:25969) — the lower copy is a clip, not a second shadow.
- */
-.upperEdge {
-  position: absolute;
-  left: -9px;
-  top: 0;
-  width: 452px;
-  height: 458px;
-  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.25));
-}
-
-.lowerframe {
-  position: absolute;
-  /* SVG 452×458 at left -9; window must include the baked corner shadow. */
-  left: -9px;
-  top: 193px;
-  z-index: 3;
-  width: 452px;
-  /* SVG bottom in this frame: (11 - 193) + 458 = 276 */
-  height: 276px;
+  width: 446px;
+  height: 220px;
   overflow: hidden;
   pointer-events: none;
 }
 
+/*
+ * top-edge (242:23583) 434×445 at Figma (5, 0); SVG 452×458 inset
+ * [0_-2.07%_-5.29%_-2.07%] → code (−9, 0) inside this frame (−5, 0).
+ */
+.upperEdge {
+  position: absolute;
+  left: -4px;
+  top: 0;
+  width: 452px;
+  height: 458px;
+}
+
+.lowerframe {
+  position: absolute;
+  left: -5px;
+  top: 220px;
+  z-index: 3;
+  width: 446px;
+  height: 247px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/*
+ * top-edge (243:24357) 434×445 at Figma (5, 11) in game-tray.
+ * SVG at code (−9, 11); this frame is (−5, 220) → local (−4, −209).
+ */
 .lowerEdge {
   position: absolute;
-  left: 0;
-  /*
-   * Lower top-edge abs y = game-tray + 11 (243:24357).
-   * Within lowerframe (top 193): 11 - 193.
-   */
-  top: calc(11px - 193px);
+  left: -4px;
+  top: -209px;
   width: 452px;
   height: 458px;
 }
@@ -113,6 +114,34 @@
 
 @media (prefers-reduced-motion: reduce) {
   .tileSlidingGo {
+    transition: none;
+  }
+}
+
+/* Figma endgame-dim (320:49683) — 405×422 at (19, 10) in 444-wide game-tray; code origin −5px x. */
+.endgameDim {
+  position: absolute;
+  left: 14px;
+  top: 10px;
+  z-index: 4;
+  width: 405px;
+  height: 422px;
+  border-radius: 5px;
+  /* No matching color token */
+  background: rgba(217, 217, 217, 0.8);
+  mix-blend-mode: saturation;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms ease;
+}
+
+.endgameDimOn {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .endgameDim {
     transition: none;
   }
 }
