@@ -52,7 +52,8 @@ jobs:
           LFTP_PASSWORD: ${{ secrets.HURSTFRYE_FTP_PASSWORD }}
         run: |
           echo "FTP user=$FTP_USER server=$FTP_SERVER"
-          lftp -u "$FTP_USER" "ftp://$FTP_SERVER" <<'EOF'
+          python3 -c 'import os,pathlib; p=pathlib.Path.home()/".netrc"; p.write_text("machine %s\nlogin %s\npassword %s\n" % (os.environ["FTP_SERVER"], os.environ["FTP_USER"], os.environ["LFTP_PASSWORD"])); p.chmod(0o600)'
+          lftp "ftp://$FTP_SERVER" <<'EOF'
           set ftp:ssl-allow no
           set ftp:passive-mode true
           set ftp:prefer-epsv no
@@ -108,7 +109,8 @@ jobs:
           echo 'ok';
           PHP
           ls -lh tablemates-out.zip unzip-tablemates.php
-          lftp -u "$FTP_USER" "ftp://$FTP_SERVER" <<EOF
+          python3 -c 'import os,pathlib; p=pathlib.Path.home()/".netrc"; p.write_text("machine %s\nlogin %s\npassword %s\n" % (os.environ["FTP_SERVER"], os.environ["FTP_USER"], os.environ["LFTP_PASSWORD"])); p.chmod(0o600)'
+          lftp "ftp://$FTP_SERVER" <<EOF
           set ftp:ssl-allow no
           set ftp:passive-mode true
           set ftp:prefer-epsv no
