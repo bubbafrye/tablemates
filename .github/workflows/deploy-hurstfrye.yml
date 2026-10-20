@@ -1,0 +1,71 @@
+name: Deploy to hurstfrye.com
+
+# Keeps GitHub Pages (deploy-pages.yml). Mirrors the same static export to
+# https://hurstfrye.com/tablemates/ via FTPS (Network Solutions / shared hosting).
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: hurstfrye-deploy
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Require deploy secrets
+        env:
+          DEPLOY_SERVER: ${{ secrets.HURSTFRYE_FTP_SERVER }}
+          DEPLOY_USER: ${{ secrets.HURSTFRYE_FTP_USER }}
+          DEPLOY_PASS: ${{ secrets.HURSTFRYE_FTP_PASSWORD }}
+          DEPLOY_PATH: ${{ secrets.HURSTFRYE_FTP_PATH }}
+        run: |
+          missing=
+          [ -n "$DEPLOY_SERVER" ] || missing="$missing HURSTFRYE_FTP_SERVER"
+          [ -n "$DEPLOY_USER" ] || missing="$missing HURSTFRYE_FTP_USER"
+          [ -n "$DEPLOY_PASS" ] || missing="$missing HURSTFRYE_FTP_PASSWORD"
+          [ -n "$DEPLOY_PATH" ] || missing="$missing HURSTFRYE_FTP_PATH"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing GitHub Actions secrets:$missing"
+            echo "See docs/DEPLOY-HURSTFRYE.md (Network Solutions / FTPS)"
+            exit 1
+          fi
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build tokens + static export
+        run: |
+          npm run tokens
+          npm run build
+        env:
+          NEXT_PUBLIC_BASE_PATH: /tablemates
+          PAGES_BASE_PATH: /tablemates
+          NEXT_PUBLIC_PARTY_HOST: ${{ vars.NEXT_PUBLIC_PARTY_HOST }}
+          NEXT_PUBLIC_CONTACT_EMAIL: ${{ vars.NEXT_PUBLIC_CONTACT_EMAIL }}
+          FIGMA_ACCESS_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
+
+      - name: Deploy out/ via SFTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.HURSTFRYE_FTP_SERVER }}
+          username: ${{ secrets.HURSTFRYE_FTP_USER }}
+          password: ${{ secrets.HURSTFRYE_FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: ./out/
+          # e.g. /tablemates/ or /htdocs/tablemates/ — see docs/DEPLOY-HURSTFRYE.md
+          server-dir: ${{ secrets.HURSTFRYE_FTP_PATH }}
+          dangerous-clean-slate: false

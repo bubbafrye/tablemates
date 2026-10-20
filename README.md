@@ -4,7 +4,10 @@ Mobile-first multiplayer game platform. Visual source of truth:
 
 https://www.figma.com/design/tE15PVyJVeYZ6XP0d0xfMc/Untitled?node-id=0-1
 
-Live site: https://bubbafrye.github.io/tablemates/
+Live sites:
+
+- GitHub Pages: https://bubbafrye.github.io/tablemates/
+- Personal host: https://hurstfrye.com/tablemates/ (see [`docs/DEPLOY-HURSTFRYE.md`](docs/DEPLOY-HURSTFRYE.md))
 
 Read `docs/FOUNDATIONS.md` before adding screens, tokens, or games.
 
@@ -34,6 +37,12 @@ The site is a **static export** deployed by `.github/workflows/deploy-pages.yml`
    - `NEXT_PUBLIC_CONTACT_EMAIL` — footer mailto
 
 Without `NEXT_PUBLIC_PARTY_HOST`, the catalog still loads; live rooms only work against a deployed PartyServer (or local `npm run party`).
+
+## hurstfrye.com (optional mirror)
+
+Pushing to `main` also runs `.github/workflows/deploy-hurstfrye.yml`, which uploads the same static `out/` build over FTPS to Network Solutions at `/tablemates/`. Pages stays enabled.
+
+Finish the one-time FTP secrets in [`docs/DEPLOY-HURSTFRYE.md`](docs/DEPLOY-HURSTFRYE.md) (Network Solutions hosting uses FTPS, not SSH).
 
 ## Platform first
 

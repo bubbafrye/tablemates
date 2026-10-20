@@ -8,7 +8,7 @@ tablemates is split into two pieces:
 
 | Piece | What it is | Where it lives |
 | --- | --- | --- |
-| **Frontend (the site)** | Static web app (Next.js export) | GitHub Pages — [bubbafrye.github.io/tablemates](https://bubbafrye.github.io/tablemates/) |
+| **Frontend (the site)** | Static web app (Next.js export) | GitHub Pages — [bubbafrye.github.io/tablemates](https://bubbafrye.github.io/tablemates/) — and optionally [hurstfrye.com/tablemates](https://hurstfrye.com/tablemates/) ([deploy doc](./DEPLOY-HURSTFRYE.md)) |
 | **Backend (live rooms)** | Realtime game servers | Cloudflare Workers + Durable Objects — e.g. `tablemates.*.workers.dev` |
 
 The website alone can show the catalog and UI. **Starting or joining a live game** needs the Cloudflare backend, because every room is a long-lived server that keeps players in sync over WebSockets.
@@ -20,13 +20,16 @@ Browser  ──WSS───►  Cloudflare Worker → Durable Object (one per ro
 
 ## Services involved
 
-### 1. GitHub Pages
+### 1. GitHub Pages (and optional hurstfrye.com)
 
-Hosts the built frontend (`out/` from `npm run build`). No Node server. Deployed by `.github/workflows/deploy-pages.yml`.
+Hosts the built frontend (`out/` from `npm run build`). No Node server.
+
+- Pages: `.github/workflows/deploy-pages.yml`
+- Personal server mirror: `.github/workflows/deploy-hurstfrye.yml` → [DEPLOY-HURSTFRYE.md](./DEPLOY-HURSTFRYE.md)
 
 Important build variables:
 
-- `NEXT_PUBLIC_BASE_PATH` — usually `/tablemates` on Pages
+- `NEXT_PUBLIC_BASE_PATH` — `/tablemates` on Pages and hurstfrye.com
 - `NEXT_PUBLIC_PARTY_HOST` — hostname of the Cloudflare Worker (without `https://`)
 
 ### 2. Cloudflare Workers
