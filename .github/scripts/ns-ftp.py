@@ -25,7 +25,15 @@ def creds() -> tuple[str, str, str, str]:
     return user, password, server, path
 
 
-def lftp(script: str, user: str, password: str, server: str, timeout: int) -> None:
+def lftp(
+    script: str,
+    user: str,
+    password: str,
+    server: str,
+    timeout: int,
+    *,
+    check: bool = True,
+) -> None:
     settings = f"""
 set ftp:ssl-allow no
 set ftp:passive-mode true
@@ -42,7 +50,7 @@ debug 1
         text=True,
         check=False,
     )
-    if proc.returncode != 0:
+    if check and proc.returncode != 0:
         raise SystemExit(proc.returncode)
 
 
@@ -56,7 +64,7 @@ def main() -> None:
             "set cmd:fail-exit no\n"
             "pwd\n"
             "cls -1\n"
-            "cls -1 public_html\n"
+            "cls -a public_html\n"
             "set cmd:fail-exit yes\n"
             "quit\n",
             user,
@@ -74,6 +82,7 @@ def main() -> None:
             password,
             server,
             timeout=20,
+            check=False,
         )
         existing = ""
         if os.path.exists("root.htaccess"):
@@ -87,7 +96,15 @@ def main() -> None:
                 "# tablemates static export — do not send these URLs to the Portfolio SPA\n"
                 "RewriteRule ^tablemates(/|$) - [L]\n\n"
             )
-            existing = block + existing
+            if not existing.strip():
+                existing = (
+                    block
+                    + "RewriteCond %{REQUEST_FILENAME} !-f\n"
+                    + "RewriteCond %{REQUEST_FILENAME} !-d\n"
+                    + "RewriteRule ^ index.html [L]\n"
+                )
+            else:
+                existing = block + existing
             open("root.htaccess", "w", encoding="utf-8").write(existing)
         lftp(
             "cd public_html\n"
