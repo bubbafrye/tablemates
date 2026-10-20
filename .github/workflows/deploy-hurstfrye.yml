@@ -53,6 +53,7 @@ jobs:
           FTP_PATH: ${{ secrets.HURSTFRYE_FTP_PATH }}
         run: |
           python3 -u .github/scripts/ns-ftp.py smoke
+          python3 -u .github/scripts/ns-ftp.py fix-spa-rewrite
           printf 'ftp-ok\n' > tm-ftp-ok.txt
           python3 -u .github/scripts/ns-ftp.py put public/.htaccess tm-ftp-ok.txt
           echo "GET https://hurstfrye.com/tablemates/tm-ftp-ok.txt"

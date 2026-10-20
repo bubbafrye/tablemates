@@ -17,7 +17,9 @@ Network Solutions FTP Management:
 | Home directory | `/Public_html/Tablemates` |
 | Enabled | on |
 
-The `tablemates` user already logs in inside the web folder. Remote path is `.` — not `public_html/tablemates/` (that nests files where the site never serves them).
+The `tablemates` user logs in at account root (a `public_html/` folder is listed). Remote path is `public_html/tablemates/`.
+
+The Portfolio SPA’s root `.htaccess` was sending **every** URL to `index.html`, including files that exist under `/tablemates/`. The Action prepends an exception for that prefix.
 
 ## GitHub Actions secrets
 
@@ -26,13 +28,13 @@ The `tablemates` user already logs in inside the web folder. Remote path is `.` 
 | `HURSTFRYE_FTP_SERVER` | FTP hostname from the panel (e.g. `ftp.hurstfrye.com`) |
 | `HURSTFRYE_FTP_USER` | `tablemates` |
 | `HURSTFRYE_FTP_PASSWORD` | password for that FTP user |
-| `HURSTFRYE_FTP_PATH` | `.` |
+| `HURSTFRYE_FTP_PATH` | `public_html/tablemates/` |
 
 ```bash
 gh secret set HURSTFRYE_FTP_SERVER --body 'ftp.hurstfrye.com'
 gh secret set HURSTFRYE_FTP_USER --body 'tablemates'
 gh secret set HURSTFRYE_FTP_PASSWORD --body 'YOUR_FTP_PASSWORD'
-gh secret set HURSTFRYE_FTP_PATH --body '.'
+gh secret set HURSTFRYE_FTP_PATH --body 'public_html/tablemates/'
 ```
 
 Optional (shared with Pages): variable `NEXT_PUBLIC_PARTY_HOST`, variable `NEXT_PUBLIC_CONTACT_EMAIL`, secret `FIGMA_ACCESS_TOKEN`.

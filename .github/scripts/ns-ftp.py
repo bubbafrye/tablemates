@@ -65,6 +65,40 @@ def main() -> None:
             timeout=20,
         )
         return
+    if cmd == "fix-spa-rewrite":
+        lftp(
+            "set cmd:fail-exit no\n"
+            "get public_html/.htaccess -o root.htaccess\n"
+            "quit\n",
+            user,
+            password,
+            server,
+            timeout=20,
+        )
+        existing = ""
+        if os.path.exists("root.htaccess"):
+            existing = open("root.htaccess", encoding="utf-8", errors="replace").read()
+        print("---- public_html/.htaccess before ----")
+        print(existing or "(missing)")
+        print("---- end ----")
+        if "RewriteRule ^tablemates(/|$)" not in existing:
+            block = (
+                "RewriteEngine On\n"
+                "# tablemates static export — do not send these URLs to the Portfolio SPA\n"
+                "RewriteRule ^tablemates(/|$) - [L]\n\n"
+            )
+            existing = block + existing
+            open("root.htaccess", "w", encoding="utf-8").write(existing)
+        lftp(
+            "cd public_html\n"
+            "put root.htaccess -o .htaccess\n"
+            "quit\n",
+            user,
+            password,
+            server,
+            timeout=20,
+        )
+        return
     if cmd == "put":
         files = sys.argv[2:]
         if not files:
