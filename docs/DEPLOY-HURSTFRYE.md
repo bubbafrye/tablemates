@@ -17,7 +17,7 @@ Network Solutions FTP Management:
 | Home directory | `/Public_html/Tablemates` |
 | Enabled | on |
 
-Remote path used by the Action: `public_html/tablemates/` (from the FTP login root).
+The `tablemates` user already logs in inside the web folder. Remote path is `.` — not `public_html/tablemates/` (that nests files where the site never serves them).
 
 ## GitHub Actions secrets
 
@@ -26,13 +26,13 @@ Remote path used by the Action: `public_html/tablemates/` (from the FTP login ro
 | `HURSTFRYE_FTP_SERVER` | FTP hostname from the panel (e.g. `ftp.hurstfrye.com`) |
 | `HURSTFRYE_FTP_USER` | `tablemates` |
 | `HURSTFRYE_FTP_PASSWORD` | password for that FTP user |
-| `HURSTFRYE_FTP_PATH` | `public_html/tablemates/` |
+| `HURSTFRYE_FTP_PATH` | `.` |
 
 ```bash
 gh secret set HURSTFRYE_FTP_SERVER --body 'ftp.hurstfrye.com'
 gh secret set HURSTFRYE_FTP_USER --body 'tablemates'
 gh secret set HURSTFRYE_FTP_PASSWORD --body 'YOUR_FTP_PASSWORD'
-gh secret set HURSTFRYE_FTP_PATH --body 'public_html/tablemates/'
+gh secret set HURSTFRYE_FTP_PATH --body '.'
 ```
 
 Optional (shared with Pages): variable `NEXT_PUBLIC_PARTY_HOST`, variable `NEXT_PUBLIC_CONTACT_EMAIL`, secret `FIGMA_ACCESS_TOKEN`.

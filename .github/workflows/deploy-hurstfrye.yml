@@ -56,7 +56,12 @@ jobs:
           printf 'ftp-ok\n' > tm-ftp-ok.txt
           python3 -u .github/scripts/ns-ftp.py put public/.htaccess tm-ftp-ok.txt
           echo "GET https://hurstfrye.com/tablemates/tm-ftp-ok.txt"
-          curl -sS -D - --max-time 30 "https://hurstfrye.com/tablemates/tm-ftp-ok.txt" | head -n 40
+          body=$(curl -sS --max-time 30 "https://hurstfrye.com/tablemates/tm-ftp-ok.txt")
+          echo "$body" | head -n 20
+          echo "$body" | grep -q ftp-ok || {
+            echo "::error::Canary uploaded but /tablemates/tm-ftp-ok.txt is not served (got Portfolio rewrite)."
+            exit 1
+          }
 
       - name: Setup Node
         uses: actions/setup-node@v4
