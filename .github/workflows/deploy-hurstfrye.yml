@@ -50,21 +50,8 @@ jobs:
           FTP_SERVER: ${{ secrets.HURSTFRYE_FTP_SERVER }}
           FTP_USER: ${{ secrets.HURSTFRYE_FTP_USER }}
           LFTP_PASSWORD: ${{ secrets.HURSTFRYE_FTP_PASSWORD }}
-        run: |
-          echo "FTP user=$FTP_USER server=$FTP_SERVER"
-          python3 -c 'import os,pathlib; p=pathlib.Path.home()/".netrc"; p.write_text("machine %s\nlogin %s\npassword %s\n" % (os.environ["FTP_SERVER"], os.environ["FTP_USER"], os.environ["LFTP_PASSWORD"])); p.chmod(0o600)'
-          lftp "ftp://$FTP_SERVER" <<'EOF'
-          set ftp:ssl-allow no
-          set ftp:passive-mode true
-          set ftp:prefer-epsv no
-          set net:max-retries 2
-          set net:timeout 20
-          set cmd:fail-exit yes
-          debug 1
-          pwd
-          cls -1
-          quit
-          EOF
+          FTP_PATH: ${{ secrets.HURSTFRYE_FTP_PATH }}
+        run: python3 -u .github/scripts/ns-ftp.py smoke
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -109,21 +96,7 @@ jobs:
           echo 'ok';
           PHP
           ls -lh tablemates-out.zip unzip-tablemates.php
-          python3 -c 'import os,pathlib; p=pathlib.Path.home()/".netrc"; p.write_text("machine %s\nlogin %s\npassword %s\n" % (os.environ["FTP_SERVER"], os.environ["FTP_USER"], os.environ["LFTP_PASSWORD"])); p.chmod(0o600)'
-          lftp "ftp://$FTP_SERVER" <<EOF
-          set ftp:ssl-allow no
-          set ftp:passive-mode true
-          set ftp:prefer-epsv no
-          set net:max-retries 5
-          set net:reconnect-interval-base 5
-          set net:timeout 180
-          set cmd:fail-exit yes
-          debug 1
-          cd ${FTP_PATH}
-          put tablemates-out.zip
-          put unzip-tablemates.php
-          quit
-          EOF
+          python3 -u .github/scripts/ns-ftp.py put tablemates-out.zip unzip-tablemates.php
           echo "UNZIP_TOKEN=$TOKEN" >> "$GITHUB_ENV"
 
       - name: Unzip on host
