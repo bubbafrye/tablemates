@@ -1,11 +1,14 @@
-/* Figma game-tray (268:25969) — 434×457. */
+/* Figma game-tray (268:25969) — 444×467 node; 5px pad is drop-shadow, not a box. */
 .root {
   position: relative;
   width: 434px;
-  height: 457px;
-  /* box-shadow — not filter — so tile mix-blend-overlay still works */
-  box-shadow: 0 4px 5px rgba(0, 0, 0, 0.25);
-  border-radius: 15px;
+  height: 467px;
+  overflow: visible;
+  /*
+   * Shadow is the edge SVG filter (follows chrome alpha). Do not box-shadow
+   * this 434×467 rect — that paints a second, lower rounded plate.
+   * filter:drop-shadow on .root would also flatten tile mix-blend-overlay.
+   */
 }
 
 .base {
@@ -20,7 +23,7 @@
 /*
  * Same edge asset twice, half-masked (268:25969):
  *   upperframe (243:24354) — clip top 217px, behind tiles
- *   lowerframe (243:24355) — clip from y=193 h=264, in front of tiles
+ *   lowerframe (243:24355) — clip from y=193 h=276, in front of tiles
  * SoT paint order: base → upperframe → tiles → lowerframe.
  */
 .upperframe {
@@ -48,18 +51,20 @@
 
 .lowerframe {
   position: absolute;
-  left: 0;
+  /* SVG 452×458 at left -9; window must include the baked corner shadow. */
+  left: -9px;
   top: 193px;
   z-index: 3;
-  width: 434px;
-  height: 264px;
+  width: 452px;
+  /* SVG bottom in this frame: (11 - 193) + 458 = 276 */
+  height: 276px;
   overflow: hidden;
   pointer-events: none;
 }
 
 .lowerEdge {
   position: absolute;
-  left: -9px;
+  left: 0;
   /*
    * Lower top-edge abs y = game-tray + 11 (243:24357).
    * Within lowerframe (top 193): 11 - 193.
@@ -72,7 +77,8 @@
 .tiles {
   position: absolute;
   left: 16px;
-  top: 11px;
+  /* 11px SoT + 5px playfield drop (with grid) — PNG pad was sitting tiles high */
+  top: 16px;
   z-index: 2;
   width: 403px;
   height: 424px;

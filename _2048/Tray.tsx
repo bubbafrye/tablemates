@@ -45,7 +45,7 @@ export function Tray({ variant = "floor", className, style }: TrayProps) {
         */}
         <img
           className={styles.grid}
-          src={withBasePath("/assets/2048/tray-grid.svg?v=y4")}
+          src={withBasePath("/assets/2048/tray-grid.svg?v=y9")}
           alt=""
           width={434}
           height={434}

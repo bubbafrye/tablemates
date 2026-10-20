@@ -116,10 +116,11 @@
    */
   box-sizing: border-box;
   width: 434px;
-  height: 457px;
+  height: 467px;
+  overflow: visible;
   transform: scale(var(--board-fit));
   transform-origin: top center;
-  margin-bottom: calc(457px * (var(--board-fit) - 1));
+  margin-bottom: calc(467px * (var(--board-fit) - 1));
   flex-shrink: 0;
 }
 

@@ -1,15 +1,15 @@
 <svg width="434" height="434" viewBox="0 0 434 434" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Figma Tile grid 217:12150 / vector 307:49625 at (15,4) — H @ 109.25/214.5/319.75, V @ 116.5/218/319.5 -->
-  <path d="M15 319.75H421V320.271H15V319.75Z" fill="#D1D1D1"/>
-  <path d="M15 319.229H421V319.75H15V319.229Z" fill="#633313" fill-opacity="0.6"/>
-  <path d="M319.5 4H320.002V425H319.5V4Z" fill="#D1D1D1"/>
-  <path d="M318.998 4H319.5V425H318.998V4Z" fill="#633313" fill-opacity="0.6"/>
-  <path d="M15 214.5H421V215.021H15V214.5Z" fill="#D1D1D1"/>
-  <path d="M15 213.979H421V214.5H15V213.979Z" fill="#633313" fill-opacity="0.6"/>
-  <path d="M218 4H218.502V425H218V4Z" fill="#D1D1D1"/>
-  <path d="M217.498 4H218V425H217.498V4Z" fill="#633313" fill-opacity="0.6"/>
-  <path d="M15 109.25H421V109.771H15V109.25Z" fill="#D1D1D1"/>
-  <path d="M15 108.729H421V109.25H15V108.729Z" fill="#633313" fill-opacity="0.6"/>
-  <path d="M116.5 4H117.002V425H116.5V4Z" fill="#D1D1D1"/>
-  <path d="M115.998 4H116.5V425H115.998V4Z" fill="#633313" fill-opacity="0.6"/>
+  <!-- Figma Tile grid 217:12150 / vector 307:49625 at (15,9) — H @ 114.25/219.5/324.75, V @ 116.5/218/319.5 -->
+  <path d="M15 324.75H421V325.271H15V324.75Z" fill="#D1D1D1"/>
+  <path d="M15 324.229H421V324.75H15V324.229Z" fill="#633313" fill-opacity="0.6"/>
+  <path d="M319.5 9H320.002V430H319.5V9Z" fill="#D1D1D1"/>
+  <path d="M318.998 9H319.5V430H318.998V9Z" fill="#633313" fill-opacity="0.6"/>
+  <path d="M15 219.5H421V220.021H15V219.5Z" fill="#D1D1D1"/>
+  <path d="M15 218.979H421V219.5H15V218.979Z" fill="#633313" fill-opacity="0.6"/>
+  <path d="M218 9H218.502V430H218V9Z" fill="#D1D1D1"/>
+  <path d="M217.498 9H218V430H217.498V9Z" fill="#633313" fill-opacity="0.6"/>
+  <path d="M15 114.25H421V114.771H15V114.25Z" fill="#D1D1D1"/>
+  <path d="M15 113.729H421V114.25H15V113.729Z" fill="#633313" fill-opacity="0.6"/>
+  <path d="M116.5 9H117.002V430H116.5V9Z" fill="#D1D1D1"/>
+  <path d="M115.998 9H116.5V430H115.998V9Z" fill="#633313" fill-opacity="0.6"/>
 </svg>
