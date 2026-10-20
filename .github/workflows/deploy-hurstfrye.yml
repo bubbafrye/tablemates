@@ -84,49 +84,28 @@ jobs:
           NEXT_PUBLIC_CONTACT_EMAIL: ${{ vars.NEXT_PUBLIC_CONTACT_EMAIL }}
           FIGMA_ACCESS_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
 
-      # One zip + unzip.php: Network Solutions PASV often dies mid multi-file mirror.
-      - name: Deploy out/ via FTP (zip)
+      # Zip/PHP are blocked by Network Solutions malware scanning. Mirror files.
+      - name: Deploy out/ via FTP
         env:
           FTP_SERVER: ${{ secrets.HURSTFRYE_FTP_SERVER }}
           FTP_USER: ${{ secrets.HURSTFRYE_FTP_USER }}
           LFTP_PASSWORD: ${{ secrets.HURSTFRYE_FTP_PASSWORD }}
           FTP_PATH: ${{ secrets.HURSTFRYE_FTP_PATH }}
         run: |
-          TOKEN=$(openssl rand -hex 16)
-          echo "$TOKEN" > /tmp/deploy-token
-          ( cd out && zip -r -q ../tablemates-out.zip . )
-          cat > unzip-tablemates.php <<PHP
-          <?php
-          if (!hash_equals('${TOKEN}', \$_GET['t'] ?? '')) { http_response_code(403); exit('forbidden'); }
-          \$zip = new ZipArchive();
-          if (\$zip->open(__DIR__ . '/tablemates-out.zip') !== true) { http_response_code(500); exit('zip open failed'); }
-          \$zip->extractTo(__DIR__);
-          \$zip->close();
-          @unlink(__DIR__ . '/tablemates-out.zip');
-          @unlink(__FILE__);
-          echo 'ok';
-          PHP
-          ls -lh tablemates-out.zip unzip-tablemates.php
-          python3 -u .github/scripts/ns-ftp.py put tablemates-out.zip unzip-tablemates.php
-          echo "UNZIP_TOKEN=$TOKEN" >> "$GITHUB_ENV"
+          python3 -u .github/scripts/ns-ftp.py put out/index.html out/404.html
+          python3 -u .github/scripts/ns-ftp.py mirror ./out
 
-      - name: Unzip on host
-        env:
-          TOKEN: ${{ env.UNZIP_TOKEN }}
+      - name: Verify live index
         run: |
-          ok=
-          for url in \
-            "https://hurstfrye.com/tablemates/unzip-tablemates.php?t=${TOKEN}" \
-            "https://hurstfrye.com/Tablemates/unzip-tablemates.php?t=${TOKEN}"
-          do
-            echo "GET $url"
-            body=$(curl -sS -w "\nHTTP:%{http_code}" --max-time 120 "$url" || true)
-            echo "$body"
-            echo "$body" | grep -q '^ok' && { ok=1; break; }
-          done
-          if [ -z "$ok" ]; then
-            echo "::error::Uploaded zip, but unzip.php did not run. Unzip tablemates-out.zip in Network Solutions File Manager."
+          body=$(curl -sS --max-time 30 "https://hurstfrye.com/tablemates/index.html")
+          echo "$body" | head -c 400
+          echo
+          echo "$body" | grep -qi 'Portfolio' && {
+            echo "::error::Live index.html is still the Portfolio SPA."
             exit 1
-          fi
-          curl -sS "https://hurstfrye.com/tablemates/index.html" | head -c 400
+          }
+          echo "$body" | grep -qi 'tablemates' || {
+            echo "::error::Live index.html did not look like the tablemates export."
+            exit 1
+          }
 

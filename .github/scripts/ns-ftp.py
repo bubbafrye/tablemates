@@ -133,6 +133,19 @@ def main() -> None:
         )
         lftp(script, user, password, server, timeout=180)
         return
+    if cmd == "mirror":
+        local = sys.argv[2] if len(sys.argv) > 2 else "./out"
+        script = (
+            f"mkdir -p {path}\n"
+            f"mirror -R --verbose --parallel=1 --no-perms "
+            f"--exclude-glob '*.zip' --exclude-glob '*.php' "
+            f"{local}/ {path}/\n"
+            f"cd {path}\n"
+            "cls -1\n"
+            "quit\n"
+        )
+        lftp(script, user, password, server, timeout=600)
+        return
     raise SystemExit(f"unknown command {cmd}")
 
 
