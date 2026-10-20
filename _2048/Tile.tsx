@@ -14,11 +14,23 @@ function tileSrc(value: number): string {
   return withBasePath(`/assets/2048/tiles/${value}.png`);
 }
 
+const PRELOAD_VALUES = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096];
+let preloaded = false;
+function preloadTileArt() {
+  if (preloaded || typeof window === "undefined") return;
+  preloaded = true;
+  for (const value of PRELOAD_VALUES) {
+    const img = new Image();
+    img.src = tileSrc(value);
+  }
+}
+
 /**
  * Figma `tile` (`213:154683`) — baked PNG per value (see scripts/export-2048-tiles.mjs).
  * Number + lighting + blends are in the asset for mobile-safe compositing.
  */
 export function Tile({ value, pop = false }: TileProps) {
+  preloadTileArt();
   const glow = tileGlow(value);
   const artStyle = {
     ...(glow ? { boxShadow: glow } : {}),
@@ -42,6 +54,7 @@ export function Tile({ value, pop = false }: TileProps) {
         width={TILE_ART.imgWidth}
         height={TILE_ART.imgHeight}
         draggable={false}
+        decoding="sync"
       />
     </div>
   );

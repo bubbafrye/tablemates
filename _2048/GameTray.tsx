@@ -84,6 +84,7 @@ export function GameTray({
   }
 
   const leaving = new Set(motions?.map((m) => m.from) ?? []);
+  const destSeen = new Map<number, number>();
 
   const staticTiles: AnimTile[] = [];
   if (!sliding) {
@@ -91,7 +92,8 @@ export function GameTray({
       const value = board[i] ?? 0;
       if (value > 0) {
         staticTiles.push({
-          key: `c${i}-${value}`,
+          /* Stable per cell so a landed slide reuses the same DOM node. */
+          key: `cell-${i}`,
           value,
           index: i,
           pop: popIndices?.has(i) ?? false,
@@ -103,7 +105,7 @@ export function GameTray({
       const value = board[i] ?? 0;
       if (value > 0 && !leaving.has(i)) {
         staticTiles.push({
-          key: `stay-${i}`,
+          key: `cell-${i}`,
           value,
           index: i,
           pop: false,
@@ -140,9 +142,15 @@ export function GameTray({
 
         {motions?.map((m, i) => {
           const pos = cellOffset(slideProgressed ? m.to : m.from);
+          const seen = destSeen.get(m.to) ?? 0;
+          destSeen.set(m.to, seen + 1);
+          /* Non-merge (and the first merge source) keep `cell-${to}` so React
+             does not remount the <img> when the slide commits. */
+          const key =
+            seen === 0 ? `cell-${m.to}` : m.key;
           return (
             <div
-              key={m.key}
+              key={key}
               className={[
                 styles.tileAbs,
                 styles.tileSliding,

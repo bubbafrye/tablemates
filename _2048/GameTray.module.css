@@ -86,6 +86,7 @@
   height: 109px;
   /* Tile PNG includes drop-shadow padding outside the 100×109 cell. */
   overflow: visible;
+  backface-visibility: hidden;
 }
 
 .tileSliding {
