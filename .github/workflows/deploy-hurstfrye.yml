@@ -2,6 +2,7 @@ name: Deploy to hurstfrye.com
 
 # Keeps GitHub Pages (deploy-pages.yml). Mirrors the same static export to
 # https://hurstfrye.com/tablemates/ via FTP (Network Solutions / shared hosting).
+# FTP user `tablemates` is jailed to PUBLIC_HTML/TABLEMATES — upload into `.`.
 
 on:
   push:
@@ -42,9 +43,8 @@ jobs:
       - name: Install lftp
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq lftp zip
+          sudo apt-get install -y -qq lftp
 
-      # Fail fast if the `tablemates` FTP user/password/host is wrong.
       - name: FTP login smoke test
         env:
           FTP_SERVER: ${{ secrets.HURSTFRYE_FTP_SERVER }}
@@ -53,24 +53,12 @@ jobs:
           FTP_PATH: ${{ secrets.HURSTFRYE_FTP_PATH }}
         run: |
           python3 -u .github/scripts/ns-ftp.py smoke
-          python3 -u .github/scripts/ns-ftp.py fix-spa-rewrite
-          printf 'ftp-ok\n' > tm-ftp-ok.txt
-          printf 'css-ok' > tm-ok.css
-          printf 'js-ok' > tm-ok.js
-          printf '<p>htm-ok</p>' > tm-ok.htm
-          printf '<p>html-ok</p>' > tm-ok.html
-          python3 -c 'open(".htaccess","w").write("DirectoryIndex index.html\nRewriteEngine Off\n")'
-          python3 -u .github/scripts/ns-ftp.py put .htaccess tm-ftp-ok.txt tm-ok.css tm-ok.js tm-ok.htm tm-ok.html
-          for f in tm-ftp-ok.txt tm-ok.css tm-ok.js tm-ok.htm tm-ok.html; do
-            echo "==== $f"
-            curl -sS -o /tmp/b -w "HTTP:%{http_code} type:%{content_type} size:%{size_download}\n" --max-time 20 "https://hurstfrye.com/tablemates/$f"
-            head -c 80 /tmp/b; echo
-          done
-          echo "GET https://hurstfrye.com/tablemates/tm-ftp-ok.txt"
-          body=$(curl -sS --max-time 30 "https://hurstfrye.com/tablemates/tm-ftp-ok.txt")
-          echo "$body" | head -n 20
-          echo "$body" | grep -q ftp-ok || {
-            echo "::error::Canary uploaded but /tablemates/tm-ftp-ok.txt is not served (got Portfolio rewrite)."
+          printf '<p>html-ok</p>\n' > tm-ok.html
+          python3 -u .github/scripts/ns-ftp.py put tm-ok.html
+          body=$(curl -sS --max-time 30 "https://hurstfrye.com/tablemates/tm-ok.html")
+          echo "$body"
+          echo "$body" | grep -q html-ok || {
+            echo "::error::Jail-root HTML is not served at /tablemates/tm-ok.html"
             exit 1
           }
 
@@ -94,7 +82,6 @@ jobs:
           NEXT_PUBLIC_CONTACT_EMAIL: ${{ vars.NEXT_PUBLIC_CONTACT_EMAIL }}
           FIGMA_ACCESS_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
 
-      # Zip/PHP are blocked by Network Solutions malware scanning. Mirror files.
       - name: Deploy out/ via FTP
         env:
           FTP_SERVER: ${{ secrets.HURSTFRYE_FTP_SERVER }}
@@ -108,14 +95,13 @@ jobs:
       - name: Verify live index
         run: |
           body=$(curl -sS --max-time 30 "https://hurstfrye.com/tablemates/index.html")
-          echo "$body" | head -c 400
+          echo "$body" | head -c 500
           echo
           echo "$body" | grep -qi 'Portfolio' && {
             echo "::error::Live index.html is still the Portfolio SPA."
             exit 1
           }
-          echo "$body" | grep -qi 'tablemates' || {
-            echo "::error::Live index.html did not look like the tablemates export."
+          echo "$body" | grep -q '_next' || {
+            echo "::error::Live index.html is not the Next export (missing _next)."
             exit 1
           }
-

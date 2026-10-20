@@ -17,9 +17,7 @@ Network Solutions FTP Management:
 | Home directory | `/Public_html/Tablemates` |
 | Enabled | on |
 
-The `tablemates` user logs in at account root (a `public_html/` folder is listed). Remote path is `public_html/tablemates/`.
-
-The Portfolio SPA’s root `.htaccess` was sending **every** URL to `index.html`, including files that exist under `/tablemates/`. The Action prepends an exception for that prefix.
+That user **already logs in inside** the folder File Manager shows as `ROOT / PUBLIC_HTML / TABLEMATES`. GitHub Actions must upload into `.`. Using `public_html/tablemates/` creates a nested folder the site never serves.
 
 ## GitHub Actions secrets
 
@@ -28,27 +26,22 @@ The Portfolio SPA’s root `.htaccess` was sending **every** URL to `index.html`
 | `HURSTFRYE_FTP_SERVER` | FTP hostname from the panel (e.g. `ftp.hurstfrye.com`) |
 | `HURSTFRYE_FTP_USER` | `tablemates` |
 | `HURSTFRYE_FTP_PASSWORD` | password for that FTP user |
-| `HURSTFRYE_FTP_PATH` | `public_html/tablemates/` |
+| `HURSTFRYE_FTP_PATH` | `.` |
 
 ```bash
 gh secret set HURSTFRYE_FTP_SERVER --body 'ftp.hurstfrye.com'
 gh secret set HURSTFRYE_FTP_USER --body 'tablemates'
 gh secret set HURSTFRYE_FTP_PASSWORD --body 'YOUR_FTP_PASSWORD'
-gh secret set HURSTFRYE_FTP_PATH --body 'public_html/tablemates/'
+gh secret set HURSTFRYE_FTP_PATH --body '.'
 ```
 
 Optional (shared with Pages): variable `NEXT_PUBLIC_PARTY_HOST`, variable `NEXT_PUBLIC_CONTACT_EMAIL`, secret `FIGMA_ACCESS_TOKEN`.
 
-Network Solutions typically does **not** support FTPS (`AUTH TLS` → `504`). The workflow uses plain **FTP on port 21**. Multi-file FTP hangs on this host, so the Action uploads one zip and a one-shot `unzip-tablemates.php`.
-
-`HURSTFRYE_FTP_PASSWORD` must be the password for the **`tablemates`** FTP user (not the main hosting login).
-
-## White page at /tablemates/index.html
-
-Until a successful upload, that URL is the **Portfolio** SPA at the domain root (empty `#root` if its JS is requested from `/tablemates/assets/`). After deploy you should see a `<title>tablemates</title>` document and files like `_next/` and `assets/2048/` in File Manager under `Public_html/Tablemates`.
+Network Solutions typically does **not** support FTPS (`AUTH TLS` → `504`). The workflow uses plain **FTP on port 21**. Zip/PHP uploads are blocked by their malware scan, so the Action mirrors files with lftp.
 
 ## Verify
 
 1. **Actions → Deploy to hurstfrye.com → Run workflow** (or push to `main`).
-2. Open https://hurstfrye.com/tablemates/ — assets should load under `/tablemates/_next/...`.
-3. Start a room; websockets still use your Cloudflare Worker (`NEXT_PUBLIC_PARTY_HOST`).
+2. File Manager `PUBLIC_HTML / TABLEMATES` should contain `index.html`, `_next/`, `assets/`.
+3. Open https://hurstfrye.com/tablemates/ — assets should load under `/tablemates/_next/...`.
+4. Start a room; websockets still use your Cloudflare Worker (`NEXT_PUBLIC_PARTY_HOST`).

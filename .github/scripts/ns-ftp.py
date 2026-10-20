@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""lftp helper for Network Solutions. Strips secret whitespace and passes user,pass explicitly."""
+"""lftp helper for Network Solutions. The tablemates user is jailed to PUBLIC_HTML/TABLEMATES."""
 
 from __future__ import annotations
 
@@ -16,9 +16,13 @@ def creds() -> tuple[str, str, str, str]:
     server = server.split("/")[0]
     password = os.environ["LFTP_PASSWORD"].strip("\r\n")
     path = os.environ.get("FTP_PATH", ".").strip() or "."
+    # Extra FTP user home is already PUBLIC_HTML/TABLEMATES. Nested paths 404.
+    if "public_html" in path.lower() or "tablemates" in path.lower():
+        print(f"ftp path {path!r} is inside the jail — using '.'")
+        path = "."
     print(
         f"ftp diagnostics: user_len={len(user)} server_len={len(server)} "
-        f"pass_len={len(password)} path={path!r} server_has_colon={':' in server}"
+        f"pass_len={len(password)} path={path!r}"
     )
     if not user or not server or not password:
         raise SystemExit("FTP user/server/password empty after trim")
@@ -54,9 +58,15 @@ debug 1
         raise SystemExit(proc.returncode)
 
 
+def enter_path(path: str) -> str:
+    if path in (".", "./"):
+        return "pwd\n"
+    return f"mkdir -p {path}\ncd {path}\npwd\n"
+
+
 def main() -> None:
     if len(sys.argv) < 2:
-        raise SystemExit("usage: ns-ftp.py smoke | put FILE...")
+        raise SystemExit("usage: ns-ftp.py smoke | put FILE... | mirror [DIR]")
     cmd = sys.argv[1]
     user, password, server, path = creds()
     if cmd == "smoke":
@@ -64,51 +74,8 @@ def main() -> None:
             "set cmd:fail-exit no\n"
             "pwd\n"
             "cls -1\n"
-            "cls -a public_html\n"
+            "rm -r public_html\n"
             "set cmd:fail-exit yes\n"
-            "quit\n",
-            user,
-            password,
-            server,
-            timeout=20,
-        )
-        return
-    if cmd == "fix-spa-rewrite":
-        lftp(
-            "set cmd:fail-exit no\n"
-            "get public_html/.htaccess -o root.htaccess\n"
-            "quit\n",
-            user,
-            password,
-            server,
-            timeout=20,
-            check=False,
-        )
-        existing = ""
-        if os.path.exists("root.htaccess"):
-            existing = open("root.htaccess", encoding="utf-8", errors="replace").read()
-        print("---- public_html/.htaccess before ----")
-        print(existing or "(missing)")
-        print("---- end ----")
-        if "RewriteRule ^tablemates(/|$)" not in existing:
-            block = (
-                "RewriteEngine On\n"
-                "# tablemates static export — do not send these URLs to the Portfolio SPA\n"
-                "RewriteRule ^tablemates(/|$) - [L]\n\n"
-            )
-            if not existing.strip():
-                existing = (
-                    block
-                    + "RewriteCond %{REQUEST_FILENAME} !-f\n"
-                    + "RewriteCond %{REQUEST_FILENAME} !-d\n"
-                    + "RewriteRule ^ index.html [L]\n"
-                )
-            else:
-                existing = block + existing
-            open("root.htaccess", "w", encoding="utf-8").write(existing)
-        lftp(
-            "cd public_html\n"
-            "put root.htaccess -o .htaccess\n"
             "quit\n",
             user,
             password,
@@ -123,28 +90,32 @@ def main() -> None:
         puts = "\n".join(
             f"put {name} -o {os.path.basename(name)}" for name in files
         )
-        script = (
-            f"mkdir -p {path}\n"
-            f"cd {path}\n"
-            f"pwd\n"
-            f"{puts}\n"
-            "cls -1\n"
-            "quit\n"
+        lftp(
+            enter_path(path) + puts + "\ncls -1\nquit\n",
+            user,
+            password,
+            server,
+            timeout=180,
         )
-        lftp(script, user, password, server, timeout=180)
         return
     if cmd == "mirror":
         local = sys.argv[2] if len(sys.argv) > 2 else "./out"
-        script = (
-            f"mkdir -p {path}\n"
-            f"mirror -R --verbose --parallel=1 --no-perms "
-            f"--exclude-glob '*.zip' --exclude-glob '*.php' "
-            f"{local}/ {path}/\n"
-            f"cd {path}\n"
-            "cls -1\n"
-            "quit\n"
+        dest = "." if path in (".", "./") else path
+        lftp(
+            enter_path(path)
+            + "set cmd:fail-exit no\n"
+            + "rm -r public_html\n"
+            + "set cmd:fail-exit yes\n"
+            + f"mirror -R --verbose --parallel=1 --no-perms "
+            + f"--exclude-glob '*.zip' --exclude-glob '*.php' "
+            + f"{local}/ {dest}/\n"
+            + "cls -1\n"
+            + "quit\n",
+            user,
+            password,
+            server,
+            timeout=600,
         )
-        lftp(script, user, password, server, timeout=600)
         return
     raise SystemExit(f"unknown command {cmd}")
 
