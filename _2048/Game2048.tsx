@@ -8,6 +8,11 @@ import { flushHighScoreSubmit, submitHighScore } from "@/platform/leaderboard";
 import { GameTray } from "./GameTray";
 import { readHighScore, writeHighScoreIfBetter } from "./highScore";
 import {
+  directionFromGamepad,
+  firstConnectedGamepad,
+  southButtonPressed,
+} from "./gamepad";
+import {
   commitSlide,
   continueAfterWin,
   createInitialState,
@@ -23,9 +28,9 @@ import styles from "./Game2048.module.css";
 const GAME_ID = "2048";
 
 const HINT_KEYBOARD =
-  "Use arrows to slide tiles. Merge similar tiles to build larger ones.";
+  "Use arrows or a controller to slide tiles. Merge similar tiles to build larger ones.";
 const HINT_TOUCH =
-  "Swipe to slide tiles. Merge similar tiles to build larger ones.";
+  "Swipe or use a controller to slide tiles. Merge similar tiles to build larger ones.";
 
 const KEY_DIR: Record<string, Direction> = {
   ArrowUp: "up",
@@ -58,6 +63,11 @@ export function Game2048() {
   const slideSnapshot = useRef<{ base: Game2048State; plan: SlidePlan } | null>(
     null,
   );
+  const gameRef = useRef(game);
+  gameRef.current = game;
+  const moveRef = useRef<(direction: Direction) => void>(() => {});
+  const continueRef = useRef(() => {});
+  const newGameRef = useRef(() => {});
 
   const animating = Boolean(slide);
   const canPlay =
@@ -146,6 +156,33 @@ export function Game2048() {
   }, [canPlay, game]);
 
   useEffect(() => {
+    let raf = 0;
+    let southWasDown = false;
+
+    function poll() {
+      const pad = firstConnectedGamepad();
+      if (pad) {
+        const dir = directionFromGamepad(pad);
+        if (dir) moveRef.current(dir);
+        const south = southButtonPressed(pad);
+        if (south && !southWasDown) {
+          const status = gameRef.current?.status;
+          const continued = gameRef.current?.continued;
+          if (status === "won" && !continued) continueRef.current();
+          else if (status === "lost") newGameRef.current();
+        }
+        southWasDown = south;
+      } else {
+        southWasDown = false;
+      }
+      raf = window.requestAnimationFrame(poll);
+    }
+
+    raf = window.requestAnimationFrame(poll);
+    return () => window.cancelAnimationFrame(raf);
+  }, []);
+
+  useEffect(() => {
     if (popIndices.size === 0) return;
     const id = window.setTimeout(() => setPopIndices(new Set()), 200);
     return () => window.clearTimeout(id);
@@ -164,6 +201,10 @@ export function Game2048() {
     if (!game) return;
     publish(continueAfterWin(game));
   }
+
+  moveRef.current = move;
+  continueRef.current = handleContinue;
+  newGameRef.current = handleNewGame;
 
   function onTouchStart(event: TouchEvent) {
     const t = event.changedTouches[0];
