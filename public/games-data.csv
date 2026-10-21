@@ -1,0 +1,11 @@
+game-name,player-count,controller,fullscreen,multiplayer,type
+rakko,1-4,false,false,true,card
+tic-tac-toe,2,true,false,true,puzzle
+2048,1,true,false,false,puzzle
+space-rocks,1-2,true,true,couch,arcade
+,,true,false,,
+,,true,false,,
+,,true,false,,
+,,true,false,,
+,,true,false,,
+,,true,false,,

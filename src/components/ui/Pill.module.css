@@ -1,0 +1,52 @@
+/* Figma pill (327:53944) — 45×20, radius/full is not in tokens. */
+.shell,
+.count,
+.iconPill {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 45px;
+  height: 20px;
+  max-height: 20px;
+  overflow: hidden;
+  /* No matching radius token — Figma radius/full */
+  border-radius: 9999px;
+}
+
+.shell,
+.count {
+  width: 45px;
+  padding: 0 10px;
+  background: var(--color-text-primary);
+}
+
+.count {
+  color: var(--color-text-on-accent);
+  font-family: var(--font-secondary-face), sans-serif;
+  font-size: var(--font-size-body);
+  /* Figma Encode ExtraBold — only 500 is shipped */
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.iconPill {
+  width: 45px;
+  padding: 0;
+  background: transparent;
+}
+
+.iconPill img {
+  display: block;
+  width: 45px;
+  height: 20px;
+  max-width: none;
+}
+
+.typeIcon {
+  display: block;
+  max-width: none;
+}

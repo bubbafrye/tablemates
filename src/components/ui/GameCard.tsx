@@ -1,18 +1,21 @@
 "use client";
 
 import type { GameDefinition } from "@/platform/catalog";
+import type { GameFacts } from "@/platform/gamesData";
 import { withBasePath } from "@/platform/site";
 import { Button } from "./Button";
+import { GameData } from "./GameData";
 import { TextDescription } from "./TextDescription";
 import { TextTitle } from "./TextTitle";
 import styles from "./GameCard.module.css";
 
 type GameCardProps = {
   game: GameDefinition;
+  facts?: GameFacts;
   onLaunch?: (gameId: string) => void;
 };
 
-export function GameCard({ game, onLaunch }: GameCardProps) {
+export function GameCard({ game, facts, onLaunch }: GameCardProps) {
   const hero = game.hero ?? {
     lg: "/assets/hero-lg.png",
     sm: "/assets/hero-sm.png",
@@ -51,6 +54,7 @@ export function GameCard({ game, onLaunch }: GameCardProps) {
             height={143}
           />
         </button>
+        <GameData facts={facts} />
         <div className={styles.meta}>
           <TextTitle>{game.name}</TextTitle>
           <Button onClick={() => onLaunch?.(game.id)}>Launch</Button>

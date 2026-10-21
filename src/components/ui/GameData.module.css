@@ -1,0 +1,8 @@
+/* Figma game-data (327:53964) — gap 10px, pills 45×20. */
+.row {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--spacing-item-gap);
+  overflow: hidden;
+}

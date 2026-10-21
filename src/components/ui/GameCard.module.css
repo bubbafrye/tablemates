@@ -21,7 +21,6 @@
   flex-direction: column;
   overflow: hidden;
   padding: 0;
-  padding-bottom: var(--spacing-item-gap);
   border: 0;
   background: var(--color-surface-image-container);
   cursor: pointer;

@@ -11,4 +11,13 @@ const meta: Meta<typeof GameCard> = {
 export default meta;
 type Story = StoryObj<typeof GameCard>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  args: {
+    facts: {
+      id: "rakko",
+      playerCount: "1-4",
+      controller: true,
+      type: "card",
+    },
+  },
+};
