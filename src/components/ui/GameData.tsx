@@ -12,18 +12,16 @@ type GameDataProps = {
  */
 export function GameData({ facts }: GameDataProps) {
   if (!facts) return null;
-  const showCount = Boolean(facts.playerCount);
-  const showController = facts.controller;
-  const showType = Boolean(facts.type);
-  if (!showCount && !showController && !showType) return null;
+  const { playerCount, controller, type } = facts;
+  if (!playerCount && !controller && !type) return null;
 
   return (
     <div className={styles.row} data-name="game-data" data-node-id="327:53964">
-      {showCount ? (
-        <Pill kind="player-count" label={facts.playerCount} />
+      {playerCount ? (
+        <Pill kind="player-count" label={playerCount} />
       ) : null}
-      {showController ? <Pill kind="controller" /> : null}
-      {showType ? <Pill kind={`type-${facts.type}`} /> : null}
+      {controller ? <Pill kind="controller" /> : null}
+      {type ? <Pill kind={`type-${type}`} /> : null}
     </div>
   );
 }
