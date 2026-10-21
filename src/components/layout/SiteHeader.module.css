@@ -83,3 +83,31 @@
 .qrBtn:focus-visible {
   box-shadow: var(--shadow-focus);
 }
+
+/* Figma expand (332:54613) — 15×15, fill baked in SVG (#114B5F, no token). */
+.expand {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.expand:focus {
+  outline: none;
+}
+
+.expand:focus-visible {
+  box-shadow: var(--shadow-focus);
+}
+
+.expand img {
+  display: block;
+  width: 15px;
+  height: 15px;
+}

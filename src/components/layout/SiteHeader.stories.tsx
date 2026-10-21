@@ -11,3 +11,4 @@ type Story = StoryObj<typeof SiteHeader>;
 
 export const Default: Story = {};
 export const WithRoomCode: Story = { args: { roomCode: "123456" } };
+export const WithExpand: Story = { args: { fullscreen: true } };

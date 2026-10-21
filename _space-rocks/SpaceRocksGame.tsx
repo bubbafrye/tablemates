@@ -11,7 +11,7 @@ import styles from "./SpaceRocksGame.module.css";
 export function SpaceRocksGame() {
   return (
     <div className={styles.page} data-name="space-rocks">
-      <SiteHeader />
+      <SiteHeader gameId="space-rocks" />
       <iframe
         className={styles.frame}
         src={withBasePath("/games/space-rocks/index.html")}

@@ -17,6 +17,7 @@ export const Default: Story = {
       id: "rakko",
       playerCount: "1-4",
       controller: true,
+      fullscreen: false,
       type: "card",
     },
   },

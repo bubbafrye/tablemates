@@ -1,3 +1,5 @@
+import { withBasePath } from "./site";
+
 export const GAME_TYPES = ["puzzle", "arcade", "card"] as const;
 export type GameType = (typeof GAME_TYPES)[number];
 
@@ -5,6 +7,7 @@ export type GameFacts = {
   id: string;
   playerCount: string;
   controller: boolean;
+  fullscreen: boolean;
   type: GameType | "";
 };
 
@@ -27,6 +30,7 @@ export function parseGamesDataCsv(text: string): GameFacts[] {
   const iName = col("game-name");
   const iCount = col("player-count");
   const iController = col("controller");
+  const iFullscreen = col("fullscreen");
   const iType = col("type");
 
   const rows: GameFacts[] = [];
@@ -39,6 +43,7 @@ export function parseGamesDataCsv(text: string): GameFacts[] {
       id: cell(iName),
       playerCount: cell(iCount),
       controller: parseBool(cell(iController)),
+      fullscreen: parseBool(cell(iFullscreen)),
       type: parseType(cell(iType)),
     });
   }
@@ -63,4 +68,20 @@ export function factsForGame(gameId: string, catalogIds: string[], rows: GameFac
   const idx = placeholders.indexOf(gameId);
   if (idx < 0) return undefined;
   return unnamed[idx];
+}
+
+let pending: Promise<GameFacts[]> | null = null;
+
+/** Runtime read of `public/games-data.csv` (cached). */
+export function loadGamesData() {
+  if (!pending) {
+    pending = fetch(withBasePath("/games-data.csv"))
+      .then((res) => {
+        if (!res.ok) throw new Error(`games-data.csv ${res.status}`);
+        return res.text();
+      })
+      .then(parseGamesDataCsv)
+      .catch(() => []);
+  }
+  return pending;
 }
